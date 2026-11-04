@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
-<meta name="theme-color" content="#3A3878">
+<meta name="theme-color" content="#4A4C95">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -277,13 +277,16 @@ input.txt{font-size:15px!important;font-weight:500!important}
 
 /* ================= iolite · verre dépoli sur nuit lavande ================= */
 /* Fond : halos flous lavande, pêche et indigo, fixes derrière tout le contenu */
-html{background:#3A3878} /* couleur du haut de l'écran : iOS s'en sert pour teinter la zone de l'heure */
+html{background:#4A4C95} /* couleur du haut de l'écran : iOS s'en sert pour teinter la zone de l'heure */
 body{background:transparent!important}
 body{padding-block:0 calc(108px + env(safe-area-inset-bottom,0px));font-size:15.5px;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
 body::before{display:none}
 .aura{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
   radial-gradient(120% 70% at 50% 0%,#2A2550 0%,rgba(13,11,23,0) 60%),
   linear-gradient(180deg,#1A1630 0%,#0D0B17 55%,#120E1C 100%)}
+/* iOS teinte la zone de l'heure avec la couleur d'un élément fixe collé en haut : on lui donne une couleur unie, puis on la fond dans le dégradé */
+.sbar{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background-color:#4A4C95;z-index:-1;pointer-events:none}
+.aura::after{content:"";position:absolute;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 110px);background:linear-gradient(180deg,#4A4C95 0,#4A4C95 env(safe-area-inset-top,0px),rgba(74,76,149,0) 100%)}
 .aura i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.9}
 .aura i:nth-child(1){width:70vmax;height:70vmax;left:-25vmax;top:-30vmax;background:radial-gradient(circle,#7C84F0 0%,rgba(124,132,240,0) 65%)}
 .aura i:nth-child(2){width:55vmax;height:55vmax;right:-25vmax;top:22vh;background:radial-gradient(circle,#E8907A 0%,rgba(232,144,122,0) 62%);opacity:.55}
@@ -489,7 +492,7 @@ body:not(.gate) .wiz{padding-bottom:90px}
 </style>
 </head>
 <body>
-<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div><div class="sbar" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top" id="top">
     <div class="top-title"><b id="title">…</b><small id="subtitle"></small></div>
@@ -1259,7 +1262,7 @@ function renderParams(){
   h+='<section class="set"><h2>Sauvegarde</h2>'+
       '<div class="backup"><button data-export>Exporter mes données</button><label class="imp" for="imp-file">Importer une sauvegarde</label><input type="file" id="imp-file" accept="application/json,.json" hidden></div>'+
       '<p class="note" id="bk-msg"></p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 12</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 13</p></div>';
   view.innerHTML=h;updateEq();
 }
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
