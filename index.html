@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 18">
+<meta name="description" content="iolite version 19">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -282,6 +282,8 @@ html{background:#4A4C95} /* couleur du haut de l'écran : iOS s'en sert pour tei
 body{background:transparent!important}
 body{padding-block:0 calc(108px + env(safe-area-inset-bottom,0px));font-size:15.5px;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
 body::before{display:none}
+/* la page fait toujours au moins la hauteur de l'écran (les pages courtes comme Alertes déclenchent un bug d'affichage d'iOS 26) */
+body{box-sizing:border-box;min-height:calc(100lvh - env(safe-area-inset-top,0px))}
 .aura{position:fixed;top:0;left:0;right:0;bottom:-240px;z-index:-1;overflow:hidden;background:
   radial-gradient(120% 70% at 50% 0%,#2A2550 0%,rgba(13,11,23,0) 60%),
   linear-gradient(180deg,#1A1630 0%,#0D0B17 55%,#120E1C 100%)}
@@ -1276,7 +1278,7 @@ function renderParams(){
     '</section><section class="set"><h2>Application</h2>'+
       '<div class="backup"><button class="imp" data-hardreload>Recharger l\'application</button></div>'+
       '<p class="note">Télécharge la toute dernière version d\'iolite. Vos heures et vos réglages sont conservés.</p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 18</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 19</p></div>';
   view.innerHTML=h;updateEq();
 }
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
