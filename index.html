@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.40">
+<meta name="description" content="iolite version 0.41">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -717,7 +717,8 @@ var now0=new Date();
 var S={tab:"shift",cur:now0,statW:now0,statM:now0,statY:now0.getFullYear(),days:{},target:35,
   pay:{mode:"horaire",rate:"12,31",monthly:null,charges:22,maj:"legal",meal:"4,35"},
   conges:{report:null},reminder:{times:["22:00"],recap:true}};
-try{var t=localStorage.getItem("pt-tab");if(t==="shift"||t==="stats"||t==="alerts"||t==="params")S.tab=t;}catch(e){}
+/* à l'ouverture, on arrive toujours sur Shift ; seule la mise à jour depuis Réglages ramène à l'onglet en cours */
+try{if(sessionStorage.getItem("pt-keeptab")){sessionStorage.removeItem("pt-keeptab");var t=localStorage.getItem("pt-tab");if(t==="shift"||t==="stats"||t==="alerts"||t==="params")S.tab=t;}}catch(e){}
 
 /* ---------- dates ---------- */
 function key(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
@@ -1180,7 +1181,7 @@ function permNote(){
   if(Notification.permission==="denied")return "Les notifications sont bloquées pour ce site. Autorisez-les dans les réglages du navigateur pour recevoir les rappels.";
   return "";}
 /* équivalent de Cmd + Maj + R, utilisable depuis l'icône de l'écran d'accueil : vide le cache et recharge */
-function hardReload(){var b=document.querySelector("[data-hardreload]");if(b){b.disabled=true;b.querySelector(".srow-t").firstChild.textContent="Mise à jour…";}
+function hardReload(){try{sessionStorage.setItem("pt-keeptab","1");}catch(e){}var b=document.querySelector("[data-hardreload]");if(b){b.disabled=true;b.querySelector(".srow-t").firstChild.textContent="Mise à jour…";}
   var go=function(){location.replace(location.pathname+"?maj="+Date.now());};
   var jobs=[];
   if(window.caches)jobs.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
@@ -1583,7 +1584,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.40</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.41</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
