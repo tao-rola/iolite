@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.39">
+<meta name="description" content="iolite version 0.40">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -661,6 +661,9 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .strip,.hero,.sum-card{touch-action:pan-y}
 #view>.swin,#view>.strip.swin{animation:swin .34s cubic-bezier(.2,.8,.2,1) both}
 @keyframes swin{from{transform:translateX(var(--sx,40px));opacity:0}to{transform:none;opacity:1}}
+.dock{position:fixed;left:0;right:0;margin:0 auto;max-width:430px;z-index:7;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));bottom:calc(max(10px,calc(env(safe-area-inset-bottom,0px) - 12px)) + 82px)}
+.dock .btn-main{width:100%;margin:0}.dock .sgrp{gap:0}
+.dock-sp{height:64px;flex:none}
 .prov-list{display:flex;flex-wrap:wrap;gap:8px}
 .prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .prov.on{background:#fff;color:#15122A}
@@ -1272,9 +1275,9 @@ function renderShift(){
     active(d).forEach(function(sv){var v=d[sv],c=svcCalc(v);if(!v||!(v.start||v.end))return;rows+=rowHtml2(svcLabel(sv),slotSub(v),c?fmt(c.net):"");});
     h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span>'+'</div>'+rows+'</section>';}
   if(has){
-    h+='<button class="btn-main" data-wiz="start">Modifier</button>';
+    h+='<div class="dock-sp"></div><div class="dock"><button class="btn-main" data-wiz="start">Modifier</button></div>';
   }else{
-    h+='<button class="btn-main" data-wiz="start">Pointer cette journée</button>';
+    h+='<div class="dock-sp"></div><div class="dock"><button class="btn-main" data-wiz="start">Pointer cette journée</button></div>';
   }
   view.innerHTML=h;countUp();updateBadge();checkReminder();
 }
@@ -1580,11 +1583,11 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.39</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.40</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
-  var P=S.pay,R=S.reminder,mail=USER&&USER.email?USER.email:"",k=SUB,t="",b="";
+  var P=S.pay,R=S.reminder,mail=USER&&USER.email?USER.email:"",k=SUB,t="",b="",dock="";
   if(k==="profil"){t="Profil";
     b='<div class="av-edit">'+avatarHtml("big")+'<div class="av-acts"><label class="av-btn" for="av-file">'+(PROFILE.avatar?"Changer la photo":"Ajouter une photo")+'</label>'+
       (PROFILE.avatar?'<button class="av-btn del" data-avdel>Retirer</button>':'')+'</div><input type="file" id="av-file" accept="image/*" hidden><p class="snote" id="av-msg"></p></div>'+
@@ -1623,10 +1626,10 @@ function renderSub(){
       '<section class="sgrp"><h2>Adresse</h2><div class="set"><div class="field"><label for="combo-url">Adresse de synchronisation '+esc(pv.n)+'</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse donnée par '+esc(pv.n)+'" value="'+esc(S.combo.url||"")+'"></div>'+
       (S.combo.url?'<div class="backup"><button data-combosync>Synchroniser maintenant</button></div>':'')+'</div>'+
       '<p class="snote" id="combo-msg">'+esc(comboStatus()||pv.help)+'</p></section>'+
-      (S.combo.url?group("",[row({t:"Déconnecter "+pv.n,chev:false,cls:"danger",attr:'data-combooff'})]):'');}
+      '';var dock=S.combo.url?'<div class="dock-sp"></div><div class="dock">'+group("",[row({t:"Déconnecter "+pv.n,chev:false,cls:"danger",attr:'data-combooff'})])+'</div>':'';}
   else if(k==="del"){t="Supprimer mon compte";b='<div class="set">'+accForm("del")+'</div>';}
   setHead(t,"");
-  view.innerHTML='<div class="sett sub"><button class="sback" data-sub="">'+ICON_L+'<span>Réglages</span></button>'+b+'</div>';
+  view.innerHTML='<div class="sett sub"><button class="sback" data-sub="">'+ICON_L+'<span>Réglages</span></button>'+b+'</div>'+(typeof dock==="string"?dock:"");
   if(k==="pay")updateEq();
 }
 /* ---------- compte : mot de passe, e-mail, suppression ---------- */
