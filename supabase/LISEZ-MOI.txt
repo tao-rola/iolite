@@ -1,0 +1,33 @@
+iolite : brancher la base de données Supabase (une seule fois, environ 10 minutes)
+
+1. Créer le compte et le projet
+   - Allez sur https://supabase.com et créez un compte gratuit (« Start your project »).
+   - « New project » : nom « iolite », choisissez un mot de passe de base (gardez-le),
+     région « West EU (Paris) » ou « Central EU (Frankfurt) ». Attendez 1 à 2 minutes.
+
+2. Créer les tables
+   - Menu de gauche : « SQL Editor » > « New query ».
+   - Collez tout le contenu du fichier schema.sql (dans ce dossier), puis « Run ».
+   - Le message « Success. No rows returned » confirme que c'est fait.
+
+3. Récupérer les clés
+   - « Project Settings » (roue dentée) > « API ».
+   - Copiez « Project URL » et la clé « anon public ».
+   - Ouvrez config.js (dossier Iolite) et collez-les entre les guillemets :
+       supabaseUrl: "https://xxxxx.supabase.co",
+       supabaseKey: "eyJhbGciOi..."
+   - La clé « anon » peut être publique : chaque compte ne voit que ses données
+     grâce aux règles créées par schema.sql. Ne mettez JAMAIS la clé « service_role ».
+
+4. Les adresses autorisées
+   - « Authentication » > « URL Configuration ».
+   - « Site URL » : l'adresse de votre site Netlify (ex. https://iolite-gallium.netlify.app).
+   - « Redirect URLs » : ajoutez la même adresse, plus http://localhost:8080.
+     (Ces liens servent aux e-mails de confirmation et de mot de passe oublié.)
+
+5. (Facultatif) Confirmation d'e-mail
+   - Par défaut, Supabase envoie un e-mail de confirmation à chaque inscription.
+   - Pour vos essais, vous pouvez la couper : « Authentication » > « Providers » > « Email »
+     > décochez « Confirm email ». Pensez à la réactiver avant d'ouvrir iolite à d'autres personnes.
+
+Tant que config.js est vide, iolite fonctionne sans compte, avec les données sur le téléphone.
