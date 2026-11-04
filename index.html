@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.25">
+<meta name="description" content="iolite version 0.26">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -538,6 +538,9 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .av-acts{display:flex;gap:10px}
 .av-btn{border:0;border-radius:999px;padding:9px 18px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .av-btn.del{color:var(--warn)}
+.strip,.hero,.sum-card{touch-action:pan-y}
+#view>.swin,#view>.strip.swin{animation:swin .34s cubic-bezier(.2,.8,.2,1) both}
+@keyframes swin{from{transform:translateX(var(--sx,40px));opacity:0}to{transform:none;opacity:1}}
 .prov-list{display:flex;flex-wrap:wrap;gap:8px}
 .prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .prov.on{background:#fff;color:#15122A}
@@ -1086,6 +1089,23 @@ function weekStrip(){var m=monday(S.cur),t=new Date(),L=["L","M","M","J","V","S"
     h+='<button class="sd'+(on?" on":"")+(sameDay(d,t)?" now":"")+'" data-day="'+k+'" aria-label="'+cap(JOURS[d.getDay()])+' '+d.getDate()+'"><span>'+L[i]+'</span><b>'+d.getDate()+'</b><i'+(has?' class="has"':'')+'></i></button>';}
   return h+'</div>';}
 
+/* ===== Page Shift : glisser à gauche ou à droite sur la semaine (semaine suivante / précédente) ou sur les cartes du jour (jour suivant / précédent) ===== */
+var SW=null,SWIPED=0;
+function swEls(z){return z==="week"?[view.querySelector(".strip")]:[].slice.call(view.querySelectorAll(".hero,.sum-card"));}
+view.addEventListener("touchstart",function(e){SW=null;if(S.tab!=="shift"||W||e.touches.length!==1)return;
+  var z=e.target.closest(".strip")?"week":e.target.closest(".hero,.sum-card")?"day":null;if(!z)return;
+  var t=e.touches[0];SW={z:z,x:t.clientX,y:t.clientY,dx:0,h:null,els:swEls(z).filter(Boolean)};},{passive:true});
+view.addEventListener("touchmove",function(e){if(!SW)return;var t=e.touches[0],dx=t.clientX-SW.x,dy=t.clientY-SW.y;
+  if(SW.h===null&&Math.abs(dx)+Math.abs(dy)>8)SW.h=Math.abs(dx)>Math.abs(dy);
+  if(!SW.h)return;SW.dx=dx;SW.els.forEach(function(el){el.style.transition="none";el.style.transform="translateX("+(dx*0.55)+"px)";el.style.opacity=String(1-Math.min(.45,Math.abs(dx)/500));});},{passive:true});
+function swEnd(){if(!SW)return;var o=SW;SW=null;if(!o.h)return;
+  if(Math.abs(o.dx)>55){var dir=o.dx<0?1:-1;SWIPED=Date.now();S.cur=addDays(S.cur,(o.z==="week"?7:1)*dir);W=null;render();
+    swEls(o.z).filter(Boolean).forEach(function(el){el.style.setProperty("--sx",(dir*48)+"px");el.classList.add("swin");});return;}
+  o.els.forEach(function(el){el.style.transition="transform .25s cubic-bezier(.2,.8,.2,1),opacity .25s";el.style.transform="";el.style.opacity="";});}
+view.addEventListener("touchend",swEnd);view.addEventListener("touchcancel",swEnd);
+/* un glissement ne doit pas valoir un appui sur un jour de la semaine */
+view.addEventListener("click",function(e){if(Date.now()-SWIPED<450){e.stopPropagation();e.preventDefault();}},true);
+
 /* ===== Page Shift : récapitulatif du jour + saisie question par question ===== */
 function shiftData(){return S.days[key(S.cur)]||{};}
 var W=null; /* assistant en cours : {k, i, svcs} */
@@ -1405,7 +1425,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.25</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.26</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
