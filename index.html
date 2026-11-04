@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.30">
+<meta name="description" content="iolite version 0.31">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -601,6 +601,9 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .stv .st-hero-t small,.stv .st-sel,.stv .st-sel b{text-transform:uppercase;letter-spacing:.06em}
 .stv .st-hero-t small{font-size:12.5px}.stv .st-sel{font-size:12.5px;font-weight:600}.stv .st-sel b{font-size:13px}
 .stv .tile b{color:var(--ink)}
+.stv .tile-l i{background:#fff;box-shadow:0 0 8px rgba(255,255,255,.45)}
+.stv .pb-in{text-transform:uppercase;bottom:18px;font-size:10.5px;letter-spacing:.01em}
+.stv .st-sel,.stv .st-sel b{letter-spacing:0}.stv .st-sel{gap:4px 10px}
 .stv .li .meal{font-size:9.5px;letter-spacing:.08em}.stv .li .sub{font-size:10.5px;letter-spacing:.04em}
 /* ===== Réglages : liste groupée ===== */
 .sett{display:flex;flex-direction:column;gap:28px}
@@ -1329,7 +1332,7 @@ function payHero(p,label,pct,pctLbl){var det=false;try{det=localStorage.getItem(
   if(!p)return '<section class="st-hero"><div class="st-hero-t"><span>Salaire estimé</span><p>Renseignez votre salaire dans Réglages pour voir votre brut et votre net.</p></div></section>';
   return '<section class="st-hero pay-panel" data-paypanel role="button" tabindex="0" aria-expanded="'+det+'" aria-label="Afficher ou masquer le détail du salaire">'+
     '<div class="st-hero-top"><div class="st-hero-t"><span>Net estimé · '+label+'</span><b>'+eur(p.net)+'</b><small>Brut '+eur2(p.brut)+'</small></div>'+
-    '<div class="st-hero-ring">'+dotRing(pct,92,"")+'<span><b>'+Math.round(pct*100)+'%</b><small>'+pctLbl+'</small></span></div></div>'+
+    '<div class="st-hero-ring">'+dotRing(pct,92,"")+'<span><b>'+Math.round(pct*100)+'%</b></span></div></div>'+
     '<div class="pay-fold'+(det?' open':'')+'"><div class="pay-lines">'+
       '<div><span>Heures normales ('+hh(p.normH)+' × '+eur2(p.r)+')</span><b>'+eur2(p.normH*p.r)+'</b></div>'+
       '<div><span>Heures sup ('+hh(p.supH)+')</span><b>'+eur2(p.sup)+'</b></div>'+
@@ -1357,10 +1360,10 @@ function renderStats(){
     h+=payHero(p,"S"+isoWeek(m),S.target?wt/(S.target*60):0,"de "+S.target+" h");
     h+=navPill("wk","S"+isoWeek(m)+" · "+shortDate(m)+" – "+shortDate(wEnd));
     var sel=-1;rows.forEach(function(o,i){if(sameDay(o.d,now))sel=i;});
-    h+='<section class="panel st-chart"><div class="st-ch-h"><div><span class="st-k">Heures de la semaine</span><b class="st-big">'+fmt(wt)+'</b></div>'+(wp?'<span class="chip '+(wp.diff>0?"up":wp.diff<0?"down":"eq")+'">'+(wp.diff>0?"+":"")+fmt(wp.diff)+' vs prévu</span>':'')+'</div>'+
+    h+='<section class="panel st-chart"><div class="st-ch-h"><div><span class="st-k">Heures de la semaine</span><b class="st-big">'+fmt(wt)+'</b></div>'+(wp?'<span class="chip '+(wp.diff>0?"up":wp.diff<0?"down":"eq")+'">'+(wp.diff>0?"+":"")+fmt(wp.diff)+'</span>':'')+'</div>'+
       pillBars(rows.map(function(o,i){return {lbl:L[i],v:o.r.total,txt:fmt(o.r.total),aria:cap(JOURS[o.d.getDay()])+" "+o.d.getDate(),alt:o.r.conge?"CP":o.r.mode==="repos"&&o.data.mode?"Repos":"—",cls:(dayFlag(o.d)?"alert":"")+(sameDay(o.d,now)?" today":"")};}),sel,"week",true)+'</section>';
     h+='<div class="bento">'+
-      tile("coral","Heures sup",hh(sup),sup>0?"au-delà de 35 h":"aucune cette semaine")+
+      tile("coral","Heures sup",hh(sup),sup>0?"+35h / sem.":"aucune")+
       tile("mint","Repas fournis",String(wRep),wRep>1?"repas":"repas")+
       tile("lilac","Moyenne / jour",fmt(wWorked?wt/wWorked:0),wWorked+" jour"+(wWorked>1?"s":"")+" travaillé"+(wWorked>1?"s":""))+
       (wp?tile("lav","Prévu sur "+provName(),fmt(wp.plan),(wp.diff>0?"+":"")+fmt(wp.diff)+" d'écart"):tile("lav","Objectif",S.target+" h",wt>=S.target*60?"atteint":"reste "+fmt(S.target*60-wt)))+
@@ -1383,12 +1386,12 @@ function renderStats(){
         g+='<button class="cal-c '+c+(sameDay(dd,now)?" today":"")+'" data-goday="'+k2+'" aria-label="'+cap(JOURS[dd.getDay()])+' '+dd.getDate()+(rr.worked?" : "+fmt(rr.total):"")+'">'+(c==="off"?'<i>×</i>':dd.getDate())+'</button>';}
       g+='<span class="cal-w">'+(wsum?Math.round(wsum/60)+"h":"")+'</span></div>';}
     var diffPct=prev.total?((md.total-prev.total)/prev.total*100):NaN;
-    h+='<section class="panel st-cal"><div class="st-ch-h"><div><span class="st-k">Effectué en '+MOIS[mo]+'</span><b class="st-big">'+fmt(md.total)+'</b></div>'+(prev.total?'<div class="st-cmp">'+chip(diffPct,"%")+'<small>vs '+MOIS[pm.getMonth()]+'</small></div>':'')+'</div>'+
+    h+='<section class="panel st-cal"><div class="st-ch-h"><div><span class="st-k">Effectué en '+MOIS[mo]+'</span><b class="st-big">'+fmt(md.total)+'</b></div>'+(prev.total?'<div class="st-cmp">'+chip(diffPct,"%")+'</div>':'')+'</div>'+
       '<div class="cal">'+g+'</div>'+
       '<div class="cal-leg"><span><i class="h3"></i>Travaillé</span><span><i class="alert"></i>Alerte</span><span><i class="cp"></i>Congé</span><span><i class="plan"></i>Prévu</span></div></section>';
     h+='<div class="bento">'+
       tile("lav","Jours travaillés",String(md.worked),md.congeDays?md.congeDays+" jour"+(md.congeDays>1?"s":"")+" de congé":"ce mois-ci")+
-      tile("coral","Heures sup",hh(msup),"au-delà de 35 h / sem.")+
+      tile("coral","Heures sup",hh(msup),"+35h / sem.")+
       tile("mint","Repas fournis",String(md.repas),mPay&&mPay.an?eur2(mPay.an)+" d'avantage":"")+
       (mp?tile("lilac","Prévu sur "+provName(),fmt(mp.plan),(mp.diff>0?"+":"")+fmt(mp.diff)+" d'écart"):tile("lilac","Meilleure journée",fmt(md.best),""))+
     '</div>';
@@ -1547,7 +1550,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.30</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.31</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
