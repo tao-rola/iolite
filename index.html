@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.24">
+<meta name="description" content="iolite version 0.25">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -301,8 +301,15 @@ p.note.acc-ok{color:var(--good)}
 .aura i:nth-child(1){width:70vmax;height:70vmax;left:-25vmax;top:-30vmax;background:radial-gradient(circle,#7C84F0 0%,rgba(124,132,240,0) 65%)}
 .aura i:nth-child(2){width:55vmax;height:55vmax;right:-25vmax;top:22vh;background:radial-gradient(circle,#E8907A 0%,rgba(232,144,122,0) 62%);opacity:.55}
 .aura i:nth-child(3){width:60vmax;height:60vmax;left:-10vmax;bottom:-35vmax;background:radial-gradient(circle,#5B3FA8 0%,rgba(91,63,168,0) 65%);opacity:.6}
-@media (prefers-reduced-motion:no-preference){.aura i:nth-child(1){animation:drift 26s ease-in-out infinite alternate}.aura i:nth-child(2){animation:drift 32s ease-in-out infinite alternate-reverse}}
-@keyframes drift{from{transform:translate(0,0)}to{transform:translate(6vmax,4vmax)}}
+/* fond vivant : les trois halos dérivent lentement, chacun sur son propre trajet */
+.aura i{will-change:transform}
+.aura i:nth-child(1){animation:orb1 18s ease-in-out infinite}
+.aura i:nth-child(2){animation:orb2 23s ease-in-out infinite}
+.aura i:nth-child(3){animation:orb3 27s ease-in-out infinite}
+@keyframes orb1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20vmax,12vmax) scale(1.15)}66%{transform:translate(-6vmax,24vmax) scale(.9)}}
+@keyframes orb2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-26vmax,-14vmax) scale(1.25)}}
+@keyframes orb3{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(22vmax,-20vmax) scale(1.12)}80%{transform:translate(-8vmax,-8vmax) scale(.95)}}
+@media (prefers-reduced-motion:reduce){.aura i:nth-child(1){animation-duration:40s}.aura i:nth-child(2){animation-duration:50s}.aura i:nth-child(3){animation-duration:60s}}
 
 /* Surfaces de verre */
 .svc,.panel,.set,.scard,.prof-card,.choice,.mode,.wiz-time,.bubble,.btn-alt,.nav-cap,.tabs,.maj,.seg,.quick button,.stepper button,.mini-nav button,.rem-row input,.field input,.backup .imp,.rem-del,.day-sep span,.wiz .field.money input{
@@ -1314,6 +1321,7 @@ function allMessages(){var msgs=[];
 /* alertes déjà lues (mémorisées dans ce navigateur) */
 function getSeen(){try{return JSON.parse(localStorage.getItem("pt-seen")||"{}")||{};}catch(e){return {};}}
 function markSeen(msgs){var seen=getSeen(),ch=false;msgs.forEach(function(a){if(!seen[a.id]){seen[a.id]=1;ch=true;}});try{localStorage.setItem("pt-seen",JSON.stringify(seen));}catch(e){}if(ch)pushProfileSoon();}
+var ALERT_JUMP=true; /* vrai quand on arrive sur la page Alertes */
 function renderAlerts(){
   var msgs=allMessages(),seen=getSeen(),h='<div class="chat">',prevDay=null,open=false,newShown=false;
   function close(){if(open){h+='</div></div>';open=false;}}
@@ -1329,9 +1337,8 @@ function renderAlerts(){
   close();h+='</div>';
   view.innerHTML=h;
   var sep=document.getElementById("new-sep");
-  /* défile seulement si la page dépasse l'écran (sur iPhone, un défilement forcé peut décaler l'affichage) */
-  var room=document.documentElement.scrollHeight-window.innerHeight;
-  if(room>4){var y=sep?sep.getBoundingClientRect().top+window.scrollY-16:room;window.scrollTo(0,Math.max(0,Math.min(room,y)));}
+  /* à l'ouverture de la page : on arrive en bas, sur la dernière alerte (seulement si la page dépasse l'écran, sinon iOS décale l'affichage) */
+  if(ALERT_JUMP){ALERT_JUMP=false;requestAnimationFrame(function(){var room=document.documentElement.scrollHeight-window.innerHeight;window.scrollTo(0,room>4?room:0);});}
   markSeen(msgs);updateBadge();
 }
 
@@ -1398,7 +1405,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.24</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.25</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1489,7 +1496,7 @@ function updateEq(skip){
 /* ---------- interactions ---------- */
 document.getElementById("prev").onclick=function(){S.cur=addDays(S.cur,-1);W=null;render();};
 document.getElementById("next").onclick=function(){S.cur=addDays(S.cur,1);W=null;render();};
-function goTab(t){SUB=null;if(t!=="shift"||S.tab!=="shift")W=null;S.tab=t;try{localStorage.setItem("pt-tab",t);}catch(e){}render();window.scrollTo(0,0);}
+function goTab(t){SUB=null;if(t==="alerts")ALERT_JUMP=true;if(t!=="shift"||S.tab!=="shift")W=null;S.tab=t;try{localStorage.setItem("pt-tab",t);}catch(e){}render();if(t!=="alerts")window.scrollTo(0,0);}
 document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){goTab(b.dataset.tab);};});
 function keepScroll(fn){var y=window.scrollY;fn();render();window.scrollTo(0,y);}
 
