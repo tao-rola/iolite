@@ -281,7 +281,7 @@ html{background:#4A4C95} /* couleur du haut de l'écran : iOS s'en sert pour tei
 body{background:transparent!important}
 body{padding-block:0 calc(108px + env(safe-area-inset-bottom,0px));font-size:15.5px;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
 body::before{display:none}
-.aura{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
+.aura{position:fixed;top:0;left:0;right:0;bottom:-240px;z-index:-1;overflow:hidden;background:
   radial-gradient(120% 70% at 50% 0%,#2A2550 0%,rgba(13,11,23,0) 60%),
   linear-gradient(180deg,#1A1630 0%,#0D0B17 55%,#120E1C 100%)}
 /* iOS teinte la zone de l'heure avec la couleur d'un élément fixe collé en haut : on lui donne une couleur unie, puis on la fond dans le dégradé */
@@ -1264,7 +1264,7 @@ function renderParams(){
   h+='<section class="set"><h2>Sauvegarde</h2>'+
       '<div class="backup"><button data-export>Exporter mes données</button><label class="imp" for="imp-file">Importer une sauvegarde</label><input type="file" id="imp-file" accept="application/json,.json" hidden></div>'+
       '<p class="note" id="bk-msg"></p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 16</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 17</p></div>';
   view.innerHTML=h;updateEq();
 }
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
