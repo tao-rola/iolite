@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 19">
+<meta name="description" content="iolite version 20">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -284,6 +284,16 @@ body{padding-block:0 calc(108px + env(safe-area-inset-bottom,0px));font-size:15.
 body::before{display:none}
 /* la page fait toujours au moins la hauteur de l'écran (les pages courtes comme Alertes déclenchent un bug d'affichage d'iOS 26) */
 body{box-sizing:border-box;min-height:calc(100lvh - env(safe-area-inset-top,0px))}
+.cont{margin-top:16px}.cont-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px;color:var(--muted);font-size:13px}
+.cont-h b{color:var(--ink);font-size:15px}.cont-h b.warn,.cont-h b.neg{color:var(--warn)}
+.progress.hot>div{background:var(--warn)!important}
+[data-recap]{margin-top:12px}
+.acc-links{display:flex;flex-wrap:wrap;gap:4px 18px}
+.acc-form{display:flex;flex-direction:column;gap:12px;margin:6px 0 12px}
+.acc-err{color:var(--warn);min-height:0}.acc-err:empty{display:none}
+p.note.acc-ok{color:var(--good)}
+.rem-add.danger{color:var(--warn)}
+.backup .danger-btn{background:var(--warn)!important;color:#1A0E0A!important}
 .aura{position:fixed;top:0;left:0;right:0;bottom:-240px;z-index:-1;overflow:hidden;background:
   radial-gradient(120% 70% at 50% 0%,#2A2550 0%,rgba(13,11,23,0) 60%),
   linear-gradient(180deg,#1A1630 0%,#0D0B17 55%,#120E1C 100%)}
@@ -531,8 +541,8 @@ var DAY_MAX=600, WEEK_MAX=48*60, REST_MIN=660; /* 10 h, 48 h, 11 h */
 /* ---------- état ---------- */
 var now0=new Date();
 var S={tab:"shift",cur:now0,statW:now0,statM:now0,statY:now0.getFullYear(),days:{},target:35,
-  pay:{mode:"horaire",rate:"12,31",monthly:null,charges:22,maj:"legal",meal:"4,15"},
-  conges:{report:null},reminder:{times:["22:00"]}};
+  pay:{mode:"horaire",rate:"12,31",monthly:null,charges:22,maj:"legal",meal:"4,35",contingent:null},
+  conges:{report:null},reminder:{times:["22:00"],recap:true}};
 try{var t=localStorage.getItem("pt-tab");if(t==="shift"||t==="stats"||t==="alerts"||t==="params")S.tab=t;}catch(e){}
 
 /* ---------- dates ---------- */
@@ -616,9 +626,17 @@ function payCalc(md){
   });
   var cp=md.congeH*r;brut+=cp;
   var ch=num(P.charges);if(ch==null)ch=22;
-  var mp=num(P.meal)||0,mdd=mp*md.repas,net0=brut*(1-ch/100);
-  return {brut:brut,net0:net0,net:net0-mdd,mealDed:mdd,meals:md.repas,mealPrice:mp,r:r,normH:normH,supH:supH,maj:maj,sup:sup,ch:ch,cp:cp};
+  /* repas fourni = avantage en nature : ajouté au brut (soumis aux cotisations), puis retiré du net, comme sur la fiche de paie */
+  var mp=num(P.meal)||0,an=mp*md.repas,base=brut;brut+=an;var net0=brut*(1-ch/100);
+  return {brut:brut,base:base,an:an,net0:net0,net:net0-an,mealDed:an,meals:md.repas,mealPrice:mp,r:r,normH:normH,supH:supH,maj:maj,sup:sup,ch:ch,cp:cp};
 }
+/* contingent annuel d'heures sup : 360 h en HCR (établissement permanent), 220 h selon le Code du travail */
+function contingentMax(){var c=num(S.pay.contingent);return c>0?c:(S.pay.maj==="hcr"?360:220);}
+/* heures sup cumulées sur l'année civile, semaine par semaine (au-delà de 35 h) ; renvoie aussi le jour où 80 % puis 100 % sont dépassés */
+function contingentInfo(y){var max=contingentMax(),tot=0,at80=null,at100=null,m=monday(new Date(y,0,1));if(m.getFullYear()<y)m=addDays(m,7);
+  for(;m.getFullYear()===y;m=addDays(m,7)){var sup=Math.max(0,weekTotal(m)/60-35);if(!sup)continue;tot+=sup;var end=addDays(m,6);
+    if(!at80&&tot>=max*0.8)at80=end;if(!at100&&tot>max)at100=end;}
+  return {y:y,max:max,used:tot,at80:at80,at100:at100};}
 function baseBrut(){return S.pay.mode==="mensuel"?num(S.pay.monthly):num(S.pay.rate)*weekUnits(S.target)*52/12;}
 function eur(n){return n.toLocaleString("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0});}
 function eur2(n){return n.toLocaleString("fr-FR",{style:"currency",currency:"EUR"});}
@@ -664,7 +682,7 @@ function applySettings(o){if(!o)return;if(o.target)S.target=o.target;
   if(o.pay){var p=Object.assign({},o.pay);["rate","monthly","meal"].forEach(function(f){if(p[f]==null||p[f]==="")delete p[f];});
     if(p.mode==="mensuel"&&!p.monthly)p.mode="horaire";S.pay=Object.assign({},S.pay,p);}
   if(o.conges)S.conges=Object.assign({},S.conges,o.conges);
-  if(o.reminder){var t=Array.isArray(o.reminder.times)?o.reminder.times:(o.reminder.time?[o.reminder.time]:null);if(t&&t.length)S.reminder={times:t.slice()};}}
+  if(o.reminder){var t=Array.isArray(o.reminder.times)?o.reminder.times:(o.reminder.time?[o.reminder.time]:null);if(t&&t.length)S.reminder={times:t.slice(),recap:o.reminder.recap!==false};}}
 function load(){
   try{var raw=localStorage.getItem("pt-days");if(raw)S.days=JSON.parse(raw)||{};
     var st=localStorage.getItem("pt-settings");if(st)applySettings(JSON.parse(st));}catch(e){setStatus("Échec de lecture des données de ce navigateur.");}
@@ -813,8 +831,8 @@ function renderOnboarding(){
       '<div class="field money"><label for="pay-rate">À l\'heure (brut)</label><input id="pay-rate" data-pay="rate" inputmode="decimal" autocomplete="off" placeholder="12,50"><em>€</em></div></div>';}
   else if(st==="charges"){q="Vos cotisations salariales ?";sub="La part retirée du brut pour obtenir le net. Environ 22 % en général.";
     body='<div class="field money"><label for="pay-charges">Cotisations</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>';}
-  else if(st==="meal"){q="Combien coûte un repas fourni ?";sub="Déduit de votre net pour chaque repas pris au travail.";
-    body='<div class="field money"><label for="pay-meal">Prix d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div>';}
+  else if(st==="meal"){q="Quelle est la valeur d'un repas fourni ?";sub="Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.";
+    body='<div class="field money"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div>';}
   else if(st==="maj"){q="Comment sont majorées vos heures sup ?";sub="";
     var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 %, +20 %, puis +50 %"],["none","Aucune majoration","Payées au taux normal"]];
     body='<div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-obmaj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>';}
@@ -939,12 +957,18 @@ function notify(){var title="iolite",opt={body:greet("Vous n'avez rien pointé a
   if(swReg&&swReg.showNotification)return swReg.showNotification(title,opt);
   try{new Notification(title,opt);}catch(e){}}
 function checkReminder(){
-  updateBadge();if(S.tab==="alerts")renderAlerts();
+  updateBadge();if(S.tab==="alerts")renderAlerts();checkRecap();
   var slot=dueSlot();if(!slot||!("Notification" in window)||Notification.permission!=="granted")return;
   var id=key(new Date())+"@"+slot;if(lastNotified===id)return;lastNotified=id; /* évite deux notifications quand deux vérifications se croisent */
   idbUpdate(function(st){if(st.notified===id)return false;st.notified=id;return true;}).then(function(go){if(go)notify();})
     .catch(function(){try{if(localStorage.getItem("pt-notified")===id)return;localStorage.setItem("pt-notified",id);}catch(e){}notify();});
 }
+/* notification du résumé, une seule fois par semaine, le dimanche soir */
+function checkRecap(){if(S.reminder.recap===false||!("Notification" in window)||Notification.permission!=="granted")return;
+  var m=monday(addDays(new Date(),-((new Date().getDay()===0)?0:7))),r=recapOf(m);if(!r)return;var id=r.id;
+  idbUpdate(function(st){if(st.recapNotified===id)return false;st.recapNotified=id;return true;}).then(function(go){if(!go)return;
+    var body=greet(recapText(m).replace(/<[^>]+>/g,"")),opt={body:body,icon:"icon-192.png",badge:"icon-192.png",tag:"resume"};
+    if(swReg&&swReg.showNotification)swReg.showNotification("iolite",opt);else try{new Notification("iolite",opt);}catch(e){}}).catch(function(){});}
 function registerPeriodic(){if(swReg&&swReg.periodicSync)swReg.periodicSync.register("rappel",{minInterval:60*60*1000}).catch(function(){});}
 function setupSW(){
   if(!("serviceWorker" in navigator)||location.protocol==="file:")return;
@@ -1113,15 +1137,16 @@ function renderStats(){
   var det=false;try{det=localStorage.getItem("pt-paydet")==="1";}catch(e){}
   h+='<section class="panel'+(mPay?' pay-panel" data-paypanel role="button" tabindex="0" aria-expanded="'+det+'" aria-label="Afficher ou masquer le détail du salaire':'')+'"><h2>Salaire estimé · '+MOIS[mo]+'</h2>';
   if(mPay){
-    h+='<div class="pay-top"><div><span>Brut</span><b>'+eur2(mPay.brut)+'</b></div><div><span>Net</span><b class="'+(mPay.brut>=baseBrut()-0.005?"pay-up":"pay-down")+'">'+eur2(mPay.net)+'</b></div></div>'+
+    h+='<div class="pay-top"><div><span>Brut</span><b>'+eur2(mPay.brut)+'</b></div><div><span>Net</span><b class="'+(mPay.base>=baseBrut()-0.005?"pay-up":"pay-down")+'">'+eur2(mPay.net)+'</b></div></div>'+
     '<div class="pay-fold'+(det?' open':'')+'"><div class="pay-lines">'+
       '<div><span>Objectif ('+S.target+' h / sem.)</span><b>'+eur2(baseBrut())+' brut</b></div>'+
       '<div><span>Heures normales ('+hh(mPay.normH)+' × '+eur2(mPay.r)+')</span><b>'+eur2(mPay.normH*mPay.r)+'</b></div>'+
       '<div><span>Heures sup ('+hh(mPay.supH)+')</span><b>'+eur2(mPay.sup)+'</b></div>'+
       (mPay.maj>0?'<div><span>dont majorations</span><b>'+eur2(mPay.maj)+'</b></div>':'')+
       (mPay.cp>0?'<div><span>Congés payés ('+jours(md.congeDays)+')</span><b>'+eur2(mPay.cp)+'</b></div>':'')+
+      (mPay.an>0?'<div><span>Avantage en nature repas ('+mPay.meals+' × '+eur2(mPay.mealPrice)+')</span><b>+'+eur2(mPay.an)+'</b></div>':'')+
       '<div><span>Cotisations ('+String(mPay.ch).replace(".",",")+' %)</span><b>−'+eur2(mPay.brut-mPay.net0)+'</b></div>'+
-      (mPay.mealPrice>0?'<div><span>Repas fournis ('+mPay.meals+' × '+eur2(mPay.mealPrice)+')</span><b>−'+eur2(mPay.mealDed)+'</b></div>':'')+
+      (mPay.an>0?'<div><span>Retenue repas fournis</span><b>−'+eur2(mPay.an)+'</b></div>':'')+
     '</div></div>';}
   else h+='<p class="note">Renseignez votre taux horaire ou votre salaire mensuel dans Paramètres pour voir votre brut et votre net estimés.</p>';
   h+='</section>';
@@ -1168,6 +1193,9 @@ function renderStats(){
     var empty=!d2.total&&!d2.congeDays,cur=yy===now.getFullYear()&&k===now.getMonth();
     h+='<div class="yr'+(cur?" cur":"")+(empty?" muted":"")+'"><span>'+MOIS_C[k]+'</span><span>'+fmt(d2.total)+'</span><span>'+hh(sp)+'</span>'+(ready?'<span>'+(p2?eur(p2.brut):"")+'</span><span>'+(p2?eur(p2.net):"")+'</span>':'')+'</div>';}
   h+='<div class="yr tot"><span>Total</span><span>'+fmt(tot.h)+'</span><span>'+hh(tot.s)+'</span>'+(ready?'<span>'+eur(tot.b)+'</span><span>'+eur(tot.n)+'</span>':'')+'</div></div>';
+  var ci=contingentInfo(yy),cp2=Math.min(100,ci.used/ci.max*100);
+  h+='<div class="cont"><div class="cont-h"><span>Plafond d\'heures sup '+yy+'</span><b class="'+(ci.used>ci.max?"neg":cp2>=80?"warn":"")+'">'+hh(ci.used)+' / '+ci.max+' h</b></div>'+
+    '<div class="progress'+(cp2>=80?' hot':'')+'" aria-hidden="true"><div style="width:'+cp2+'%"></div></div></div>';
   h+='</section>';
 
   /* --- Congés payés --- */
@@ -1199,8 +1227,22 @@ function message(a){var v='<b>'+a.val+'</b>';
     case "run":return "C'est votre "+a.val+"ᵉ jour de travail d'affilée. Pensez à prendre votre repos hebdomadaire.";
     case "week":return "Vous avez fait "+v+" cette semaine, au-delà des 48 h maximum.";
     case "today":return "Vous n'avez encore rien pointé aujourd'hui.";
-    case "over":return "Vous avez travaillé "+v+" de plus que prévu sur votre planning Combo.";}
+    case "over":return "Vous avez travaillé "+v+" de plus que prévu sur votre planning Combo.";
+    case "cont80":return "Vous avez déjà fait "+v+" d'heures sup en "+a.y+", soit plus de 80 % du plafond annuel de "+a.max+" h.";
+    case "cont100":return "Vous avez dépassé le plafond annuel de "+a.max+" h d'heures sup en "+a.y+" ("+v+"). Au-delà, chaque heure sup vous donne droit à un repos compensateur en plus de sa majoration.";
+    case "recap":return a.text;}
   return a.label;}
+/* ---------- résumé de la semaine : le dimanche à partir de 20 h ---------- */
+var RECAP_H=20;
+function recapReady(m){var sun=addDays(m,6),t=new Date();if(key(sun)<key(t))return true;return key(sun)===key(t)&&t.getHours()>=RECAP_H;}
+function recapText(m){var wt=weekTotal(m),days=0,rep=0;for(var i=0;i<7;i++){var r=dayCalc(dayOf(addDays(m,i)));if(r.worked)days++;rep+=r.repas;}
+  var sup=Math.max(0,wt/60-35),pl=rangePlan([0,1,2,3,4,5,6].map(function(i){return addDays(m,i);}));
+  var t="Résumé de la semaine "+isoWeek(m)+" : <b>"+fmt(wt)+"</b> sur "+days+" jour"+(days>1?"s":"")+(sup>0?", dont <b>"+hh(sup)+"</b> d'heures sup":"")+".";
+  if(pl&&Math.abs(pl.diff)>=15)t+=" C'est "+(pl.diff>0?"<b>"+fmt(pl.diff)+"</b> de plus":"<b>"+fmt(-pl.diff)+"</b> de moins")+" que prévu sur Combo.";
+  if(rep)t+=" "+rep+" repas fourni"+(rep>1?"s":"")+".";
+  if(payReady()){var md={weeks:[wt],repas:rep,congeH:0};var p=payCalc(md);t+=" Environ <b>"+eur(p.net)+"</b> net.";}
+  return t;}
+function recapOf(m){if(!recapReady(m)||!weekTotal(m)||addDays(m,6)<addDays(new Date(),-28))return null;var sun=addDays(m,6);return {dt:sun,kind:"recap",text:recapText(m),id:"recap:"+key(m),late:true};}
 /* toutes les alertes, dans l'ordre chronologique, chacune avec un identifiant stable */
 function allMessages(){var msgs=[];
   weeksWithData().slice().reverse().forEach(function(m){
@@ -1208,8 +1250,13 @@ function allMessages(){var msgs=[];
       if(a.dt)a.id=a.kind+":"+key(a.dt);
       else{var end=addDays(m,6);a.dt=end>new Date()?new Date():end;a.id="week:"+key(m);}
       msgs.push(a);});});
+  var ys={};weeksWithData().forEach(function(m){ys[m.getFullYear()]=1;ys[addDays(m,6).getFullYear()]=1;});
+  Object.keys(ys).forEach(function(y){var c=contingentInfo(+y);
+    if(c.at100)msgs.push({dt:c.at100>new Date()?new Date():c.at100,kind:"cont100",val:hh(c.used),y:c.y,max:c.max,id:"cont100:"+y});
+    else if(c.at80)msgs.push({dt:c.at80>new Date()?new Date():c.at80,kind:"cont80",val:hh(c.used),y:c.y,max:c.max,id:"cont80:"+y});});
+  if(S.reminder.recap!==false)weeksWithData().forEach(function(m){var r=recapOf(m);if(r)msgs.push(r);});
   if(reminderDue()){var t=new Date();msgs.push({dt:t,kind:"today",val:"",id:"today:"+key(t)});}
-  msgs.sort(function(x,y){return key(x.dt)<key(y.dt)?-1:key(x.dt)>key(y.dt)?1:(x.kind==="week")-(y.kind==="week");});
+  msgs.sort(function(x,y){return key(x.dt)<key(y.dt)?-1:key(x.dt)>key(y.dt)?1:((x.kind==="week")+(x.late?2:0))-((y.kind==="week")+(y.late?2:0));});
   return msgs;}
 /* alertes déjà lues (mémorisées dans ce navigateur) */
 function getSeen(){try{return JSON.parse(localStorage.getItem("pt-seen")||"{}")||{};}catch(e){return {};}}
@@ -1242,7 +1289,7 @@ function renderParams(){
   var h='<div class="cols"><section class="set"><h2>Profil</h2>'+
     '<div class="field"><label for="pf-first">Prénom</label><input id="pf-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
     '<div class="field"><label for="pf-last">Nom</label><input id="pf-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div>'+
-    (mail?'<p class="note">Connecté avec '+esc(mail)+'</p><button class="rem-add" data-logout>Se déconnecter</button>':'')+
+    (mail?'<p class="note">Connecté avec '+esc(mail)+'</p>'+accHtml()+'<div class="acc-links"><button class="rem-add" data-acc="pw">Changer le mot de passe</button><button class="rem-add" data-acc="mail">Changer l\'e-mail</button><button class="rem-add" data-logout>Se déconnecter</button></div>':'')+
   '</section><section class="set">'+
     '<div class="set-row"><span class="t">Heures par semaine</span><div class="stepper"><button data-target="-1" aria-label="Une heure de moins">−</button><output id="tgt">'+S.target+' h</output><button data-target="1" aria-label="Une heure de plus">+</button></div></div>'+
     '<div class="field-stack">'+
@@ -1252,10 +1299,13 @@ function renderParams(){
     '<div class="field money"><label for="pay-charges">Cotisations salariales (brut → net)</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>'+
   '</section>';
   h+='<section class="set"><h2>Repas</h2>'+
-    '<div class="field money"><label for="pay-meal">Prix d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,15" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div>'+
+    '<div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div>'+
+    '<p class="note">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>'+
   '</section>';
   var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 % de la 36ᵉ à la 39ᵉ, +20 % de la 40ᵉ à la 43ᵉ, +50 % au-delà"],["none","Aucune majoration","Les heures sup sont payées au taux normal"]];
-  h+='<section class="set"><h2>Majoration des heures sup</h2><div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div></section>';
+  h+='<section class="set"><h2>Majoration des heures sup</h2><div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>'+
+    '<div class="field money"><label for="pay-cont">Plafond annuel d\'heures sup</label><input id="pay-cont" data-pay="contingent" inputmode="numeric" autocomplete="off" placeholder="'+(P.maj==="hcr"?360:220)+'" value="'+esc(P.contingent==null?"":P.contingent)+'"><em>h</em></div>'+
+    '<p class="note">Laissé vide : 360 h avec la convention HCR, 220 h sinon. Mettez le chiffre de votre accord d\'entreprise s\'il est différent.</p></section>';
   h+='<section class="set"><h2>Congés payés</h2>'+
     '<div class="field money"><label for="cp-report">Jours restants au 1er juin</label><input id="cp-report" data-cp inputmode="decimal" autocomplete="off" placeholder="0" value="'+esc(S.conges.report==null?"":S.conges.report)+'"><em>j</em></div>'+
   '</section>';
@@ -1264,6 +1314,7 @@ function renderParams(){
     '<div class="rem-list">'+times.map(function(t,n){return '<div class="rem-row"><input type="time" id="rem-'+n+'" data-remidx="'+n+'" value="'+esc(t)+'" aria-label="Horaire de rappel '+(n+1)+'">'+
       (times.length>1?'<button class="rem-del" data-remdel="'+n+'" aria-label="Supprimer cet horaire">×</button>':'')+'</div>';}).join("")+'</div>'+
     (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'')+
+    '<button class="maj" data-recap aria-pressed="'+(R.recap!==false)+'"><span class="radio"></span><span><b>Résumé de la semaine</b><small>Le dimanche à 20 h : heures, heures sup et net estimé de la semaine</small></span></button>'+
     (permNote()?'<p class="note">'+permNote()+'</p>':'')+
   '</section>';
   h+='<section class="set"><h2>Planning Combo</h2>'+
@@ -1275,12 +1326,42 @@ function renderParams(){
   h+='<section class="set"><h2>Sauvegarde</h2>'+
       '<div class="backup"><button data-export>Exporter mes données</button><label class="imp" for="imp-file">Importer une sauvegarde</label><input type="file" id="imp-file" accept="application/json,.json" hidden></div>'+
       '<p class="note" id="bk-msg"></p>'+
-    '</section><section class="set"><h2>Application</h2>'+
+    '</section>'+(mail?'<section class="set"><h2>Compte</h2>'+(ACC==="del"?accForm("del"):'<button class="rem-add danger" data-acc="del">Supprimer mon compte</button>')+'</section>':'')+
+    '<section class="set"><h2>Application</h2>'+
       '<div class="backup"><button class="imp" data-hardreload>Recharger l\'application</button></div>'+
       '<p class="note">Télécharge la toute dernière version d\'iolite. Vos heures et vos réglages sont conservés.</p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 19</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 20</p></div>';
   view.innerHTML=h;updateEq();
 }
+/* ---------- compte : mot de passe, e-mail, suppression ---------- */
+var ACC=null,ACCMSG="";
+function accHtml(){return (ACC==="pw"||ACC==="mail"?accForm(ACC):"")+(ACCMSG&&ACC!=="del"?'<p class="note acc-ok">'+esc(ACCMSG)+'</p>':"");}
+function accForm(k){var cur='<div class="field"><label for="acc-cur">Mot de passe actuel</label><input id="acc-cur" type="password" autocomplete="current-password"></div>';
+  var h='<div class="acc-form">';
+  if(k==="pw")h+=cur+'<div class="field"><label for="acc-new">Nouveau mot de passe</label><input id="acc-new" type="password" autocomplete="new-password" placeholder="6 caractères minimum"></div>';
+  else if(k==="mail")h+='<div class="field"><label for="acc-mail">Nouvelle adresse e-mail</label><input id="acc-mail" class="txt" type="email" inputmode="email" autocomplete="email" spellcheck="false"></div>'+cur;
+  else h+='<p class="note">Votre compte et toutes vos données (journées pointées, réglages, planning) seront effacés définitivement. Pensez à exporter vos données avant si vous voulez les garder.</p>'+cur;
+  h+='<p class="note acc-err" id="acc-msg"></p><div class="backup"><button class="'+(k==="del"?"danger-btn":"")+'" data-accgo="'+k+'">'+(k==="del"?"Supprimer définitivement":"Enregistrer")+'</button><button class="imp" data-acc="">Annuler</button></div></div>';
+  return h;}
+function accGo(k){var msg=document.getElementById("acc-msg"),btn=view.querySelector("[data-accgo]"),cur=(document.getElementById("acc-cur")||{}).value||"";
+  function say(t){msg.textContent=t;btn.disabled=false;}
+  function done(t){ACC=null;ACCMSG=t;renderParams();}
+  if(!SB||!USER)return say("Connexion impossible pour le moment.");
+  if(!cur)return say("Indiquez votre mot de passe actuel.");
+  var nw=(document.getElementById("acc-new")||{}).value||"",nm=((document.getElementById("acc-mail")||{}).value||"").trim();
+  if(k==="pw"&&nw.length<6)return say("Le nouveau mot de passe doit faire au moins 6 caractères.");
+  if(k==="mail"&&!/^\S+@\S+\.\S+$/.test(nm))return say("Indiquez une adresse e-mail valide.");
+  if(k==="mail"&&nm.toLowerCase()===(USER.email||"").toLowerCase())return say("C'est déjà votre adresse actuelle.");
+  btn.disabled=true;msg.textContent="";
+  SB.auth.signInWithPassword({email:USER.email,password:cur}).then(function(r){
+    if(r.error)throw {iolite:/invalid login/i.test(r.error.message||"")?"Mot de passe actuel incorrect.":authErr(r.error)};
+    if(k==="pw")return SB.auth.updateUser({password:nw}).then(function(x){if(x.error)throw x.error;done("Mot de passe modifié.");});
+    if(k==="mail")return SB.auth.updateUser({email:nm},{emailRedirectTo:location.origin+location.pathname}).then(function(x){if(x.error)throw x.error;
+      done("Un lien de confirmation a été envoyé. La nouvelle adresse sera active une fois le lien ouvert (Supabase peut aussi demander de confirmer depuis l'ancienne).");});
+    return SB.rpc("delete_my_account").then(function(x){if(x.error){if(/function|schema cache|not find/i.test(x.error.message||""))throw {iolite:"La suppression n'est pas encore activée sur le serveur. Réessayez plus tard."};throw x.error;}
+      var fin=function(){resetLocal();lsSet("pt-owner",null);USER=null;cloudReady=false;W=null;ACC=null;ACCMSG="";showAuth("login","Votre compte et toutes vos données ont été supprimés.");};
+      SB.auth.signOut({scope:"local"}).then(fin,fin);});
+  }).catch(function(e){say(e&&e.iolite?e.iolite:authErr(e));});}
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
 /* les deux champs se remplissent l'un l'autre : celui saisi en dernier fait foi */
 function updateEq(skip){
@@ -1310,6 +1391,8 @@ document.addEventListener("click",function(e){
   if(ds.auth){showAuth(ds.auth);return;}
   if("retry" in ds){var u=USER;USER=null;startUser(u);return;}
   if("logout" in ds){signOut();return;}
+  if(ds.acc!=null){ACC=ds.acc||null;ACCMSG="";renderParams();var f=document.getElementById(ACC==="mail"?"acc-mail":ACC?"acc-cur":"");if(f)f.focus();return;}
+  if(ds.accgo){accGo(ds.accgo);return;}
   if("hardreload" in ds){hardReload(ds);return;}
   if(wizClick(ds))return;
   if(ds.day){var p=ds.day.split("-");S.cur=new Date(+p[0],+p[1]-1,+p[2]);W=null;render();return;}
@@ -1320,6 +1403,7 @@ document.addEventListener("click",function(e){
   if(ds.yr){keepScroll(function(){S.statY+=(+ds.yr);});return;}
   if(ds.target){S.target=Math.max(1,Math.min(60,S.target+(+ds.target)));updateEq();saveSettings();var o=document.getElementById("tgt");if(o)o.textContent=S.target+" h";return;}
   if(ds.maj){S.pay.maj=ds.maj;updateEq();saveSettings();renderParams();return;}
+  if("recap" in ds){S.reminder.recap=S.reminder.recap===false;saveSettings();mirror();renderParams();updateBadge();return;}
   if("remadd" in ds){var ts=S.reminder.times;ts.push(ts.length?"21:00":"22:00");saveSettings();if(OB)renderOnboarding();else renderParams();return;}
   if(ds.remdel){S.reminder.times.splice(+ds.remdel,1);saveSettings();if(OB)renderOnboarding();else renderParams();checkReminder();return;}
   if("export" in ds){exportData();return;}

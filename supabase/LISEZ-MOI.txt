@@ -31,3 +31,7 @@ iolite : brancher la base de données Supabase (une seule fois, environ 10 minut
      > décochez « Confirm email ». Pensez à la réactiver avant d'ouvrir iolite à d'autres personnes.
 
 Tant que config.js est vide, iolite fonctionne sans compte, avec les données sur le téléphone.
+
+Mise à jour : suppression de compte (bouton « Supprimer mon compte » dans Réglages)
+  Supabase > SQL Editor > New query : collez le contenu de supabase/suppression-compte.sql, puis « Run ».
+  À faire une seule fois. Sans cette étape, le bouton affiche « La suppression n'est pas encore activée ».
