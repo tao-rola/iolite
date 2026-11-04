@@ -280,8 +280,7 @@ input.txt{font-size:15px!important;font-weight:500!important}
 html{background:var(--bg)}
 body{background:transparent!important}
 body{padding-block:0 calc(108px + env(safe-area-inset-bottom,0px));font-size:15.5px;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
-body::before{background:transparent;transition:background .25s,-webkit-backdrop-filter .25s,backdrop-filter .25s}
-body.scrolled::before{background:rgba(13,11,23,.55);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+body::before{display:none}
 .aura{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
   radial-gradient(120% 70% at 50% 0%,#2A2550 0%,rgba(13,11,23,0) 60%),
   linear-gradient(180deg,#1A1630 0%,#0D0B17 55%,#120E1C 100%)}
@@ -1344,6 +1343,5 @@ setupSW();
 boot();
 })();
 </script>
-<script>(function(){var f=function(){document.body.classList.toggle("scrolled",window.scrollY>4);};window.addEventListener("scroll",f,{passive:true});f();})();</script>
 </body>
 </html>
