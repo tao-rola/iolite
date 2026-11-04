@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 20">
+<meta name="description" content="iolite version 21">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -653,10 +653,17 @@ function monthData(y,mo){
   o.weeks=Object.keys(w).map(function(k){return w[k];});return o;}
 
 /* ---------- congés payés : période du 1er juin au 31 mai, 2,5 jours ouvrables par mois ---------- */
+/* jours ouvrables (lundi au samedi) entre deux dates incluses */
+function ouvrables(a,b){var n=0;for(var d=new Date(a);d<=b;d=addDays(d,1))if(d.getDay()!==0)n++;return n;}
+function contractStart(){var v=S.conges.start;if(!v||!/^\d{4}-\d{2}-\d{2}$/.test(v))return null;var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+/* congés acquis sur un mois terminé : 2,5 jours par mois complet ; le premier mois est compté au prorata (24 jours ouvrables = 1 mois) */
+function monthAcq(m){var cs=contractStart(),end=new Date(m.getFullYear(),m.getMonth()+1,0);
+  if(!cs){var md=monthData(m.getFullYear(),m.getMonth());return md.worked>0||md.congeDays>0?2.5:0;}
+  if(cs>end)return 0;if(cs<=m)return 2.5;return Math.min(2.5,ouvrables(cs,end)/24*2.5);}
 function congesInfo(today){
   var py=today.getMonth()>=5?today.getFullYear():today.getFullYear()-1,start=new Date(py,5,1),acq=0,pris=0;
   for(var m=new Date(start);m.getFullYear()<today.getFullYear()||(m.getFullYear()===today.getFullYear()&&m.getMonth()<today.getMonth());m=new Date(m.getFullYear(),m.getMonth()+1,1)){
-    var md=monthData(m.getFullYear(),m.getMonth());if(md.worked>0||md.congeDays>0)acq+=2.5;}
+    acq+=monthAcq(m);}
   acq=Math.min(30,acq);
   for(var d=new Date(start);d<=today||sameDay(d,today);d=addDays(d,1)){var x=dayOf(d);if(x&&modeOf(x)==="conge"&&d.getDay()!==0)pris++;}
   /* congés posés plus tard dans la période */
@@ -816,7 +823,7 @@ function authSubmit(){
 }
 
 /* ---------- questionnaire de bienvenue (première connexion) ---------- */
-var OB_STEPS=["name","hours","pay","charges","meal","maj","rem","combo","done"];
+var OB_STEPS=["name","start","hours","pay","charges","meal","maj","rem","combo","done"];
 function startOnboarding(){OB={i:0};gate(true);renderOnboarding();}
 function renderOnboarding(){
   var st=OB_STEPS[OB.i],P=S.pay,n=OB_STEPS.length-1,pct=Math.round(Math.min(OB.i,n)/n*100),from=OB.last==null?0:OB.last;OB.last=pct;
@@ -824,6 +831,8 @@ function renderOnboarding(){
   if(st==="name"){skip=false;q="Bienvenue sur iolite";sub="Comment vous appelez-vous ?";
     body='<div class="field"><label for="ob-first">Prénom</label><input id="ob-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
       '<div class="field"><label for="ob-last">Nom</label><input id="ob-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div><p class="auth-msg" id="ob-msg"></p>';}
+  else if(st==="start"){q="Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés acquis.";
+    body='<div class="field"><label for="ob-start">Début du contrat</label><input id="ob-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>';}
   else if(st==="hours"){q="Combien d'heures par semaine ?";sub="Les heures prévues à votre contrat.";
     body='<div class="stepper big"><button data-target="-1" aria-label="Une heure de moins">−</button><output id="tgt">'+S.target+' h</output><button data-target="1" aria-label="Une heure de plus">+</button></div>';}
   else if(st==="pay"){q="Quel est votre salaire brut ?";sub="Remplissez l'un des deux : l'autre se calcule tout seul.";
@@ -1307,6 +1316,7 @@ function renderParams(){
     '<div class="field money"><label for="pay-cont">Plafond annuel d\'heures sup</label><input id="pay-cont" data-pay="contingent" inputmode="numeric" autocomplete="off" placeholder="'+(P.maj==="hcr"?360:220)+'" value="'+esc(P.contingent==null?"":P.contingent)+'"><em>h</em></div>'+
     '<p class="note">Laissé vide : 360 h avec la convention HCR, 220 h sinon. Mettez le chiffre de votre accord d\'entreprise s\'il est différent.</p></section>';
   h+='<section class="set"><h2>Congés payés</h2>'+
+    '<div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
     '<div class="field money"><label for="cp-report">Jours restants au 1er juin</label><input id="cp-report" data-cp inputmode="decimal" autocomplete="off" placeholder="0" value="'+esc(S.conges.report==null?"":S.conges.report)+'"><em>j</em></div>'+
   '</section>';
   var times=S.reminder.times||[];
@@ -1330,7 +1340,7 @@ function renderParams(){
     '<section class="set"><h2>Application</h2>'+
       '<div class="backup"><button class="imp" data-hardreload>Recharger l\'application</button></div>'+
       '<p class="note">Télécharge la toute dernière version d\'iolite. Vos heures et vos réglages sont conservés.</p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 20</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 21</p></div>';
   view.innerHTML=h;updateEq();
 }
 /* ---------- compte : mot de passe, e-mail, suppression ---------- */
@@ -1432,6 +1442,7 @@ view.addEventListener("input",function(e){var i=e.target;
   if(i.dataset.pay){var f=i.dataset.pay;S.pay[f]=i.value.trim()===""?null:i.value.trim();
     if(f==="rate")S.pay.mode="horaire";else if(f==="monthly")S.pay.mode="mensuel";
     updateEq(i);saveSettings();return;}
+  if("cpstart" in i.dataset){S.conges.start=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
   if("cp" in i.dataset){S.conges.report=i.value.trim()===""?null:i.value.trim();saveSettings();return;}
   if(i.id==="wiz-time"&&i.value){svcObj(i.dataset.wizs)[i.dataset.wizf]=i.value;tidy(key(S.cur));return;}
   if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;savePlan();return;}
