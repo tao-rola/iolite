@@ -20,6 +20,10 @@
 body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
+
+/* Défilement dans la page elle-même, sous la zone de l'heure : rien ne passe derrière l'heure, donc iOS n'ajoute plus son flou */
+html{height:100%;overflow:hidden;padding-top:0!important;scrollbar-gutter:auto}
+body{position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);margin:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 </style>
 <style>
 /* Layout : une colonne mobile, en-tête de date en haut, barre d'onglets fixée en bas (Shift / Statistiques / Paramètres). Couleurs de service : midi (soleil), soir (crépuscule), continue (vert d'eau). */
@@ -827,7 +831,7 @@ function renderOnboarding(){
     '<h2 class="wiz-q">'+q+'</h2>'+(sub?'<p class="auth-sub">'+sub+'</p>':'')+body+
     '<div class="wiz-nav">'+(OB.i>0&&st!=="done"?'<button class="wiz-back" data-ob="back">Retour</button>':'')+
     '<button class="btn-main" data-ob="next">'+nextLabel+'</button></div></div>';
-  view.innerHTML=h;window.scrollTo(0,0);
+  view.innerHTML=h;document.body.scrollTo(0,0);
   if(st==="pay")updateEq();
 }
 function obClick(ds){
@@ -1004,7 +1008,7 @@ function wizSteps(){var d=shiftData(),m=modeOf(d),st=["type"];
 function wizStart(){var d=shiftData(),had={};SVCS.forEach(function(s){if(d[s]&&(d[s].start||d[s].end||d[s].pause))had[s]=1;});
   W={k:key(S.cur),i:0,typed:!!S.days[key(S.cur)],had:had,pt:{},
   svcs:modeOf(d)==="coupure"&&(d.midi||d.soir)?["midi","soir"].filter(function(s){return d[s];}):["midi","soir"]};renderShift();}
-function wizNext(){var st=wizSteps();W.i++;if(W.i>=st.length){W=null;}renderShift();window.scrollTo(0,0);}
+function wizNext(){var st=wizSteps();W.i++;if(W.i>=st.length){W=null;}renderShift();document.body.scrollTo(0,0);}
 function wizBack(){if(W.i===0){W=null;}else W.i--;renderShift();}
 
 function renderShift(){
@@ -1218,7 +1222,7 @@ function renderAlerts(){
   close();h+='</div>';
   view.innerHTML=h;
   var sep=document.getElementById("new-sep");
-  if(sep)sep.scrollIntoView({block:"start"});else window.scrollTo(0,document.body.scrollHeight);
+  if(sep)sep.scrollIntoView({block:"start"});else document.body.scrollTo(0,document.body.scrollHeight);
   markSeen(msgs);updateBadge();
 }
 
@@ -1262,7 +1266,7 @@ function renderParams(){
   h+='<section class="set"><h2>Sauvegarde</h2>'+
       '<div class="backup"><button data-export>Exporter mes données</button><label class="imp" for="imp-file">Importer une sauvegarde</label><input type="file" id="imp-file" accept="application/json,.json" hidden></div>'+
       '<p class="note" id="bk-msg"></p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 13</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 14</p></div>';
   view.innerHTML=h;updateEq();
 }
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
@@ -1278,9 +1282,9 @@ function updateEq(skip){
 /* ---------- interactions ---------- */
 document.getElementById("prev").onclick=function(){S.cur=addDays(S.cur,-1);W=null;render();};
 document.getElementById("next").onclick=function(){S.cur=addDays(S.cur,1);W=null;render();};
-function goTab(t){if(t!=="shift"||S.tab!=="shift")W=null;S.tab=t;try{localStorage.setItem("pt-tab",t);}catch(e){}render();window.scrollTo(0,0);}
+function goTab(t){if(t!=="shift"||S.tab!=="shift")W=null;S.tab=t;try{localStorage.setItem("pt-tab",t);}catch(e){}render();document.body.scrollTo(0,0);}
 document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){goTab(b.dataset.tab);};});
-function keepScroll(fn){var y=window.scrollY;fn();render();window.scrollTo(0,y);}
+function keepScroll(fn){var y=document.body.scrollTop;fn();render();document.body.scrollTo(0,y);}
 
 /* un appui sur la carte du salaire déplie ou replie le détail */
 function togglePay(sec){var on=sec.getAttribute("aria-expanded")!=="true";sec.setAttribute("aria-expanded",String(on));
