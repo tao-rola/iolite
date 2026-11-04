@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 17">
+<meta name="description" content="iolite version 18">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -958,6 +958,14 @@ function permNote(){
   if(!("Notification" in window))return "Sur iPhone, ajoutez l'application à l'écran d'accueil et ouvrez-la depuis l'icône pour recevoir les rappels.";
   if(Notification.permission==="denied")return "Les notifications sont bloquées pour ce site. Autorisez-les dans les réglages du navigateur pour recevoir les rappels.";
   return "";}
+/* équivalent de Cmd + Maj + R, utilisable depuis l'icône de l'écran d'accueil : vide le cache et recharge */
+function hardReload(){var b=document.querySelector("[data-hardreload]");if(b){b.disabled=true;b.textContent="Rechargement…";}
+  var go=function(){location.replace(location.pathname+"?maj="+Date.now());};
+  var jobs=[];
+  if(window.caches)jobs.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
+  if(navigator.serviceWorker)jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.update().catch(function(){});}));}));
+  Promise.all(jobs).then(go,go);setTimeout(go,4000);}
+if(/[?&]maj=/.test(location.search)){try{history.replaceState(null,"",location.pathname);}catch(e){}}
 function remMsg(t){var m=document.getElementById("rem-msg");if(m)m.textContent=t;}
 
 /* ---------- rendu ---------- */
@@ -1265,7 +1273,10 @@ function renderParams(){
   h+='<section class="set"><h2>Sauvegarde</h2>'+
       '<div class="backup"><button data-export>Exporter mes données</button><label class="imp" for="imp-file">Importer une sauvegarde</label><input type="file" id="imp-file" accept="application/json,.json" hidden></div>'+
       '<p class="note" id="bk-msg"></p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 17</p></div>';
+    '</section><section class="set"><h2>Application</h2>'+
+      '<div class="backup"><button class="imp" data-hardreload>Recharger l\'application</button></div>'+
+      '<p class="note">Télécharge la toute dernière version d\'iolite. Vos heures et vos réglages sont conservés.</p>'+
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 18</p></div>';
   view.innerHTML=h;updateEq();
 }
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
@@ -1297,6 +1308,7 @@ document.addEventListener("click",function(e){
   if(ds.auth){showAuth(ds.auth);return;}
   if("retry" in ds){var u=USER;USER=null;startUser(u);return;}
   if("logout" in ds){signOut();return;}
+  if("hardreload" in ds){hardReload(ds);return;}
   if(wizClick(ds))return;
   if(ds.day){var p=ds.day.split("-");S.cur=new Date(+p[0],+p[1]-1,+p[2]);W=null;render();return;}
   if("combosync" in ds){syncCombo(true);return;}
