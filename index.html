@@ -1218,7 +1218,9 @@ function renderAlerts(){
   close();h+='</div>';
   view.innerHTML=h;
   var sep=document.getElementById("new-sep");
-  if(sep)sep.scrollIntoView({block:"start"});else window.scrollTo(0,document.body.scrollHeight);
+  /* défile seulement si la page dépasse l'écran (sur iPhone, un défilement forcé peut décaler l'affichage) */
+  var room=document.documentElement.scrollHeight-window.innerHeight;
+  if(room>4){var y=sep?sep.getBoundingClientRect().top+window.scrollY-16:room;window.scrollTo(0,Math.max(0,Math.min(room,y)));}
   markSeen(msgs);updateBadge();
 }
 
@@ -1262,7 +1264,7 @@ function renderParams(){
   h+='<section class="set"><h2>Sauvegarde</h2>'+
       '<div class="backup"><button data-export>Exporter mes données</button><label class="imp" for="imp-file">Importer une sauvegarde</label><input type="file" id="imp-file" accept="application/json,.json" hidden></div>'+
       '<p class="note" id="bk-msg"></p>'+
-    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 15</p></div>';
+    '</section><p class="note" style="text-align:center;opacity:.5">iolite · version 16</p></div>';
   view.innerHTML=h;updateEq();
 }
 function dec2(n){return n==null||!isFinite(n)?"":n.toFixed(2).replace(".",",");}
