@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.36">
+<meta name="description" content="iolite version 0.37">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -595,7 +595,7 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .st-cp-n{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .st-cp-n span{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted)}
 .st-cp-n b{color:var(--ink);margin-left:auto;padding-left:10px}
-.st-cp-n i{width:9px;height:9px;border-radius:50%}.st-cp-n i.mint{background:var(--c-mint)}.st-cp-n i.coral{background:var(--c-coral)}
+.st-cp-n i{width:9px;height:9px;border-radius:50%}.st-cp-n i.mint{background:var(--c-mint)}.st-cp-n i.coral{background:rgba(255,255,255,.14)}
 /* Statistiques : les petites mentions descriptives en majuscules */
 .stv .tile small,.stv .st-cp-t>small,.stv .st-cmp small,.stv .li .sub,.stv .li .meal{text-transform:uppercase;letter-spacing:.06em;font-size:11px;font-weight:600}
 .stv .tile small{white-space:normal;line-height:1.35}
@@ -1580,7 +1580,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.36</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.37</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
