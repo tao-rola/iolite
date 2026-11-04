@@ -4,13 +4,15 @@ const ROOT = __dirname, PORT = Number(process.env.PORT) || 8080;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.webmanifest': 'application/manifest+json',
   '.png': 'image/png', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 http.createServer((req, res) => {
-  // même relais que la fonction Netlify, pour tester Combo en local
+  // même relais que la fonction Netlify, pour tester les plannings en local
   if (req.url.startsWith('/.netlify/functions/combo')) {
     const raw = new URL(req.url, 'http://x').searchParams.get('url') || '';
     let t; try { t = new URL(raw.replace(/^webcal:/i, 'https:')); } catch { res.writeHead(400); return res.end('Adresse invalide'); }
-    if (t.protocol !== 'https:' || !/(^|\.)combo(hr)?\.[a-z.]+$/i.test(t.hostname)) { res.writeHead(403); return res.end('Seules les adresses Combo sont acceptées'); }
+    const ALLOWED = [/(^|\.)(combo|combohr)\.(fr|com|io|app)$/i, /(^|\.)skello\.(io|com|fr)$/i, /(^|\.)planday\.(com|dk|net)$/i,
+      /(^|\.)snapshift\.(co|com|fr)$/i, /(^|\.)agendrix\.(com|ca)$/i, /(^|\.)deputy\.com$/i, /(^|\.)wheniwork\.com$/i];
+    if (t.protocol !== 'https:' || !ALLOWED.some(re => re.test(t.hostname))) { res.writeHead(403); return res.end('Logiciel de planning non reconnu'); }
     fetch(t).then(r => r.text().then(b => { res.writeHead(r.ok ? 200 : 502, { 'content-type': 'text/calendar; charset=utf-8' }); res.end(b); }))
-      .catch(() => { res.writeHead(504); res.end('Combo ne répond pas'); });
+      .catch(() => { res.writeHead(504); res.end('Le logiciel de planning ne répond pas'); });
     return;
   }
   let p = decodeURIComponent(req.url.split('?')[0]);

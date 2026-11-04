@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.23">
+<meta name="description" content="iolite version 0.24">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -531,6 +531,9 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .av-acts{display:flex;gap:10px}
 .av-btn{border:0;border-radius:999px;padding:9px 18px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .av-btn.del{color:var(--warn)}
+.prov-list{display:flex;flex-wrap:wrap;gap:8px}
+.prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
+.prov.on{background:#fff;color:#15122A}
 .prof-t{flex:1;min-width:0}.prof-t b{display:block;font-size:18px;font-weight:700}
 .prof-t small{display:block;color:var(--muted);font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
 .sback{display:inline-flex;align-items:center;gap:2px;align-self:flex-start;border:0;background:none;color:var(--soir);font:inherit;font-size:16px;font-weight:600;padding:2px 8px 2px 0;margin:-4px 0 -6px;cursor:pointer}
@@ -886,8 +889,8 @@ function renderOnboarding(){
     var times=S.reminder.times||[];
     body='<div class="rem-list">'+times.map(function(t,i){return '<div class="rem-row"><input type="time" id="rem-'+i+'" data-remidx="'+i+'" value="'+esc(t)+'" aria-label="Horaire de rappel '+(i+1)+'">'+(times.length>1?'<button class="rem-del" data-remdel="'+i+'" aria-label="Supprimer cet horaire">×</button>':'')+'</div>';}).join("")+'</div>'+
       (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'');}
-  else if(st==="combo"){q="Votre planning Combo";sub="Dans l'app Combo : Compte › Mes préférences › Synchronisation calendrier. Copiez l'adresse et collez-la ici.";
-    body='<div class="field"><label for="combo-url">Adresse de synchronisation</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse Combo" value="'+esc(S.combo.url||"")+'"></div><p class="note" id="combo-msg">'+esc(comboStatus())+'</p>';}
+  else if(st==="combo"){q="Votre logiciel de planning";sub="Combo, Skello, Planday… Collez l'adresse de synchronisation calendrier de votre planning : iolite reconnaît le logiciel tout seul.";
+    body='<div class="field"><label for="combo-url">Adresse de synchronisation</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse de votre planning" value="'+esc(S.combo.url||"")+'"></div><p class="note" id="combo-msg">'+esc(comboStatus())+'</p>';}
   else if(st==="done"){skip=false;q="Tout est prêt"+(firstName()?", "+esc(firstName()):"")+" !";sub="Vous pourrez tout modifier plus tard dans Réglages.";nextLabel="Commencer";
     body='<div class="ob-done">'+BOT+'</div>';}
   var h='<div class="wiz onb"><div class="wiz-bar"><div style="--from:'+from+'%;width:'+pct+'%"></div></div>'+
@@ -963,15 +966,28 @@ function mergePlan(p){var today=key(new Date());
   Object.keys(S.plan).forEach(function(k){if(k>=today&&!p.days[k])delete S.plan[k];});
   S.combo.last=new Date().toISOString();S.combo.count=p.count;S.combo.err=null;savePlan();mirror();}
 var syncing=false;
+/* logiciels de planning reconnus : chacun donne au salarié une adresse d'abonnement calendrier (iCal) */
+var PROVS=[
+  {id:"combo",n:"Combo",re:/(^|\.)(combo|combohr)\.(fr|com|io|app)$/i,help:"Dans l'app Combo : Compte › Mes préférences › Synchronisation calendrier. Copiez l'adresse."},
+  {id:"skello",n:"Skello",re:/(^|\.)skello\.(io|com|fr)$/i,help:"Ouvrez l'e-mail de planning envoyé par Skello et copiez le lien de synchronisation du calendrier."},
+  {id:"planday",n:"Planday",re:/(^|\.)planday\.(com|dk|net)$/i,help:"Dans l'app Planday : Profil › Synchroniser avec votre calendrier › Copier le lien."},
+  {id:"snapshift",n:"Snapshift",re:/(^|\.)snapshift\.(co|com|fr)$/i,help:"Dans Snapshift, cherchez « synchronisation calendrier » ou « lien iCal » dans votre profil, puis copiez l'adresse."},
+  {id:"agendrix",n:"Agendrix",re:/(^|\.)agendrix\.(com|ca)$/i,help:"Dans Agendrix, cherchez « synchronisation calendrier » ou « lien iCal » dans votre profil, puis copiez l'adresse."},
+  {id:"deputy",n:"Deputy",re:/(^|\.)deputy\.com$/i,help:"Dans Deputy, cherchez « synchronisation calendrier » ou « lien iCal » dans votre profil, puis copiez l'adresse."},
+  {id:"wheniwork",n:"When I Work",re:/(^|\.)wheniwork\.com$/i,help:"Dans When I Work, cherchez « synchronisation calendrier » ou « lien iCal » dans votre profil, puis copiez l'adresse."}];
+function provOf(url){try{var h=new URL(String(url||"").replace(/^webcal:/i,"https:")).hostname;for(var i=0;i<PROVS.length;i++)if(PROVS[i].re.test(h))return PROVS[i];}catch(e){}return null;}
+function provSel(){var id=S.combo.prov;for(var i=0;i<PROVS.length;i++)if(PROVS[i].id===id)return PROVS[i];return provOf(S.combo.url)||PROVS[0];}
+function provName(){return S.combo.url?provSel().n:"le planning";}
 function syncCombo(manual){
   var u=(S.combo.url||"").trim();if(!u||syncing)return Promise.resolve();
+  if(!provOf(u)){S.combo.err="Cette adresse ne vient pas d'un logiciel de planning reconnu ("+PROVS.map(function(p){return p.n;}).join(", ")+").";savePlan();comboMsg(S.combo.err);return Promise.resolve();}
   syncing=true;if(manual)comboMsg("Synchronisation…");
   var https=u.replace(/^webcal:/i,"https:");
   return fetch("/.netlify/functions/combo?url="+encodeURIComponent(https),{cache:"no-store"})
     .then(function(r){if(!r.ok)throw new Error("proxy "+r.status);return r.text();})
     .catch(function(){return fetch(https,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http "+r.status);return r.text();});})
     .then(function(t){mergePlan(parseICS(t));})
-    .catch(function(){S.combo.err="Impossible de lire le planning Combo. Vérifiez l'adresse, ou importez le fichier .ics.";savePlan();})
+    .catch(function(){S.combo.err=provOf(S.combo.url)?"Impossible de lire le planning "+provSel().n+". Vérifiez l'adresse.":"Cette adresse ne vient pas d'un logiciel de planning reconnu ("+PROVS.map(function(p){return p.n;}).join(", ")+").";savePlan();})
     .then(function(){syncing=false;if(OB||document.body.classList.contains("gate")){comboMsg(comboStatus());return;}if(S.tab==="params")renderParams();else if(S.tab!=="alerts")render();updateBadge();});}
 function autoSync(){var l=S.combo.last?new Date(S.combo.last):null;if(S.combo.url&&(!l||new Date()-l>2*3600*1000))syncCombo(false);}
 function comboMsg(t){var m=document.getElementById("combo-msg");if(m)m.textContent=t;}
@@ -1102,7 +1118,7 @@ function renderShift(){
   if(pl.length&&pl[0].allday)plRows=isAbsence(pl[0])?rowHtml2(esc(pl[0].title),"Journée entière","1j"):rowHtml2("Repos","Aucun créneau planifié","0h00");
   else if(ps)["midi","soir","cont"].forEach(function(sv){var v=ps[sv];if(!v)return;var c=svcCalc(v);plRows+=rowHtml2(svcLabel(sv),slotSub(v),c?fmt(c.net):"");});
   else if(planRest(k))plRows=rowHtml2("Repos","Aucun créneau planifié","0h00");
-  if(plRows)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot combo"></i>Prévu sur Combo</span></div>'+plRows+'</section>';
+  if(plRows)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot combo"></i>Prévu sur '+provName()+'</span></div>'+plRows+'</section>';
   if(has&&!active(d).length)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span></div>'+(m==="repos"?rowHtml2("Repos","Journée non travaillée","0h00"):
       S.cur.getDay()===0?rowHtml2("Congé payé","Dimanche non décompté","0j"):rowHtml2("Congé payé","1 jour décompté · "+joursMot(congesInfo(new Date()).reste)+" restant"+(Math.abs(congesInfo(new Date()).reste)>1?"s":""),"1j"))+'</section>';
   if(has&&active(d).length){var rows="";
@@ -1125,7 +1141,7 @@ function renderWizard(){
   var eyebrow="",q="",body="",next=false;
   if(step==="type"){
     q="Quel type de journée ?";
-    eyebrow=pl.length?(pl[0].allday?"Prévu sur Combo : "+planText(pl):"Prévu sur Combo : "+planText(pl)):planRest(k)?"Prévu sur Combo : repos":"";
+    eyebrow=pl.length?"Prévu sur "+provName()+" : "+planText(pl):planRest(k)?"Prévu sur "+provName()+" : repos":"";
     var cur=!S.days[k]?null:modeOf(d)==="repos"?"off":modeOf(d);
     body='<div class="choices">'+
       [["continue","Continue",""],["coupure","Coupure",""],["off","Repos",""],["conge","Congé payé",""]].map(function(o){
@@ -1215,7 +1231,7 @@ function renderStats(){
   h+='<div class="chart">'+g+'</div>';
   var wp=rangePlan(rows.map(function(o){return o.d;}));
   h+='<div class="stats"><div class="stat"><span>Moyenne / jour</span><b>'+fmt(wWorked?wt/wWorked:0)+'</b></div><div class="stat"><span>Repas fournis</span><b>'+wRep+'</b></div>'+
-    (wp?'<div class="stat"><span>Prévu sur Combo</span><b>'+fmt(wp.plan)+'</b></div><div class="stat"><span>Écart</span><b class="'+(wp.diff>0?"pos":"")+'">'+(wp.diff>0?"+":"")+fmt(wp.diff)+'</b></div>':'')+'</div>';
+    (wp?'<div class="stat"><span>Prévu sur '+provName()+'</span><b>'+fmt(wp.plan)+'</b></div><div class="stat"><span>Écart</span><b class="'+(wp.diff>0?"pos":"")+'">'+(wp.diff>0?"+":"")+fmt(wp.diff)+'</b></div>':'')+'</div>';
   h+='<div class="list">'+rows.map(rowHtml).join("")+'</div></section>';
 
   /* --- Mois --- */
@@ -1224,7 +1240,7 @@ function renderStats(){
   h+='<div class="sec-total"><span class="num">'+fmt(md.total)+'</span>'+((md.total||prev.total)?'<span class="cmp '+(diff>0?"plus":diff<0?"minus":"eq")+'">'+(diff>0?"+":"")+fmt(diff)+' par rapport à '+MOIS[pm.getMonth()]+'</span>':'')+'</div>';
   /* prévu à gauche, effectué à droite, repas fournis en dessous sur toute la largeur */
   h+='<div class="stats">'+
-    (mp?'<div class="stat"><span>Prévu sur Combo</span><b>'+fmt(mp.plan)+'</b></div>':'')+
+    (mp?'<div class="stat"><span>Prévu sur '+provName()+'</span><b>'+fmt(mp.plan)+'</b></div>':'')+
     '<div class="stat"><span>Effectué</span><b>'+fmt(md.total)+'</b></div>'+
     '<div class="stat'+(mp?' wide':'')+'"><span>Repas fournis</span><b>'+md.repas+'</b></div>'+
   '</div>';
@@ -1270,7 +1286,7 @@ function message(a){var v='<b>'+a.val+'</b>';
     case "run":return "C'est votre "+a.val+"ᵉ jour de travail d'affilée. Pensez à prendre votre repos hebdomadaire.";
     case "week":return "Vous avez fait "+v+" cette semaine, au-delà des 48 h maximum.";
     case "today":return "Vous n'avez encore rien pointé aujourd'hui.";
-    case "over":return "Vous avez travaillé "+v+" de plus que prévu sur votre planning Combo.";
+    case "over":return "Vous avez travaillé "+v+" de plus que prévu sur votre planning "+provName()+".";
     case "recap":return a.text;}
   return a.label;}
 /* ---------- résumé de la semaine : le dimanche à partir de 20 h ---------- */
@@ -1279,7 +1295,7 @@ function recapReady(m){var sun=addDays(m,6),t=new Date();if(key(sun)<key(t))retu
 function recapText(m){var wt=weekTotal(m),days=0,rep=0;for(var i=0;i<7;i++){var r=dayCalc(dayOf(addDays(m,i)));if(r.worked)days++;rep+=r.repas;}
   var sup=Math.max(0,wt/60-35),pl=rangePlan([0,1,2,3,4,5,6].map(function(i){return addDays(m,i);}));
   var t="Résumé de la semaine "+isoWeek(m)+" : <b>"+fmt(wt)+"</b> sur "+days+" jour"+(days>1?"s":"")+(sup>0?", dont <b>"+hh(sup)+"</b> d'heures sup":"")+".";
-  if(pl&&Math.abs(pl.diff)>=15)t+=" C'est "+(pl.diff>0?"<b>"+fmt(pl.diff)+"</b> de plus":"<b>"+fmt(-pl.diff)+"</b> de moins")+" que prévu sur Combo.";
+  if(pl&&Math.abs(pl.diff)>=15)t+=" C'est "+(pl.diff>0?"<b>"+fmt(pl.diff)+"</b> de plus":"<b>"+fmt(-pl.diff)+"</b> de moins")+" que prévu sur "+provName()+".";
   if(rep)t+=" "+rep+" repas fourni"+(rep>1?"s":"")+".";
   if(payReady()){var md={weeks:[wt],repas:rep,congeH:0};var p=payCalc(md);t+=" Environ <b>"+eur(p.net)+"</b> net.";}
   return t;}
@@ -1373,7 +1389,7 @@ function renderParams(){
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
     row({icon:"recap",t:"Résumé de la semaine",sub:"Le dimanche à 20 h",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
     permNote()?'<p class="snote">'+permNote()+'</p>':'');
-  h+=group("Planning",[row({icon:"cal",t:"Combo",v:S.combo.url?"Relié":"Non relié",attr:'data-sub="combo"'})]);
+  h+=group("Planning",[row({icon:"cal",t:"Logiciel de planning",v:S.combo.url?provSel().n:"Non relié",attr:'data-sub="combo"'})]);
   h+=group("Données",[
     row({icon:"down",t:"Exporter mes données",chev:false,attr:'data-export'}),
     row({icon:"up",t:"Importer une sauvegarde",chev:false,label:"imp-file"}),
@@ -1382,7 +1398,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.23</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.24</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1420,11 +1436,12 @@ function renderSub(){
       (times.length>1?'<button class="rem-del" data-remdel="'+n+'" aria-label="Supprimer cet horaire">×</button>':'')+'</div>';}).join("")+'</div>'+
       (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'')+'</div>'+
       '<p class="snote">Si rien n\'est pointé, iolite vous envoie une notification à ces horaires.'+(permNote()?' '+permNote():'')+'</p>';}
-  else if(k==="combo"){t="Planning Combo";
-    b='<div class="set"><div class="field"><label for="combo-url">Adresse de synchronisation</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse donnée par Combo" value="'+esc(S.combo.url||"")+'"></div>'+
+  else if(k==="combo"){t="Planning";var pv=provSel();
+    b='<section class="sgrp"><h2>Logiciel</h2><div class="prov-list">'+PROVS.map(function(p){return '<button class="prov'+(p.id===pv.id?" on":"")+'" data-prov="'+p.id+'" aria-pressed="'+(p.id===pv.id)+'">'+p.n+'</button>';}).join("")+'</div></section>'+
+      '<section class="sgrp"><h2>Adresse</h2><div class="set"><div class="field"><label for="combo-url">Adresse de synchronisation '+esc(pv.n)+'</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse donnée par '+esc(pv.n)+'" value="'+esc(S.combo.url||"")+'"></div>'+
       (S.combo.url?'<div class="backup"><button data-combosync>Synchroniser maintenant</button></div>':'')+'</div>'+
-      '<p class="snote" id="combo-msg">'+esc(comboStatus()||"Dans l'app Combo : Compte › Mes préférences › Synchronisation calendrier.")+'</p>'+
-      (S.combo.url?group("",[row({t:"Déconnecter Combo",chev:false,cls:"danger",attr:'data-combooff'})]):'');}
+      '<p class="snote" id="combo-msg">'+esc(comboStatus()||pv.help)+'</p></section>'+
+      (S.combo.url?group("",[row({t:"Déconnecter "+pv.n,chev:false,cls:"danger",attr:'data-combooff'})]):'');}
   else if(k==="del"){t="Supprimer mon compte";b='<div class="set">'+accForm("del")+'</div>';}
   setHead(t,"");
   view.innerHTML='<div class="sett sub"><button class="sback" data-sub="">'+ICON_L+'<span>Réglages</span></button>'+b+'</div>';
@@ -1496,6 +1513,7 @@ document.addEventListener("click",function(e){
   if(wizClick(ds))return;
   if(ds.day){var p=ds.day.split("-");S.cur=new Date(+p[0],+p[1]-1,+p[2]);W=null;render();return;}
   if("combosync" in ds){syncCombo(true);return;}
+  if(ds.prov){S.combo.prov=ds.prov;savePlanLocal();renderParams();return;}
   if("combooff" in ds){S.combo={url:null,last:null,err:null,count:0};savePlan();renderParams();return;}
   if(ds.wk){keepScroll(function(){S.statW=addDays(S.statW,7*(+ds.wk));});return;}
   if(ds.mo){keepScroll(function(){S.statM=new Date(S.statM.getFullYear(),S.statM.getMonth()+(+ds.mo),1);});return;}
@@ -1518,7 +1536,7 @@ view.addEventListener("submit",function(e){if(e.target.id==="auth-form"){e.preve
 view.addEventListener("keydown",function(e){if(e.key==="Enter"&&OB&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-ob="next"]');if(b)b.click();return;}if(e.key==="Enter"&&W&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-wiz="next"]');if(b)b.click();}});
 view.addEventListener("change",function(e){var i=e.target;
   if(i.id==="av-file"){setAvatar(i.files&&i.files[0]);i.value="";return;}
-  if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;S.combo.last=null;savePlan();syncCombo(true);return;}
+  if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;S.combo.last=null;S.combo.err=null;var pd=provOf(S.combo.url);if(pd)S.combo.prov=pd.id;savePlan();syncCombo(true);return;}
   if(i.id==="ics-file"&&i.files&&i.files[0]){var fr=new FileReader();fr.onload=function(){try{mergePlan(parseICS(fr.result));renderParams();}catch(x){comboMsg("Ce fichier n'est pas un calendrier .ics.");}};fr.readAsText(i.files[0]);i.value="";return;}
   if(i.dataset.remidx){if(i.value){S.reminder.times[+i.dataset.remidx]=i.value;saveSettings();checkReminder();}return;}
   if(i.id!=="imp-file"||!i.files||!i.files[0])return;
