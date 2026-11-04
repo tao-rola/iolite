@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.34">
+<meta name="description" content="iolite version 0.35">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -245,6 +245,7 @@ input.txt{font-size:15px!important;font-weight:500!important}
 .day-sep span{background:var(--surface-2);color:var(--muted);font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px}
 .grp{display:flex;align-items:flex-end;gap:8px}
 .bot{flex:none;width:30px;height:30px;border-radius:9px;display:block}
+.grp .bot{border-radius:50%;object-fit:cover}
 .bubbles{display:flex;flex-direction:column;gap:4px;min-width:0;max-width:86%}
 .bubble{margin:0;background:var(--surface);padding:10px 14px;border-radius:18px;font-size:14.5px;line-height:1.4}
 .bubbles .bubble:last-child{border-bottom-left-radius:6px}
@@ -1577,7 +1578,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.34</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.35</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
