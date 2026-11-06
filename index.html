@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.45">
+<meta name="description" content="iolite version 0.46">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -787,7 +787,9 @@ function updateBadge(){var b=document.getElementById("al-badge");if(!b)return;va
 
 /* ---------- salaire (estimation) ---------- */
 var MAJ={legal:[[35,1],[43,1.25],[1e9,1.5]],hcr:[[35,1],[39,1.10],[43,1.20],[1e9,1.5]],none:[[1e9,1]]};
-function factor(h){var t=MAJ[S.pay.maj]||MAJ.legal;for(var i=0;i<t.length;i++)if(h<=t[i][0])return t[i][1];return 1;}
+/* majoration personnalisée : taux de sa convention ou de son accord d'entreprise */
+function majCustom(){var c=S.pay.majc||{},t1=num(c.t1),h1=num(c.h1),t2=num(c.t2);if(!(t1>=0))t1=25;if(!(h1>35))h1=43;if(!(t2>=0))t2=50;return [[35,1],[h1,1+t1/100],[1e9,1+t2/100]];}
+function factor(h){var t=S.pay.maj==="custom"?majCustom():(MAJ[S.pay.maj]||MAJ.legal);for(var i=0;i<t.length;i++)if(h<=t[i][0])return t[i][1];return 1;}
 function payReady(){return S.pay.mode==="mensuel"?num(S.pay.monthly)>0:num(S.pay.rate)>0;}
 /* brut d'une semaine de h heures payée 1 €/h, majorations comprises */
 function weekUnits(h){var u=Math.min(h,35),cuts=[35,39,43,h].filter(function(x){return x>=35&&x<=h;});
@@ -1022,7 +1024,7 @@ function renderOnboarding(){
   else if(st==="meal"){q="Quelle est la valeur d'un repas fourni ?";sub="Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.";
     body='<div class="field money"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div>';}
   else if(st==="maj"){q="Comment sont majorées vos heures sup ?";sub="";
-    var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 %, +20 %, puis +50 %"],["none","Aucune majoration","Payées au taux normal"]];
+    var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 %, +20 %, puis +50 %"],["custom","Ma convention ou mon accord","Vous saisirez vos taux dans Réglages"],["none","Aucune majoration","Payées au taux normal"]];
     body='<div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-obmaj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>';}
   else if(st==="rem"){q="À quelle heure vous rappeler ?";sub="Si rien n'est pointé, iolite vous envoie une notification à ces horaires.";
     var times=S.reminder.times||[];
@@ -1564,7 +1566,7 @@ function row(o){var tag=o.label?'label':'button',attr=o.label?' for="'+o.label+'
   return '<'+tag+' class="srow'+(o.cls?" "+o.cls:"")+'"'+attr+'>'+(o.icon?ico(o.icon):'')+'<span class="srow-t">'+o.t+(o.sub?'<small>'+o.sub+'</small>':'')+'</span>'+
     (o.v!=null?'<span class="srow-v">'+o.v+'</span>':'')+(o.toggle!=null?'<span class="tgl'+(o.toggle?' on':'')+'" aria-hidden="true"></span>':o.chev===false?'':CHEV)+'</'+tag+'>';}
 function group(title,rows,after){return '<section class="sgrp">'+(title?'<h2>'+title+'</h2>':'')+'<div class="scard">'+rows.join("")+'</div>'+(after||'')+'</section>';}
-var MAJ_NAMES={legal:"Code du travail",hcr:"Convention HCR",none:"Aucune"};
+var MAJ_NAMES={legal:"Code du travail",hcr:"Convention HCR",custom:"Personnalisée",none:"Aucune"};
 function fdate(v){if(!v)return "";var p=v.split("-");return (+p[2])+" "+MOIS_C[+p[1]-1]+" "+p[0];}
 function initials(){var f=(PROFILE.first_name||"").trim(),l=(PROFILE.last_name||"").trim();return ((f[0]||"")+(l[0]||"")).toUpperCase()||"?";}
 /* photo de profil : recadrée en carré 256 px, gardée avec les réglages (synchronisée avec le compte) */
@@ -1603,7 +1605,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.45</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.46</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1627,8 +1629,14 @@ function renderSub(){
       '<div class="field money"><label for="pay-charges">Cotisations salariales (brut → net)</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>'+
       '</div><p class="snote">Remplissez le taux horaire ou le salaire mensuel : l\'autre se calcule tout seul.</p>';}
   else if(k==="maj"){t="Heures sup";
-    var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","+10 % de la 36ᵉ à la 39ᵉ, +20 % de la 40ᵉ à la 43ᵉ, +50 % au-delà"],["none","Aucune majoration","Les heures sup sont payées au taux normal"]];
-    b='<section class="sgrp"><h2>Majoration</h2><div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div></section>';}
+    var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 % de la 36ᵉ à la 39ᵉ, +20 % de la 40ᵉ à la 43ᵉ, +50 % au-delà"],["custom","Ma convention ou mon accord","Saisissez vous-même les taux prévus par votre convention collective ou votre accord d'entreprise"],["none","Aucune majoration","Les heures sup sont payées au taux normal"]];
+    var mc=P.majc||{};
+    b='<section class="sgrp"><h2>Majoration</h2><div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div></section>'+
+      (P.maj==="custom"?'<section class="sgrp"><h2>Vos taux</h2><div class="set">'+
+        '<div class="field money"><label for="mc-t1">Majoration à partir de la 36ᵉ heure</label><input id="mc-t1" data-majc="t1" inputmode="decimal" autocomplete="off" placeholder="25" value="'+esc(mc.t1==null?"":mc.t1)+'"><em>%</em></div>'+
+        '<div class="field money"><label for="mc-h1">Jusqu\'à la</label><input id="mc-h1" data-majc="h1" inputmode="numeric" autocomplete="off" placeholder="43" value="'+esc(mc.h1==null?"":mc.h1)+'"><em>ᵉ h</em></div>'+
+        '<div class="field money"><label for="mc-t2">Majoration au-delà</label><input id="mc-t2" data-majc="t2" inputmode="decimal" autocomplete="off" placeholder="50" value="'+esc(mc.t2==null?"":mc.t2)+'"><em>%</em></div></div>'+
+        '<p class="snote">Les taux sont écrits dans votre convention collective (son nom figure sur votre fiche de paie) ou dans l\'accord de votre entreprise. Vous les trouvez aussi sur code.travail.gouv.fr, en cherchant votre convention puis « heures supplémentaires ». La loi impose au moins 10 %.</p></section>':'');}
   else if(k==="meal"){t="Repas fournis";
     b='<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
       '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>';}
@@ -1766,6 +1774,7 @@ view.addEventListener("input",function(e){var i=e.target;
   if(i.dataset.pay){var f=i.dataset.pay;S.pay[f]=i.value.trim()===""?null:i.value.trim();
     if(f==="rate")S.pay.mode="horaire";else if(f==="monthly")S.pay.mode="mensuel";
     updateEq(i);saveSettings();return;}
+  if(i.dataset.majc){S.pay.majc=S.pay.majc||{};S.pay.majc[i.dataset.majc]=i.value.trim()||null;saveSettings();return;}
   if("cpstart" in i.dataset){S.conges.start=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
   if("cp" in i.dataset){S.conges.report=i.value.trim()===""?null:i.value.trim();saveSettings();return;}
   if(i.id==="wiz-time"&&i.value){svcObj(i.dataset.wizs)[i.dataset.wizf]=i.value;tidy(key(S.cur));return;}
