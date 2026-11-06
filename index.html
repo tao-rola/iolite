@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.49">
+<meta name="description" content="iolite version 0.50">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -792,6 +792,8 @@ function majCustom(){var c=S.pay.majc||{},t1=num(c.t1),h1=num(c.h1),t2=num(c.t2)
 /* conventions courantes qui appliquent les taux du Code du travail (+25 % puis +50 %) */
 var CONV=[["rapide","Restauration rapide","IDCC 1501"],["collect","Restauration de collectivités","IDCC 1266"],["alim","Commerce de détail et de gros à prédominance alimentaire","IDCC 2216"],
   ["syntec","Bureaux d'études techniques (Syntec)","IDCC 1486"],["metal","Métallurgie","IDCC 3248"],["btp","Bâtiment (ouvriers)","IDCC 1596 / 1597"]];
+/* repas fournis par l'entreprise : sans réponse (anciens comptes) on garde la question */
+function mealsOn(){return S.pay.mealsOn!==false;}
 function factor(h){var t=S.pay.maj==="custom"?majCustom():(MAJ[S.pay.maj]||MAJ.legal);for(var i=0;i<t.length;i++)if(h<=t[i][0])return t[i][1];return 1;}
 function payReady(){return S.pay.mode==="mensuel"?num(S.pay.monthly)>0:num(S.pay.rate)>0;}
 /* brut d'une semaine de h heures payée 1 €/h, majorations comprises */
@@ -812,7 +814,7 @@ function payCalc(md){
   var cp=md.congeH*r;brut+=cp;
   var ch=num(P.charges);if(ch==null)ch=22;
   /* repas fourni = avantage en nature : ajouté au brut (soumis aux cotisations), puis retiré du net, comme sur la fiche de paie */
-  var mp=num(P.meal)||0,an=mp*md.repas,base=brut;brut+=an;var net0=brut*(1-ch/100);
+  var mp=mealsOn()?(num(P.meal)||0):0,an=mp*md.repas,base=brut;brut+=an;var net0=brut*(1-ch/100);
   return {brut:brut,base:base,an:an,net0:net0,net:net0-an,mealDed:an,meals:md.repas,mealPrice:mp,r:r,normH:normH,supH:supH,maj:maj,sup:sup,ch:ch,cp:cp};
 }
 function baseBrut(){return S.pay.mode==="mensuel"?num(S.pay.monthly):num(S.pay.rate)*weekUnits(S.target)*52/12;}
@@ -1024,8 +1026,9 @@ function renderOnboarding(){
       '<div class="field money"><label for="pay-rate">À l\'heure (brut)</label><input id="pay-rate" data-pay="rate" inputmode="decimal" autocomplete="off" placeholder="12,50"><em>€</em></div></div>';}
   else if(st==="charges"){q="Vos cotisations salariales ?";sub="La part retirée du brut pour obtenir le net. Environ 22 % en général.";
     body='<div class="field money"><label for="pay-charges">Cotisations</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>';}
-  else if(st==="meal"){q="Quelle est la valeur d'un repas fourni ?";sub="Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.";
-    body='<div class="field money"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div>';}
+  else if(st==="meal"){if(S.pay.mealsOn===undefined)S.pay.mealsOn=false;q="Votre entreprise vous fournit-elle vos repas ?";sub="Si oui, iolite vous demandera à chaque journée si un repas vous a été fourni.";
+    body='<div class="choices two"><button class="choice'+(P.mealsOn?" on":"")+'" data-obmeal="1">Oui</button><button class="choice'+(P.mealsOn?"":" on")+'" data-obmeal="0">Non</button></div>'+
+      (P.mealsOn?'<div class="field money" style="margin-top:16px"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div><p class="snote">Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.</p>':'');}
   else if(st==="maj"){q="Comment sont majorées vos heures sup ?";sub="";
     var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 %, +20 %, puis +50 %"],["custom","Ma convention ou mon accord","Vous saisirez vos taux dans Réglages"],["none","Aucune majoration","Payées au taux normal"]];
     body='<div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-obmaj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>';}
@@ -1046,6 +1049,7 @@ function renderOnboarding(){
 }
 function obClick(ds){
   if(!OB)return false;
+  if(ds.obmeal){S.pay.mealsOn=ds.obmeal==="1";saveSettings();renderOnboarding();return true;}
   if(ds.obmaj){S.pay.maj=ds.obmaj;updateEq();saveSettings();renderOnboarding();return true;}
   if(!ds.ob)return false;
   var st=OB_STEPS[OB.i];
@@ -1271,7 +1275,7 @@ function wizSteps(){var d=shiftData(),m=modeOf(d),st=["type"];
   if(!W.typed)return st;
   if(m==="conge"||m==="off")return st;
   var list=m==="continue"?["cont"]:(W.svcs||["midi","soir"]);
-  list.forEach(function(s){st.push("start:"+s,"end:"+s,"pause:"+s,"repas:"+s);});
+  list.forEach(function(s){st.push("start:"+s,"end:"+s,"pause:"+s);if(mealsOn())st.push("repas:"+s);});
   return st;}
 function wizStart(){var d=shiftData(),had={};SVCS.forEach(function(s){if(d[s]&&(d[s].start||d[s].end||d[s].pause))had[s]=1;});
   W={k:key(S.cur),i:0,typed:!!S.days[key(S.cur)],had:had,pt:{},
@@ -1414,7 +1418,7 @@ function renderStats(){
       pillBars(rows.map(function(o,i){return {lbl:L[i],v:o.r.total,txt:fmt(o.r.total),aria:cap(JOURS[o.d.getDay()])+" "+o.d.getDate(),alt:o.r.conge?"CP":o.r.mode==="repos"&&o.data.mode?"Repos":"·",cls:(dayFlag(o.d)?"alert":"")+(sameDay(o.d,now)?" today":"")};}),sel,"week",true)+'</section>';
     h+='<div class="bento">'+
       tile("coral","Heures sup",hh(sup),sup>0?"+35h / sem.":"aucune")+
-      tile("mint","Repas fournis",String(wRep),wRep>1?"repas":"repas")+
+      (mealsOn()?tile("mint","Repas fournis",String(wRep),"repas"):tile("mint","Jours travaillés",String(wWorked),"cette semaine"))+
       tile("lilac","Moyenne / jour",fmt(wWorked?wt/wWorked:0),wWorked+" jour"+(wWorked>1?"s":"")+" travaillé"+(wWorked>1?"s":""))+
       (wp?tile("lav","Prévu sur "+provName(),fmt(wp.plan),(wp.diff>0?"+":"")+fmt(wp.diff)+" d'écart"):tile("lav","Objectif",S.target+" h",wt>=S.target*60?"atteint":"reste "+fmt(S.target*60-wt)))+
     '</div>';
@@ -1442,7 +1446,7 @@ function renderStats(){
     h+='<div class="bento">'+
       tile("lav","Jours travaillés",String(md.worked),md.congeDays?md.congeDays+" jour"+(md.congeDays>1?"s":"")+" de congé":"ce mois-ci")+
       tile("coral","Heures sup",hh(msup),"+35h / sem.")+
-      tile("mint","Repas fournis",String(md.repas),mPay&&mPay.an?eur2(mPay.an)+" d'avantage":"")+
+      (mealsOn()?tile("mint","Repas fournis",String(md.repas),mPay&&mPay.an?eur2(mPay.an)+" d'avantage":""):tile("mint","Moyenne / jour",fmt(md.worked?md.total/md.worked:0),"sur le mois"))+
       (mp?tile("lilac","Prévu sur "+provName(),fmt(mp.plan),(mp.diff>0?"+":"")+fmt(mp.diff)+" d'écart"):tile("lilac","Meilleure journée",fmt(md.best),""))+
     '</div>';
     h+=congesCard();
@@ -1593,7 +1597,7 @@ function renderParams(){
   h+=group("Travail",[
     row({icon:"pay",t:"Salaire",v:payV,attr:'data-sub="pay"'}),
     row({icon:"sup",t:"Heures sup",v:MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
-    row({icon:"meal",t:"Repas fournis",v:P.meal?String(P.meal).replace(".",",")+" €":"—",attr:'data-sub="meal"'}),
+    row({icon:"meal",t:"Repas fournis",v:mealsOn()?(P.meal?String(P.meal).replace(".",",")+" €":"Oui"):"Non",attr:'data-sub="meal"'}),
     row({icon:"cp",t:"Début du contrat",v:S.conges.start?fdate(S.conges.start):"",attr:'data-sub="conges"'})]);
   h+=group("Notifications",[
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
@@ -1608,7 +1612,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.49</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.50</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1642,8 +1646,8 @@ function renderSub(){
         '<div class="field money"><label for="mc-t2">Majoration au-delà</label><input id="mc-t2" data-majc="t2" inputmode="decimal" autocomplete="off" placeholder="50" value="'+esc(mc.t2==null?"":mc.t2)+'"><em>%</em></div></div>'+
         '<p class="snote">Les taux sont écrits dans votre convention collective (son nom figure sur votre fiche de paie) ou dans l\'accord de votre entreprise. Vous les trouvez aussi sur code.travail.gouv.fr, en cherchant votre convention puis « heures supplémentaires ». La loi impose au moins 10 %.</p></section>':'');}
   else if(k==="meal"){t="Repas fournis";
-    b='<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
-      '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>';}
+    b=group("",[row({t:"Mon entreprise me fournit mes repas",sub:"iolite demande à chaque journée si un repas a été fourni",toggle:mealsOn(),attr:'data-mealson aria-pressed="'+mealsOn()+'"'})])+(!mealsOn()?'':'<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
+      '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>');}
   else if(k==="conges"){t="Début du contrat";
     b='<div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       '</div>'+
@@ -1748,6 +1752,7 @@ document.addEventListener("click",function(e){
   if(ds.yr){ST_ANIM=true;STSEL.year=null;keepScroll(function(){S.statY+=(+ds.yr);});return;}
   if(ds.target){S.target=Math.max(1,Math.min(60,S.target+(+ds.target)));updateEq();saveSettings();var o=document.getElementById("tgt");if(o)o.textContent=S.target+" h";return;}
   if(ds.maj){S.pay.maj=ds.maj;updateEq();saveSettings();renderParams();return;}
+  if("mealson" in ds){S.pay.mealsOn=!mealsOn();saveSettings();renderParams();return;}
   if("recap" in ds){S.reminder.recap=S.reminder.recap===false;saveSettings();mirror();renderParams();updateBadge();return;}
   if("remadd" in ds){var ts=S.reminder.times;ts.push(ts.length?"21:00":"22:00");saveSettings();if(OB)renderOnboarding();else renderParams();return;}
   if(ds.remdel){S.reminder.times.splice(+ds.remdel,1);saveSettings();if(OB)renderOnboarding();else renderParams();checkReminder();return;}
