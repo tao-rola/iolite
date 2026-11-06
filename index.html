@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.43">
+<meta name="description" content="iolite version 0.44">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -668,6 +668,7 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 .pw-wrap input{padding-right:52px!important;width:100%}
 .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .eye svg{width:21px;height:21px}.eye[aria-pressed="true"]{color:var(--ink)}
+.help-row{cursor:default}.help-row small{white-space:normal;line-height:1.4;margin-top:4px}
 .prov-list{display:flex;flex-wrap:wrap;gap:8px}
 .prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .prov.on{background:#fff;color:#15122A}
@@ -1027,7 +1028,7 @@ function renderOnboarding(){
     var times=S.reminder.times||[];
     body='<div class="rem-list">'+times.map(function(t,i){return '<div class="rem-row"><input type="time" id="rem-'+i+'" data-remidx="'+i+'" value="'+esc(t)+'" aria-label="Horaire de rappel '+(i+1)+'">'+(times.length>1?'<button class="rem-del" data-remdel="'+i+'" aria-label="Supprimer cet horaire">×</button>':'')+'</div>';}).join("")+'</div>'+
       (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'');}
-  else if(st==="combo"){q="Votre logiciel de planning";sub="Combo, Skello, Planday… Collez l'adresse de synchronisation calendrier de votre planning : iolite reconnaît le logiciel tout seul.";
+  else if(st==="combo"){q="Votre planning";sub="Collez l'adresse d'abonnement calendrier (iCal / .ics) de votre planning : Combo, Skello, Planday, emploi du temps ADE, Google Agenda…";
     body='<div class="field"><label for="combo-url">Adresse de synchronisation</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse de votre planning" value="'+esc(S.combo.url||"")+'"></div><p class="note" id="combo-msg">'+esc(comboStatus())+'</p>';}
   else if(st==="done"){skip=false;q="Tout est prêt"+(firstName()?", "+esc(firstName()):"")+" !";sub="Vous pourrez tout modifier plus tard dans Réglages.";nextLabel="Commencer";
     body='<div class="ob-done">'+BOT+'</div>';}
@@ -1114,18 +1115,18 @@ var PROVS=[
   {id:"deputy",n:"Deputy",re:/(^|\.)deputy\.com$/i,help:"Dans Deputy, cherchez « synchronisation calendrier » ou « lien iCal » dans votre profil, puis copiez l'adresse."},
   {id:"wheniwork",n:"When I Work",re:/(^|\.)wheniwork\.com$/i,help:"Dans When I Work, cherchez « synchronisation calendrier » ou « lien iCal » dans votre profil, puis copiez l'adresse."}];
 function provOf(url){try{var h=new URL(String(url||"").replace(/^webcal:/i,"https:")).hostname;for(var i=0;i<PROVS.length;i++)if(PROVS[i].re.test(h))return PROVS[i];}catch(e){}return null;}
-function provSel(){var id=S.combo.prov;for(var i=0;i<PROVS.length;i++)if(PROVS[i].id===id)return PROVS[i];return provOf(S.combo.url)||PROVS[0];}
-function provName(){return S.combo.url?provSel().n:"le planning";}
+function provSel(){return provOf(S.combo.url)||{id:"autre",n:"votre planning",help:""};}
+function provName(){return S.combo.url?provSel().n:"votre planning";}
 function syncCombo(manual){
   var u=(S.combo.url||"").trim();if(!u||syncing)return Promise.resolve();
-  if(!provOf(u)){S.combo.err="Cette adresse ne vient pas d'un logiciel de planning reconnu ("+PROVS.map(function(p){return p.n;}).join(", ")+").";savePlan();comboMsg(S.combo.err);return Promise.resolve();}
+  if(!/^(https?|webcal):\/\/[^\s]+\.[^\s]+/i.test(u)){S.combo.err="Cette adresse n'est pas valide. Collez l'adresse complète, qui commence par https:// ou webcal://.";savePlan();comboMsg(S.combo.err);return Promise.resolve();}
   syncing=true;if(manual)comboMsg("Synchronisation…");
   var https=u.replace(/^webcal:/i,"https:");
   return fetch("/.netlify/functions/combo?url="+encodeURIComponent(https),{cache:"no-store"})
     .then(function(r){if(!r.ok)throw new Error("proxy "+r.status);return r.text();})
     .catch(function(){return fetch(https,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http "+r.status);return r.text();});})
     .then(function(t){mergePlan(parseICS(t));})
-    .catch(function(){S.combo.err=provOf(S.combo.url)?"Impossible de lire le planning "+provSel().n+". Vérifiez l'adresse.":"Cette adresse ne vient pas d'un logiciel de planning reconnu ("+PROVS.map(function(p){return p.n;}).join(", ")+").";savePlan();})
+    .catch(function(){S.combo.err="Impossible de lire ce planning. Vérifiez que l'adresse est bien celle de l'abonnement calendrier (iCal / .ics).";savePlan();})
     .then(function(){syncing=false;if(OB||document.body.classList.contains("gate")){comboMsg(comboStatus());return;}if(S.tab==="params")renderParams();else if(S.tab!=="alerts")render();updateBadge();});}
 function autoSync(){var l=S.combo.last?new Date(S.combo.last):null;if(S.combo.url&&(!l||new Date()-l>2*3600*1000))syncCombo(false);}
 function comboMsg(t){var m=document.getElementById("combo-msg");if(m)m.textContent=t;}
@@ -1580,7 +1581,7 @@ function renderParams(){
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
     row({icon:"recap",t:"Résumé de la semaine",sub:"Le dimanche à 20 h",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
     permNote()?'<p class="snote">'+permNote()+'</p>':'');
-  h+=group("Planning",[row({icon:"cal",t:"Logiciel de planning",v:S.combo.url?provSel().n:"Non relié",attr:'data-sub="combo"'})]);
+  h+=group("Planning",[row({icon:"cal",t:"Planning",v:S.combo.url?(provSel().id==="autre"?"Relié":provSel().n):"Non relié",attr:'data-sub="combo"'})]);
   h+=group("Données",[
     row({icon:"down",t:"Exporter mes données",chev:false,attr:'data-export'}),
     row({icon:"up",t:"Importer une sauvegarde",chev:false,label:"imp-file"}),
@@ -1589,7 +1590,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.43</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.44</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1628,11 +1629,12 @@ function renderSub(){
       (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'')+'</div>'+
       '<p class="snote">Si rien n\'est pointé, iolite vous envoie une notification à ces horaires.'+(permNote()?' '+permNote():'')+'</p>';}
   else if(k==="combo"){t="Planning";var pv=provSel();
-    b='<section class="sgrp"><h2>Logiciel</h2><div class="prov-list">'+PROVS.map(function(p){return '<button class="prov'+(p.id===pv.id?" on":"")+'" data-prov="'+p.id+'" aria-pressed="'+(p.id===pv.id)+'">'+p.n+'</button>';}).join("")+'</div></section>'+
-      '<section class="sgrp"><h2>Adresse</h2><div class="set"><div class="field"><label for="combo-url">Adresse de synchronisation '+esc(pv.n)+'</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse donnée par '+esc(pv.n)+'" value="'+esc(S.combo.url||"")+'"></div>'+
+    b='<section class="sgrp"><div class="set"><div class="field"><label for="combo-url">Adresse du calendrier (iCal / .ics)</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://… ou webcal://…" value="'+esc(S.combo.url||"")+'"></div>'+
       (S.combo.url?'<div class="backup"><button data-combosync>Synchroniser maintenant</button></div>':'')+'</div>'+
-      '<p class="snote" id="combo-msg">'+esc(comboStatus()||pv.help)+'</p></section>'+
-      '';var dock=S.combo.url?'<div class="dock-sp"></div><div class="dock">'+group("",[row({t:"Déconnecter "+pv.n,chev:false,cls:"danger",attr:'data-combooff'})])+'</div>':'';}
+      '<p class="snote" id="combo-msg">'+esc(comboStatus()||(S.combo.url&&pv.help?pv.help:"Collez l'adresse d'abonnement calendrier de votre planning. Elle fonctionne avec Combo, Skello, Planday, les emplois du temps ADE, Google Agenda, iCloud et tout logiciel qui propose un lien iCal."))+'</p></section>'+
+      (!S.combo.url?'<section class="sgrp"><h2>Où trouver l\'adresse ?</h2><div class="scard">'+PROVS.slice(0,3).map(function(p){return '<div class="srow help-row"><span class="srow-t">'+p.n+'<small>'+esc(p.help)+'</small></span></div>';}).join("")+
+        '<div class="srow help-row"><span class="srow-t">Autres logiciels<small>Cherchez « synchronisation calendrier », « lien iCal » ou « s\'abonner » dans votre profil ou vos paramètres.</small></span></div></div></section>':'');
+    dock=S.combo.url?'<div class="dock-sp"></div><div class="dock">'+group("",[row({t:"Déconnecter "+(pv.id==="autre"?"le planning":pv.n),chev:false,cls:"danger",attr:'data-combooff'})])+'</div>':'';}
   else if(k==="del"){t="Supprimer mon compte";b='<div class="set">'+accForm("del")+'</div>';}
   setHead(t,"");
   view.innerHTML='<div class="sett sub"><button class="sback" data-sub="">'+ICON_L+'<span>Réglages</span></button>'+b+'</div>'+(typeof dock==="string"?dock:"");
