@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.51">
+<meta name="description" content="iolite version 0.52">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -669,6 +669,7 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .eye svg{width:21px;height:21px}.eye[aria-pressed="true"]{color:var(--ink)}
 .help-row{cursor:default}.help-row small{white-space:normal;line-height:1.4;margin-top:4px}
+.wiz-skip{display:block;margin:22px auto 0;border:0;background:none;color:var(--soir);font:inherit;font-size:15.5px;font-weight:600;padding:10px 6px;cursor:pointer}
 .prov-list{display:flex;flex-wrap:wrap;gap:8px}
 .prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .prov.on{background:#fff;color:#15122A}
@@ -709,7 +710,7 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 <script>
 (function(){
 "use strict";
-var SVCS=["midi","soir","cont"], NAMES={midi:"Matin",soir:"Après-midi",cont:"Journée continue"}, CLS={midi:"m",soir:"s",cont:"c"};
+var SVCS=["midi","soir","cont"], NAMES={midi:"Matin",soir:"Après-midi",cont:"Journée"}, CLS={midi:"m",soir:"s",cont:"c"};
 var JOURS=["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 var MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 var MOIS_C=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
@@ -1011,7 +1012,7 @@ function authSubmit(){
 }
 
 /* ---------- questionnaire de bienvenue (première connexion) ---------- */
-var OB_STEPS=["name","start","hours","split","pay","charges","meal","maj","rem","combo","done"];
+var OB_STEPS=["name","start","hours","pay","charges","meal","maj","rem","combo","done"];
 function startOnboarding(){OB={i:0};gate(true);renderOnboarding();}
 function renderOnboarding(){
   var st=OB_STEPS[OB.i],P=S.pay,n=OB_STEPS.length-1,pct=Math.round(Math.min(OB.i,n)/n*100),from=OB.last==null?0:OB.last;OB.last=pct;
@@ -1224,7 +1225,7 @@ function remMsg(t){var m=document.getElementById("rem-msg");if(m)m.textContent=t
 
 /* ---------- rendu ---------- */
 var view=document.getElementById("view");
-function render(){NAMES.cont=splitOn()?"Journée continue":"Journée";
+function render(){
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false");});
   var sh=S.tab==="shift";document.getElementById("top").classList.toggle("day",sh);document.getElementById("navcap").hidden=!sh;document.getElementById("toplogo").hidden=true;
   if(!sh)setHead({stats:"Statistiques",alerts:"Alertes",params:"Réglages"}[S.tab],{stats:"Vos heures et votre salaire",alerts:"Ce qu'iolite a remarqué",params:"Votre compte et vos préférences"}[S.tab]);
@@ -1279,11 +1280,11 @@ function recent(s,f,n){var out=[],ks=Object.keys(S.days).sort().reverse();
 function wizSteps(){var d=shiftData(),m=modeOf(d),st=["type"];
   if(!W.typed)return st;
   if(m==="conge"||m==="off")return st;
-  var list=m==="continue"?["cont"]:(W.svcs||["midi","soir"]);
+  var list=m==="continue"?["cont"]:["midi","soir"].filter(function(s){return !(W.skip&&W.skip[s]);});
   list.forEach(function(s){st.push("start:"+s,"end:"+s,"pause:"+s);if(mealsOn())st.push("repas:"+s);});
   return st;}
 function wizStart(){var d=shiftData(),had={};SVCS.forEach(function(s){if(d[s]&&(d[s].start||d[s].end||d[s].pause))had[s]=1;});
-  W={k:key(S.cur),i:0,typed:!!S.days[key(S.cur)],had:had,pt:{},
+  W={k:key(S.cur),i:0,typed:!!S.days[key(S.cur)],had:had,pt:{},skip:{},
   svcs:modeOf(d)==="coupure"&&(d.midi||d.soir)?["midi","soir"].filter(function(s){return d[s];}):["midi","soir"]};renderShift();}
 function wizNext(){var st=wizSteps();W.i++;if(W.i>=st.length){W=null;}renderShift();window.scrollTo(0,0);}
 function wizBack(){if(W.i===0){W=null;}else W.i--;renderShift();}
@@ -1328,7 +1329,7 @@ function renderWizard(){
     eyebrow=pl.length?"Prévu sur "+provName()+" : "+planText(pl):planRest(k)?"Prévu sur "+provName()+" : repos":"";
     var cur=!S.days[k]?null:modeOf(d)==="repos"?"off":modeOf(d);
     body='<div class="choices">'+
-      (splitOn()?[["continue","Continue",""],["coupure","Coupée","Matin et après-midi"],["off","Repos",""],["conge","Congé payé",""]]:[["continue","Travaillée",""],["off","Repos",""],["conge","Congé payé",""]]).map(function(o){
+      [["coupure","Coupée",""],["off","Repos",""],["conge","Congé payé",""]].map(function(o){
         return '<button class="choice'+(cur===o[0]?" on":"")+'" data-wiztype="'+o[0]+'">'+o[1]+(o[2]?'<small>'+o[2]+'</small>':'')+'</button>';}).join("")+'</div>';
   }else if(parts[0]==="start"||parts[0]==="end"){
     var f=parts[0],v=(d[s]&&d[s][f])||"",sug=[],pp=planFor(k,s);
@@ -1336,7 +1337,8 @@ function renderWizard(){
     if(!v&&sug.length)v=sug[0];
     eyebrow=svcLabel(s);q=f==="start"?"À quelle heure avez-vous commencé ?":"À quelle heure avez-vous fini ?";
     body='<input type="time" class="wiz-time" id="wiz-time" data-wizf="'+f+'" data-wizs="'+s+'" value="'+esc(v)+'">'+
-      (sug.length?'<div class="quick">'+sug.map(function(x){return '<button data-wizset="'+x+'">'+x+(pp&&pp[f]===x?' · Prévu':'')+'</button>';}).join("")+'</div>':'');
+      (sug.length?'<div class="quick">'+sug.map(function(x){return '<button data-wizset="'+x+'">'+x+(pp&&pp[f]===x?' · Prévu':'')+'</button>';}).join("")+'</div>':'')+
+      (f==="start"&&(s==="midi"||s==="soir")?'<button class="wiz-skip" data-wizskip="'+s+'">'+(s==="midi"?"Je n'ai pas travaillé ce matin":"Je n'ai pas travaillé cet après-midi")+'</button>':'');
     next=true;
   }else if(parts[0]==="pause"){
     var o=svcObj(s);if(!W.had[s]&&!W.pt[s]){var pp2=planFor(k,s),rp=recent(s,"pause",1);o.pause=pp2&&pp2.pause!=null?pp2.pause:(rp.length?rp[0]:0);W.pt[s]=1;tidy(k);}
@@ -1360,8 +1362,12 @@ function wizClick(ds){
     if(t==="off"){S.days[x.k]={mode:"repos"};saveDays();W=null;renderShift();return true;}
     if(t==="conge"){x.d.mode="conge";delete x.d.midi;delete x.d.soir;delete x.d.cont;tidy(x.k);W=null;renderShift();return true;}
     if(t==="continue"){x.d.mode="continue";delete x.d.midi;delete x.d.soir;}
-    else{W.svcs=["midi","soir"];x.d.mode="coupure";delete x.d.cont;}
+    else{W.svcs=["midi","soir"];W.skip={};x.d.mode="coupure";delete x.d.cont;}
     tidy(x.k);wizNext();return true;}
+  /* « je n'ai pas travaillé ce matin / cet après-midi » */
+  if(ds.wizskip){var y=dayRef(),sk=ds.wizskip;W.skip=W.skip||{};W.skip[sk]=true;delete y.d[sk];
+    if(!y.d.midi&&!y.d.soir&&W.skip.midi&&(W.skip.soir||sk==="soir")){S.days[y.k]={mode:"repos"};saveDays();W=null;renderShift();return true;}
+    tidy(y.k);if(sk==="midi"){W.i=wizSteps().indexOf("start:soir");if(W.i<0)W=null;}else W=null;renderShift();window.scrollTo(0,0);return true;}
   if(ds.wizset){var t=document.getElementById("wiz-time");svcObj(t.dataset.wizs)[t.dataset.wizf]=ds.wizset;tidy(key(S.cur));wizNext();return true;}
   if(ds.wizpause){var st2=wizSteps()[W.i].split(":")[1],o=svcObj(st2);W.pt[st2]=1;o.pause=Math.max(0,Math.min(240,(o.pause||0)+(+ds.wizpause)));
     var out=document.getElementById("wiz-pause");if(out)out.textContent=o.pause+" min";tidy(key(S.cur));return true;}
@@ -1603,7 +1609,6 @@ function renderParams(){
   h+=group("Travail",[
     row({icon:"pay",t:"Salaire",v:payV,attr:'data-sub="pay"'}),
     row({icon:"sup",t:"Heures sup",v:MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
-    row({icon:"split",t:"Journées coupées",sub:"Matin et après-midi séparés",toggle:splitOn(),attr:'data-spliton aria-pressed="'+splitOn()+'"'}),
     row({icon:"meal",t:"Repas fournis",v:mealsOn()?(P.meal?String(P.meal).replace(".",",")+" €":"Oui"):"Non",attr:'data-sub="meal"'}),
     row({icon:"cp",t:"Début du contrat",v:S.conges.start?fdate(S.conges.start):"",attr:'data-sub="conges"'})]);
   h+=group("Notifications",[
@@ -1619,7 +1624,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.51</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.52</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){

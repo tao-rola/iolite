@@ -1,5 +1,5 @@
 /* iolite : fonctionnement hors ligne et rappel du soir */
-const CACHE = 'iolite-v51';
+const CACHE = 'iolite-v52';
 const ASSETS = ['./', './index.html', './config.js', './manifest.webmanifest', './favicon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
