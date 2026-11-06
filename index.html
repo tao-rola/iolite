@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.56">
+<meta name="description" content="iolite version 0.57">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -710,9 +710,12 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 #dayhead:empty{display:none}
 body.fixtop .shead{position:fixed;top:0;left:0;right:0;z-index:6;gap:10px;
   padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));
-  background:linear-gradient(180deg,rgba(74,76,149,.9) 0%,rgba(66,64,138,.7) 60%,rgba(58,54,124,.45) 100%);
-  -webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);
-  -webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 16px),transparent)}
+  isolation:isolate}
+/* sous l'en-tête : une copie exacte du fond animé, calée au même endroit que celui de la page, pour que rien ne se voie */
+.shead-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;visibility:hidden}
+body.fixtop .shead-bg{visibility:visible;
+  -webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 22px),transparent)}
+.shead-bg .aura{position:absolute;top:0;left:0;right:0;bottom:auto;height:calc(100vh + 240px);z-index:auto}
 body.fixtop .shead>*{width:100%;max-width:430px;margin-left:auto;margin-right:auto}
 body.fixtop #view{padding-top:var(--sh,180px)}
 body.fixtop #dayhead .strip{margin-top:0}
@@ -721,7 +724,7 @@ body.fixtop #dayhead .strip{margin-top:0}
 <body>
 <div class="aura" aria-hidden="true"><i></i><i></i><i></i></div><div class="sbar" aria-hidden="true"></div>
 <div class="wrap">
-  <div class="shead" id="shead"><header class="top" id="top">
+  <div class="shead" id="shead"><div class="shead-bg" aria-hidden="true"><div class="aura"><i></i><i></i><i></i></div></div><header class="top" id="top">
     <div class="top-title"><b id="title">…</b><small id="subtitle"></small></div>
     <div class="nav-cap" id="navcap"><button class="nav-btn" id="prev" aria-label="Jour précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="nav-btn" id="next" aria-label="Jour suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <span class="top-logo" id="toplogo" aria-hidden="true"></span>
@@ -1522,7 +1525,10 @@ function dayTags(dt,d,r){var t=[],fn=ferName(dt);
 function dayHead(html){var dh=document.getElementById("dayhead");if(dh.innerHTML!==html)dh.innerHTML=html;fixTop();}
 function fixTop(){var on=S.tab==="shift"&&!document.body.classList.contains("gate");document.body.classList.toggle("fixtop",on);
   if(!on){document.getElementById("dayhead").innerHTML="";return;}
-  var sh=document.getElementById("shead");document.body.style.setProperty("--sh",Math.max(0,sh.offsetHeight-safeTop())+"px");}
+  var sh=document.getElementById("shead");document.body.style.setProperty("--sh",Math.max(0,sh.offsetHeight-safeTop())+"px");syncAura();}
+/* les bulles du fond sous l'en-tête bougent exactement en même temps que celles de la page */
+function syncAura(){try{var a=document.querySelectorAll("body>.aura i"),c=document.querySelectorAll(".shead-bg .aura i");
+  for(var i=0;i<a.length&&i<c.length;i++){var x=a[i].getAnimations?a[i].getAnimations()[0]:null,y=c[i].getAnimations?c[i].getAnimations()[0]:null;if(x&&y&&x.startTime!=null&&y.startTime!==x.startTime)y.startTime=x.startTime;}}catch(e){}}
 function safeTop(){var t=document.getElementById("shead");var c=parseFloat(getComputedStyle(t).paddingTop)||0;return c;}
 window.addEventListener("resize",function(){if(document.body.classList.contains("fixtop"))fixTop();});
 function renderShift(){
@@ -2015,7 +2021,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.56</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.57</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
