@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.48">
+<meta name="description" content="iolite version 0.49">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1327,7 +1327,7 @@ function renderWizard(){
     if(!v&&sug.length)v=sug[0];
     eyebrow=svcLabel(s);q=f==="start"?"À quelle heure avez-vous commencé ?":"À quelle heure avez-vous fini ?";
     body='<input type="time" class="wiz-time" id="wiz-time" data-wizf="'+f+'" data-wizs="'+s+'" value="'+esc(v)+'">'+
-      (sug.length?'<div class="quick">'+sug.map(function(x){return '<button data-wizset="'+x+'">'+x+(pp&&pp[f]===x?' · PRÉVU':'')+'</button>';}).join("")+'</div>':'');
+      (sug.length?'<div class="quick">'+sug.map(function(x){return '<button data-wizset="'+x+'">'+x+(pp&&pp[f]===x?' · Prévu':'')+'</button>';}).join("")+'</div>':'');
     next=true;
   }else if(parts[0]==="pause"){
     var o=svcObj(s);if(!W.had[s]&&!W.pt[s]){var pp2=planFor(k,s),rp=recent(s,"pause",1);o.pause=pp2&&pp2.pause!=null?pp2.pause:(rp.length?rp[0]:0);W.pt[s]=1;tidy(k);}
@@ -1594,7 +1594,7 @@ function renderParams(){
     row({icon:"pay",t:"Salaire",v:payV,attr:'data-sub="pay"'}),
     row({icon:"sup",t:"Heures sup",v:MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
     row({icon:"meal",t:"Repas fournis",v:P.meal?String(P.meal).replace(".",",")+" €":"—",attr:'data-sub="meal"'}),
-    row({icon:"cp",t:"Congés payés",v:S.conges.start?fdate(S.conges.start):"",attr:'data-sub="conges"'})]);
+    row({icon:"cp",t:"Début du contrat",v:S.conges.start?fdate(S.conges.start):"",attr:'data-sub="conges"'})]);
   h+=group("Notifications",[
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
     row({icon:"recap",t:"Résumé de la semaine",sub:"Le dimanche à 20 h",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
@@ -1608,7 +1608,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.48</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.49</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1644,7 +1644,7 @@ function renderSub(){
   else if(k==="meal"){t="Repas fournis";
     b='<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
       '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>';}
-  else if(k==="conges"){t="Congés payés";
+  else if(k==="conges"){t="Début du contrat";
     b='<div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       '</div>'+
       '<p class="snote">Tout est calculé à partir de cette date : 2,5 jours acquis par mois travaillé (le premier mois au prorata), puis décomptés à chaque congé pointé.</p>';}
