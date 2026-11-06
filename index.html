@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.53">
+<meta name="description" content="iolite version 0.54">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -565,7 +565,21 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .tile-l i{width:9px;height:9px;border-radius:50%;background:var(--tc);box-shadow:0 0 10px var(--tc);flex:none}
 .tile b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:10px;color:var(--tc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile small{display:block;font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.st-days h3,.st-cp h3{margin:0;font-size:17px;font-weight:700}
+.st-days h3,.st-cp h3,.st-x h3{margin:0;font-size:17px;font-weight:700}
+.st-x .xl{display:flex;flex-direction:column;margin-top:4px}
+.st-x .xr{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0}
+.st-x .xr+.xr{box-shadow:0 -1px 0 rgba(255,255,255,.08)}
+.st-x .xr span{font-size:14.5px;font-weight:600;min-width:0}.st-x .xr span small{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.st-x .xr b{font-size:15px;font-weight:800;white-space:nowrap}
+.st-x .xr.tot{box-shadow:0 -1.5px 0 rgba(255,255,255,.22)}.st-x .xr.tot span,.st-x .xr.tot b{font-size:16px}
+.jobsw{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 4px;padding:2px}
+.jobsw::-webkit-scrollbar{display:none}
+.jobsw button{flex:none;border:0;border-radius:999px;padding:9px 16px;font:inherit;font-size:13.5px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18)}
+.jobsw button[aria-pressed="true"]{background:#fff;color:var(--accent-ink);box-shadow:0 0 18px rgba(255,255,255,.35)}
+.day-tags{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 2px}
+.day-tags span{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.day-tags span.hot{background:rgba(255,165,133,.22);box-shadow:inset 0 0 0 1px rgba(255,165,133,.55)}
+.sd b.fer{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45)}
 .cal{display:flex;flex-direction:column;gap:7px;margin-top:6px}
 .cal-h,.cal-r{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:center}
 .cal-h span{text-align:center;font-size:11.5px;font-weight:700;color:var(--muted)}
@@ -577,12 +591,15 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .cal-c.alert{background:var(--c-coral);color:#2A140C;box-shadow:0 0 14px rgba(255,165,133,.4)}
 .cal-c.cp{background:var(--c-mint);color:#0E2A1C;box-shadow:none}
 .cal-c.plan{box-shadow:inset 0 0 0 1.5px var(--c-lav);color:var(--c-lav)}
+.cal-c.ab{background:var(--c-lilac);color:#1C1430;box-shadow:none}
+.cal-c.fer{position:relative}.cal-c.fer::after{content:"";position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:currentColor;opacity:.8}
 .cal-c.off i{font-style:normal;font-size:15px;opacity:.6}
 .cal-c.today{outline:2px solid #fff;outline-offset:2px}
 .cal-w{font-size:12px;font-weight:700;color:var(--muted);text-align:right;padding-left:6px;border-left:1px solid var(--line)}
 .cal-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:4px}
 .cal-leg span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600}
 .cal-leg i{width:11px;height:11px;border-radius:50%}
+.cal-leg i.ab{background:var(--c-lilac)}.cal-leg i.fer{width:5px;height:5px;background:#fff;margin:0 3px}
 .cal-leg i.h3{background:var(--c-lav)}.cal-leg i.alert{background:var(--c-coral)}.cal-leg i.cp{background:var(--c-mint)}.cal-leg i.plan{box-shadow:inset 0 0 0 1.5px var(--c-lav)}
 .st-sel{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.05);font-size:14px;color:var(--muted)}
 .st-sel b{color:var(--ink);font-size:15px}
@@ -663,6 +680,9 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 @keyframes swin{from{transform:translateX(var(--sx,40px));opacity:0}to{transform:none;opacity:1}}
 .dock{position:fixed;left:0;right:0;margin:0 auto;max-width:430px;z-index:7;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));bottom:calc(max(10px,calc(env(safe-area-inset-bottom,0px) - 12px)) + 82px)}
 .dock .btn-main{width:100%;margin:0}.dock .sgrp{gap:0}
+.dock .btn-main+.btn-alt{margin-top:8px;height:48px;font-size:15px;background:rgba(30,30,70,.55);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22)}
+.dock-sp.two{height:120px}
+.snote.warn{color:var(--warn)}
 .dock-sp{height:64px;flex:none}
 .pw-wrap{position:relative}
 .pw-wrap input{padding-right:52px!important;width:100%}
@@ -725,7 +745,8 @@ var DAY_MAX=600, WEEK_MAX=48*60, REST_MIN=660; /* 10 h, 48 h, 11 h */
 var now0=new Date();
 var S={tab:"shift",cur:now0,statW:now0,statM:now0,statY:now0.getFullYear(),days:{},target:35,
   pay:{mode:"horaire",rate:"12,31",monthly:null,charges:22,maj:"legal",meal:"4,35"},
-  conges:{report:null},reminder:{times:["22:00"],recap:true}};
+  conges:{report:null},reminder:{times:["22:00"],recap:true},
+  contract:{type:"cdi",cat:"emp",end:null,essai:true,en:null,eu:null,ren:false,rn:null,ru:null}};
 /* à l'ouverture, on arrive toujours sur Shift ; seule la mise à jour depuis Réglages ramène à l'onglet en cours */
 try{if(sessionStorage.getItem("pt-keeptab")){sessionStorage.removeItem("pt-keeptab");var t=localStorage.getItem("pt-tab");if(t==="shift"||t==="stats"||t==="alerts"||t==="params")S.tab=t;}}catch(e){}
 
@@ -738,11 +759,24 @@ function sameDay(a,b){return key(a)===key(b);}
 function shortDate(d){return d.getDate()+" "+MOIS_C[d.getMonth()];}
 
 /* ---------- journées ---------- */
-function modeOf(d){var m=d&&d.mode;if(m==="coupure"||m==="continue"||m==="conge"||m==="repos")return m;return d&&d.cont&&!d.midi&&!d.soir?"continue":"coupure";}
-function active(d){var m=modeOf(d);return m==="conge"||m==="repos"?[]:m==="continue"?["cont"]:["midi","soir"];}
+function modeOf(d){var m=d&&d.mode;if(m==="coupure"||m==="continue"||m==="conge"||m==="repos"||m==="abs")return m;return d&&d.cont&&!d.midi&&!d.soir?"continue":"coupure";}
+function active(d){var m=modeOf(d);return m==="conge"||m==="repos"||m==="abs"?[]:m==="continue"?["cont"]:["midi","soir"];}
 function num(v){var n=parseFloat(String(v==null?"":v).replace(/\s/g,"").replace(",","."));return isFinite(n)&&n>=0?n:null;}
-/* une journée « pointée » : au moins un horaire saisi, ou un congé */
-function entered(d){if(!d)return false;if(modeOf(d)==="conge"||modeOf(d)==="repos")return true;return active(d).some(function(s){return d[s]&&(d[s].start||d[s].end);});}
+/* une journée « pointée » : au moins un horaire saisi, ou un congé, un repos, une absence */
+function entered(d){if(!d)return false;var m=modeOf(d);if(m==="conge"||m==="repos"||m==="abs")return true;return active(d).some(function(s){return d[s]&&(d[s].start||d[s].end);});}
+/* absences : k = "work" (temps de travail effectif, compté dans les heures), "paid" (payée, hors heures sup), "unpaid" (non payée par l'employeur) */
+var ABS=[
+  {id:"ecole",n:"École",sub:"Alternance : cours au centre de formation",k:"work"},
+  {id:"formation",n:"Formation",sub:"Prévue par l'employeur",k:"work"},
+  {id:"maladie",n:"Arrêt maladie",sub:"Indemnités de la Sécurité sociale à part",k:"unpaid"},
+  {id:"at",n:"Accident du travail",sub:"Ou maladie professionnelle",k:"unpaid"},
+  {id:"rtt",n:"RTT",sub:"Jour de réduction du temps de travail",k:"paid"},
+  {id:"recup",n:"Récupération",sub:"Repos compensateur, heures récupérées",k:"paid"},
+  {id:"famille",n:"Événement familial",sub:"Mariage, naissance, décès…",k:"paid"},
+  {id:"parent",n:"Maternité, paternité",sub:"Indemnités de la Sécurité sociale à part",k:"unpaid"},
+  {id:"sanssolde",n:"Absence non payée",sub:"Congé sans solde, absence autorisée",k:"unpaid"}];
+var ABSK={};ABS.forEach(function(a){ABSK[a.id]=a;});
+function absOf(d){return d&&modeOf(d)==="abs"?ABSK[d.abs]||null:null;}
 function isBlank(d){return !d.midi&&!d.soir&&!d.cont&&modeOf(d)==="coupure";}
 
 /* ---------- calculs d'heures ---------- */
@@ -755,6 +789,8 @@ function svcCalc(v){
 }
 function dayCalc(d){var r={midi:0,soir:0,cont:0,total:0,worked:false,repas:0,shifts:0,mode:modeOf(d),conge:false};if(!d)return r;
   r.conge=r.mode==="conge";
+  var ab=absOf(d);if(ab){r.abs=ab.id;r.absK=ab.k;var am=ab.k==="unpaid"?0:Math.max(0,+d.h||0);
+    if(ab.k==="work"){r.total+=am;r.worked=true;r[ab.id]=am;}else if(ab.k==="paid")r.paidAbs=am;return r;}
   active(d).forEach(function(s){var c=svcCalc(d[s]);if(c){r[s]=c.net;r.total+=c.net;r.worked=true;r.shifts++;}if(d[s]&&d[s].repas===true)r.repas++;});return r;}
 function dayOf(dt){return S.days[key(dt)];}
 /* début et fin de la journée de travail, en minutes depuis minuit du jour */
@@ -817,33 +853,142 @@ function payCalc(md){
     for(var i=0;i<cuts.length-1;i++){var a=cuts[i],b=cuts[i+1];if(b<=a)continue;var f=factor((a+b)/2),amt=(b-a)*r*f;brut+=amt;
       supH+=b-a;maj+=(b-a)*r*(f-1);sup+=amt;}
   });
-  var cp=md.congeH*r;brut+=cp;
+  var cp=(md.congeH||0)*r;brut+=cp;
+  /* jours fériés chômés (maintien du salaire) et absences payées (RTT, récupération, événement familial) */
+  var fer=(md.ferInWeeks?0:(md.ferPaidH||0))*r,absP=(md.absPaidH||0)*r;brut+=fer+absP;
+  /* majorations de nuit, du dimanche et des jours fériés travaillés */
+  var xm=(md.majH||0)*r;brut+=xm;
   var ch=num(P.charges);if(ch==null)ch=22;
   /* repas fourni = avantage en nature : ajouté au brut (soumis aux cotisations), puis retiré du net, comme sur la fiche de paie */
-  var mp=mealsOn()?(num(P.meal)||0):0,an=mp*md.repas,base=brut;brut+=an;var net0=brut*(1-ch/100);
-  return {brut:brut,base:base,an:an,net0:net0,net:net0-an,mealDed:an,meals:md.repas,mealPrice:mp,r:r,normH:normH,supH:supH,maj:maj,sup:sup,ch:ch,cp:cp};
+  var mp=mealsOn()?(num(P.meal)||0):0,an=mp*(md.repas||0),base=brut;brut+=an;var net0=brut*(1-ch/100);
+  return {brut:brut,base:base,an:an,net0:net0,net:net0-an,mealDed:an,meals:md.repas||0,mealPrice:mp,r:r,normH:normH,supH:supH,maj:maj,sup:sup,ch:ch,cp:cp,
+    fer:fer,ferH:md.ferInWeeks?0:(md.ferPaidH||0),absP:absP,absH:md.absPaidH||0,xm:xm,night:md.night||0,sun:md.sun||0,ferW:md.fer||0,solid:md.solid||0};
 }
 function baseBrut(){return S.pay.mode==="mensuel"?num(S.pay.monthly):num(S.pay.rate)*weekUnits(S.target)*52/12;}
 function eur(n){return n.toLocaleString("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0});}
 function eur2(n){return n.toLocaleString("fr-FR",{style:"currency",currency:"EUR"});}
 function hh(h){return fmt(h*60);}
 
-/* toutes les données d'un mois */
-function monthData(y,mo){
-  var n=new Date(y,mo+1,0).getDate(),o={total:0,midi:0,soir:0,cont:0,worked:0,repas:0,best:0,congeDays:0,congeH:0,weeks:[]},w={};
-  for(var i=1;i<=n;i++){var dt=new Date(y,mo,i),r=dayCalc(dayOf(dt)),wk=key(monday(dt));
+/* ---------- jours fériés (Code du travail, art. L3133-1) ---------- */
+function easter(y){var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+  i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),x=h+l-7*m+114;return new Date(y,Math.floor(x/31)-1,(x%31)+1);}
+var REGIONS=[["metro","France métropolitaine",""],["alsace","Alsace-Moselle","+ Vendredi saint et 26 décembre"],["gp","Guadeloupe","+ 27 mai"],["mq","Martinique","+ 22 mai"],
+  ["gf","Guyane","+ 10 juin"],["re","La Réunion","+ 20 décembre"],["yt","Mayotte","+ 27 avril"]];
+var FER_CACHE={};
+function ferReg(){return S.pay.reg||"metro";}
+function solidOn(){return S.pay.solid===true;}
+function feries(y){var rg=ferReg(),ck=y+rg;if(FER_CACHE[ck])return FER_CACHE[ck];var e=easter(y),o={};
+  function add(d,n){o[key(d)]=n;}
+  add(new Date(y,0,1),"Jour de l'an");add(addDays(e,1),"Lundi de Pâques");add(new Date(y,4,1),"Fête du Travail");add(new Date(y,4,8),"Victoire de 1945");
+  add(addDays(e,39),"Ascension");add(addDays(e,50),"Lundi de Pentecôte");add(new Date(y,6,14),"Fête nationale");add(new Date(y,7,15),"Assomption");
+  add(new Date(y,10,1),"Toussaint");add(new Date(y,10,11),"Armistice de 1918");add(new Date(y,11,25),"Noël");
+  if(rg==="alsace"){add(addDays(e,-2),"Vendredi saint");add(new Date(y,11,26),"Saint-Étienne");}
+  var ab={gp:[4,27],mq:[4,22],gf:[5,10],re:[11,20],yt:[3,27]}[rg];if(ab)add(new Date(y,ab[0],ab[1]),"Abolition de l'esclavage");
+  return FER_CACHE[ck]=o;}
+function isPentecote(dt){return key(dt)===key(addDays(easter(dt.getFullYear()),50));}
+function isSolid(dt){return solidOn()&&isPentecote(dt);}
+/* nom du jour férié, sauf le lundi de Pentecôte quand il sert de journée de solidarité */
+function ferName(dt){if(isSolid(dt))return null;return feries(dt.getFullYear())[key(dt)]||null;}
+function isMay1(dt){return dt.getMonth()===4&&dt.getDate()===1;}
+/* ancienneté en mois à une date donnée (contrat inconnu : on considère la condition remplie) */
+function seniority(dt){var cs=contractStart();if(!cs)return 999;return (dt.getFullYear()-cs.getFullYear())*12+dt.getMonth()-cs.getMonth()-(dt.getDate()<cs.getDate()?1:0);}
+
+/* ---------- nuit, dimanche, jours fériés : règles de chaque convention ----------
+   fer : majoration d'un jour férié travaillé (hors 1er mai, toujours payé double) ; ferSen : ancienneté requise en mois
+   night : plage de nuit [début, fin] en minutes ; nb : tranches majorées [début, fin, %] ; sun : majoration du dimanche ; max : majorations non cumulables */
+var EXT={
+  legal:{fer:0,night:[1260,360],nb:[],sun:0,
+    fn:"Le Code du travail ne prévoit pas de majoration pour un jour férié travaillé, sauf le 1er mai, payé double. Votre convention ou votre entreprise peut prévoir mieux.",
+    nn:"Travail de nuit : de 21 h à 6 h. La loi n'impose pas de majoration de salaire : les travailleurs de nuit ont droit à un repos compensateur, et souvent à une majoration prévue par accord.",
+    sn:"Pas de majoration légale en général. Exception : dans un commerce de détail ouvert un « dimanche du maire », le salaire de la journée est doublé."},
+  hcr:{fer:100,ferSen:12,night:[1320,420],nb:[],sun:0,
+    fn:"Après 1 an d'ancienneté, un jour férié travaillé est compensé par un jour de repos ou par une indemnité : iolite le compte comme +100 %. Le 1er mai travaillé est payé double.",
+    nn:"Travail de nuit : de 22 h à 7 h. La convention n'impose pas de majoration de salaire : les travailleurs de nuit ont 1 % de repos compensateur par heure de nuit.",
+    sn:"La convention HCR ne prévoit pas de majoration du dimanche."},
+  rapide:{fer:0,night:[1320,420],nb:[[0,120,10],[120,360,30]],sun:0,
+    fn:"Après 1 an d'ancienneté, les jours fériés chômés sont payés. La convention ne chiffre pas la majoration d'un jour férié travaillé (repos ou paiement, au choix de l'employeur) : saisissez votre taux si vous le connaissez. Le 1er mai travaillé est payé double.",
+    nn:"Travail de nuit : de 22 h à 7 h. +10 % de minuit à 2 h, +30 % de 2 h à 6 h (niveaux I à IV).",
+    sn:"La convention ne fixe pas de majoration du dimanche : votre entreprise peut prévoir un repos ou une majoration."},
+  collect:{fer:0,night:[1260,360],nb:[[1260,1440,10],[0,360,10]],sun:0,
+    fn:"La convention ne chiffre pas la majoration d'un jour férié travaillé : saisissez votre taux si votre entreprise en prévoit un. Le 1er mai travaillé est payé double.",
+    nn:"Travail de nuit : de 21 h à 6 h, +10 % par heure, que vous soyez travailleur de nuit ou non.",
+    sn:"Pas de majoration à l'heure : une prime d'activité continue de 53 € brut par mois est versée dans les établissements ouverts 7 jours sur 7."},
+  alim:{fer:100,night:[1260,360],nb:[[1260,1320,5],[1320,1440,20],[0,300,20]],sun:100,
+    fn:"Un jour férié travaillé donne, au choix, un repos de même durée ou le paiement des heures en plus du salaire : iolite le compte comme +100 %. Le 1er mai travaillé est payé double.",
+    nn:"Travail de nuit : de 21 h à 6 h. +5 % de 21 h à 22 h, +20 % de 22 h à 5 h.",
+    sn:"Dimanche travaillé occasionnellement : +100 %. Si vous travaillez habituellement le dimanche, c'est +20 % à +30 % selon le magasin : saisissez votre taux."},
+  syntec:{fer:100,night:[1260,420],nb:[[1260,1440,25],[0,420,25]],sun:100,
+    fn:"Jour férié travaillé exceptionnellement (moins de 16 dimanches ou fériés dans l'année) : +100 %. Au-delà, travail habituel : +25 %, à saisir vous-même.",
+    nn:"Travail de nuit habituel (ETAM) : de 21 h à 7 h, +25 %.",
+    sn:"Dimanche travaillé exceptionnellement : +100 %. Travail habituel du dimanche : +25 %, à saisir vous-même."},
+  metal:{fer:50,night:[1260,360],nb:[[1260,1440,15],[0,360,15]],sun:100,max:true,
+    fn:"Jour férié travaillé exceptionnellement : +50 %. Le 1er mai travaillé est payé double.",
+    nn:"Travail de nuit habituel : de 21 h à 6 h, +15 % (postes comptant au moins 6 h de nuit). Nuit exceptionnelle : +25 %, à saisir vous-même.",
+    sn:"Dimanche travaillé exceptionnellement : +100 %. Les majorations de nuit, du dimanche et des fériés ne se cumulent pas : seule la plus forte compte."},
+  btp:{fer:100,night:[1260,360],nb:[[1260,1440,25],[0,360,25]],sun:100,max:true,
+    fn:"Ouvriers et ETAM : les heures d'un jour férié travaillé sont majorées de 100 %. Les cadres n'ont pas de majoration.",
+    nn:"Travail de nuit programmé : de 21 h à 6 h, +25 %. Travail de nuit exceptionnel : +100 %, à saisir vous-même.",
+    sn:"Dimanche travaillé exceptionnellement : +100 %. Les majorations ne se cumulent pas : seule la plus forte compte."}};
+function extBase(){return EXT[S.pay.maj]||EXT.legal;}
+/* règles appliquées : celles de la convention, sauf ce que l'utilisateur a saisi lui-même */
+function extCfg(){var b=extBase(),o=S.pay.ov||{},r={fer:b.fer,ferSen:b.ferSen||0,win:b.night.slice(),nb:b.nb,sun:b.sun,max:!!b.max};
+  var f=num(o.fer);if(f!=null)r.fer=f;var s=num(o.sun);if(s!=null)r.sun=s;
+  var a=toMin(o.ns),z=toMin(o.ne);if(a!=null&&z!=null&&a!==z)r.win=[a,z];
+  var n=num(o.night);if(n!=null)r.nb=n>0?[[r.win[0],r.win[1],n]]:[];return r;}
+function inWin(m,w){return w[0]<w[1]?m>=w[0]&&m<w[1]:m>=w[0]||m<w[1];}
+function bandPct(m,nb){for(var i=0;i<nb.length;i++)if(inWin(m,nb[i]))return nb[i][2];return 0;}
+/* minutes de nuit, du dimanche et des fériés d'une journée, et majoration en heures-équivalent */
+function dayExtra(dt){var d=dayOf(dt),out={night:0,sun:0,fer:0,may1:0,majH:0,solid:0};if(!d)return out;
+  var segs=[];active(d).forEach(function(s){var c=svcCalc(d[s]);if(c&&c.amp>0)segs.push(c);});if(!segs.length)return out;
+  var X=extCfg(),STEP=5,cache={};
+  function info(off){if(cache[off])return cache[off];var cd=addDays(dt,off),fn=ferName(cd),may=isMay1(cd)&&!isSolid(cd),fp=0;
+    if(may)fp=100;else if(fn&&seniority(cd)>=X.ferSen)fp=X.fer;
+    return cache[off]={sun:cd.getDay()===0,fer:!!fn,may:may,fp:fp};}
+  segs.forEach(function(c){var k=c.net/c.amp,nm=0,sm=0,fm=0,mm=0,mu=0;
+    for(var t=c.a;t<c.b;t+=STEP){var off=Math.floor(t/1440),mod=t-off*1440,I=info(off),np=bandPct(mod,X.nb),sp=I.sun?X.sun:0,fp=I.fp,pct;
+      if(inWin(mod,X.win))nm+=STEP;if(I.sun)sm+=STEP;if(I.fer)fm+=STEP;if(I.may)mm+=STEP;
+      /* dimanche et férié le même jour : une seule majoration, la plus forte */
+      pct=X.max?Math.max(np,sp,fp):np+Math.max(sp,fp);if(I.may&&X.max)pct=Math.max(pct,100);mu+=STEP*pct/100;}
+    out.night+=nm*k;out.sun+=sm*k;out.fer+=fm*k;out.may1+=mm*k;out.majH+=mu*k/60;});
+  /* journée de solidarité : jusqu'à 7 h (au prorata d'un temps partiel) non payées et hors heures sup */
+  if(isSolid(dt))out.solid=Math.min(dayCalc(d).total,420*Math.min(1,S.target/35));
+  return out;}
+/* heures habituelles d'un jour : celles du planning, sinon la moyenne des mêmes jours des 8 dernières semaines, sinon 1/5 du contrat du lundi au vendredi */
+function typicalMin(dt){var k=key(dt);if(planShifts(k).length)return planTotal(k);
+  var n=0,w=0,sum=0;for(var i=1;i<=8;i++){var x=addDays(dt,-7*i),d=dayOf(x);if(!entered(d))continue;n++;var r=dayCalc(d);if(r.worked&&!r.abs){w++;sum+=r.total;}}
+  if(n>=3)return w*2>=n?sum/w:0;
+  var g=dt.getDay();return g>=1&&g<=5?S.target*60/5:0;}
+/* jour férié non travaillé : salaire maintenu (3 mois d'ancienneté ; le 1er mai sans condition), s'il tombe un jour habituellement travaillé */
+function ferChomeMin(dt){var d=dayOf(dt),r=dayCalc(d);if(!ferName(dt)||r.worked||r.paidAbs||r.absK==="unpaid")return 0;
+  var cs=contractStart();if(cs&&dt<cs)return 0;if(!isMay1(dt)&&seniority(dt)<3)return 0;
+  /* sans date de début, on ne compte que si l'emploi a des journées pointées autour (deux semaines avant ou après) */
+  if(!cs){var near=false;for(var i=-14;i<=14&&!near;i++)if(i&&entered(dayOf(addDays(dt,i))))near=true;if(!near)return 0;}
+  return typicalMin(dt);}
+/* un congé posé un jour férié chômé n'est pas décompté (ni le dimanche) */
+function cpDay(dt,d){return modeOf(d)==="conge"&&dt.getDay()!==0&&!ferName(dt);}
+
+/* toutes les données d'une suite de jours (semaine, mois) */
+function rangeData(dates){
+  var o={total:0,midi:0,soir:0,cont:0,worked:0,repas:0,best:0,congeDays:0,congeH:0,weeks:[],ferPaidH:0,ferChome:0,ferInWeeks:S.pay.ferHS===true,absPaidH:0,
+    majH:0,night:0,sun:0,fer:0,may1:0,solid:0,ecole:0,formation:0,abs:{}},w={};
+  dates.forEach(function(dt){var d=dayOf(dt),r=dayCalc(d),wk=key(monday(dt)),hs=r.total;
     o.total+=r.total;o.midi+=r.midi;o.soir+=r.soir;o.cont+=r.cont;o.repas+=r.repas;
     if(r.worked){o.worked++;o.best=Math.max(o.best,r.total);}
-    if(r.conge&&dt.getDay()!==0){o.congeDays++;o.congeH+=S.target/6;}
-    w[wk]=(w[wk]||0)+r.total;}
+    if(cpDay(dt,d)){o.congeDays++;o.congeH+=S.target/6;}
+    if(r.abs){o.abs[r.abs]=(o.abs[r.abs]||0)+1;if(r.paidAbs)o.absPaidH+=r.paidAbs/60;if(r.abs==="ecole")o.ecole+=r.ecole;if(r.abs==="formation")o.formation+=r.formation;}
+    if(r.worked&&!r.abs){var x=dayExtra(dt);o.majH+=x.majH;o.night+=x.night;o.sun+=x.sun;o.fer+=x.fer;o.may1+=x.may1;o.solid+=x.solid;hs-=x.solid;}
+    var fc=ferChomeMin(dt);if(fc){o.ferPaidH+=fc/60;o.ferChome++;if(o.ferInWeeks)hs+=fc;}
+    w[wk]=(w[wk]||0)+hs;});
   o.weeks=Object.keys(w).map(function(k){return w[k];});return o;}
+function monthData(y,mo){var n=new Date(y,mo+1,0).getDate(),ds=[];for(var i=1;i<=n;i++)ds.push(new Date(y,mo,i));return rangeData(ds);}
+function weekData(m){var ds=[];for(var i=0;i<7;i++)ds.push(addDays(m,i));return rangeData(ds);}
 
 /* ---------- congés payés : période du 1er juin au 31 mai, 2,5 jours ouvrables par mois ---------- */
 /* depuis le début du contrat : acquis mois par mois (30 jours au plus par période juin-mai), moins tous les congés pointés */
 function congesContrat(today,cs){var acq=0,per={},pris=0;
   for(var m=new Date(cs.getFullYear(),cs.getMonth(),1);m<new Date(today.getFullYear(),today.getMonth(),1);m=new Date(m.getFullYear(),m.getMonth()+1,1)){
     var py=m.getMonth()>=5?m.getFullYear():m.getFullYear()-1,a=monthAcq(m),room=30-(per[py]||0),g=Math.min(a,Math.max(0,room));per[py]=(per[py]||0)+g;acq+=g;}
-  Object.keys(S.days).forEach(function(k){var p=k.split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);if(d>=cs&&modeOf(S.days[k])==="conge"&&d.getDay()!==0)pris++;});
+  Object.keys(S.days).forEach(function(k){var p=k.split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);if(d>=cs&&cpDay(d,S.days[k]))pris++;});
   return {start:cs,fromContract:true,acq:acq,pris:pris,rep:0,reste:acq-pris};}
 /* jours ouvrables (lundi au samedi) entre deux dates incluses */
 function ouvrables(a,b){var n=0;for(var d=new Date(a);d<=b;d=addDays(d,1))if(d.getDay()!==0)n++;return n;}
@@ -851,15 +996,20 @@ function contractStart(){var v=S.conges.start;if(!v||!/^\d{4}-\d{2}-\d{2}$/.test
 /* congés acquis sur un mois terminé : 2,5 jours par mois complet ; le premier mois est compté au prorata (24 jours ouvrables = 1 mois) */
 function monthAcq(m){var cs=contractStart(),end=new Date(m.getFullYear(),m.getMonth()+1,0);
   if(!cs){var md=monthData(m.getFullYear(),m.getMonth());return md.worked>0||md.congeDays>0?2.5:0;}
-  if(cs>end)return 0;if(cs<=m)return 2.5;return Math.min(2.5,ouvrables(cs,end)/24*2.5);}
+  if(cs>end)return 0;var a=cs<=m?2.5:Math.min(2.5,ouvrables(cs,end)/24*2.5);return Math.max(0,a-absCut(m,end));}
+/* absences sur le mois : arrêt maladie (non professionnel) = 2 jours acquis par mois au lieu de 2,5 (loi du 22 avril 2024) ;
+   absence non payée = pas d'acquisition. L'accident du travail, la maternité et la paternité comptent comme du travail. */
+function absCut(m,end){var o=ouvrables(m,end),mal=0,ss=0;if(!o)return 0;
+  for(var d=new Date(m);d<=end;d=addDays(d,1)){if(d.getDay()===0)continue;var a=absOf(dayOf(d));if(!a)continue;if(a.id==="maladie")mal++;else if(a.id==="sanssolde")ss++;}
+  return Math.min(1,mal/o)*0.5+Math.min(1,ss/o)*2.5;}
 function congesInfo(today){var cs=contractStart();if(cs)return congesContrat(today,cs);
   var py=today.getMonth()>=5?today.getFullYear():today.getFullYear()-1,start=new Date(py,5,1),acq=0,pris=0;
   for(var m=new Date(start);m.getFullYear()<today.getFullYear()||(m.getFullYear()===today.getFullYear()&&m.getMonth()<today.getMonth());m=new Date(m.getFullYear(),m.getMonth()+1,1)){
     acq+=monthAcq(m);}
   acq=Math.min(30,acq);
-  for(var d=new Date(start);d<=today||sameDay(d,today);d=addDays(d,1)){var x=dayOf(d);if(x&&modeOf(x)==="conge"&&d.getDay()!==0)pris++;}
+  for(var d=new Date(start);d<=today||sameDay(d,today);d=addDays(d,1)){var x=dayOf(d);if(x&&cpDay(d,x))pris++;}
   /* congés posés plus tard dans la période */
-  Object.keys(S.days).forEach(function(k){var p=k.split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);if(d>today&&d<new Date(py+1,5,1)&&modeOf(S.days[k])==="conge"&&d.getDay()!==0)pris++;});
+  Object.keys(S.days).forEach(function(k){var p=k.split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);if(d>today&&d<new Date(py+1,5,1)&&cpDay(d,S.days[k]))pris++;});
   var rep=num(S.conges.report)||0;
   return {start:start,acq:acq,pris:pris,rep:rep,reste:rep+acq-pris};
 }
@@ -869,21 +1019,56 @@ function jours(n){var s=(Math.round(n*10)/10).toString().replace(".",",");return
 /* ---------- stockage (navigateur) ---------- */
 var timers={};
 function setStatus(t){document.getElementById("status").textContent=t||"";}
-function settingsObj(){return {target:S.target,pay:S.pay,conges:S.conges,reminder:S.reminder,avatar:PROFILE.avatar||null};}
+/* ---------- plusieurs emplois ----------
+   Chaque emploi a ses propres journées, réglages (heures, salaire, convention, contrat) et planning.
+   S.days, S.plan, S.combo, S.pay… sont toujours ceux de l'emploi affiché ; les autres attendent dans JDAYS, JPLAN, JCFG.
+   En ligne, l'emploi principal reste à sa place habituelle (compatible avec les anciennes versions) ; les autres sont rangés dans « x » (journées) et « jobs » (réglages). */
+var JOBS=[{id:"main",name:""}],JOB="main",JCFG={},JDAYS={main:S.days},JPLAN={};
+function jobName(j){if(typeof j==="string")j=JOBS.filter(function(x){return x.id===j;})[0];return (j&&j.name&&j.name.trim())||(j&&j.id==="main"?"Emploi principal":"Autre emploi");}
+function emptyCombo(){return {url:null,last:null,err:null,count:0};}
+function defCfg(){var d=JSON.parse(DEFAULTS||JSON.stringify({target:35,pay:S.pay,conges:{report:null},contract:S.contract}));return {target:d.target,pay:d.pay,conges:d.conges,contract:d.contract||{type:"cdi",cat:"emp",end:null,essai:true,en:null,eu:null,ren:false,rn:null,ru:null}};}
+function cfgNow(){return {target:S.target,pay:S.pay,conges:S.conges,contract:S.contract};}
+function cfgSet(c){S.target=c.target;S.pay=c.pay;S.conges=c.conges;S.contract=c.contract;}
+function stash(){JCFG[JOB]=cfgNow();JDAYS[JOB]=S.days;JPLAN[JOB]={plan:S.plan,combo:S.combo};}
+function unstash(id){JOB=id;cfgSet(JCFG[id]||(JCFG[id]=defCfg()));S.days=JDAYS[id]||(JDAYS[id]={});var p=JPLAN[id]||(JPLAN[id]={plan:{},combo:emptyCombo()});S.plan=p.plan;S.combo=p.combo;}
+/* exécute fn comme si l'emploi id était affiché */
+function withJob(id,fn){if(id===JOB)return fn();var prev=JOB;stash();unstash(id);try{return fn();}finally{stash();unstash(prev);}}
+function switchJob(id){if(id===JOB||!JOBS.some(function(j){return j.id===id;}))return;stash();unstash(id);lsSet("pt-job",id);W=null;STSEL={week:null,year:null};render();autoSync();}
+function restoreJob(){var id=lsGet("pt-job");if(id&&id!==JOB&&JOBS.some(function(j){return j.id===id;})){stash();unstash(id);}}
+/* toutes les journées, tous emplois confondus, au format enregistré */
+function allDaysMap(){stash();var out={};
+  Object.keys(JDAYS.main||{}).forEach(function(k){var c=Object.assign({},JDAYS.main[k]);delete c.x;out[k]=c;});
+  JOBS.forEach(function(j){if(j.id==="main")return;var m=JDAYS[j.id]||{};Object.keys(m).forEach(function(k){var o=out[k]||(out[k]={});o.x=o.x||{};o.x[j.id]=m[k];});});
+  return out;}
+function setAllDays(map){JDAYS={main:{}};Object.keys(map||{}).forEach(function(k){var d=map[k];if(!d||typeof d!=="object")return;var c=Object.assign({},d),x=c.x;delete c.x;
+    if(Object.keys(c).length)JDAYS.main[k]=c;
+    if(x&&typeof x==="object")Object.keys(x).forEach(function(id){if(x[id])(JDAYS[id]=JDAYS[id]||{})[k]=x[id];});});
+  S.days=JDAYS[JOB]||(JDAYS[JOB]={});}
+function settingsObj(){stash();var m=JCFG.main||cfgNow(),jc={};JOBS.forEach(function(j){if(j.id!=="main"&&JCFG[j.id])jc[j.id]=JCFG[j.id];});
+  return {target:m.target,pay:m.pay,conges:m.conges,contract:m.contract,reminder:S.reminder,avatar:PROFILE.avatar||null,jobs:JOBS,jobCfg:jc};}
 function saveDays(){clearTimeout(timers.d);timers.d=setTimeout(function(){
-  try{localStorage.setItem("pt-days",JSON.stringify(S.days));setStatus("");}catch(e){setStatus("Échec de l'enregistrement : la mémoire du navigateur est pleine.");}
+  try{localStorage.setItem("pt-days",JSON.stringify(allDaysMap()));setStatus("");}catch(e){setStatus("Échec de l'enregistrement : la mémoire du navigateur est pleine.");}
   pushDays();mirror();},400);}
 function saveSettings(){clearTimeout(timers.s);timers.s=setTimeout(function(){
   try{localStorage.setItem("pt-settings",JSON.stringify(settingsObj()));}catch(e){setStatus("Échec de l'enregistrement des paramètres.");}
   pushProfileSoon();mirror();},400);}
-function applySettings(o){if(!o)return;if("avatar" in o)PROFILE.avatar=o.avatar||"";if(o.target)S.target=o.target;
-  /* un champ jamais rempli garde sa valeur par défaut (12,31 €/h, repas 4,15 €) */
+/* un champ jamais rempli garde sa valeur par défaut (12,31 €/h, repas 4,35 €) */
+function mergeCfg(base,o){var c=JSON.parse(JSON.stringify(base));if(!o)return c;if(o.target)c.target=o.target;
   if(o.pay){var p=Object.assign({},o.pay);["rate","monthly","meal"].forEach(function(f){if(p[f]==null||p[f]==="")delete p[f];});
-    if(p.mode==="mensuel"&&!p.monthly)p.mode="horaire";S.pay=Object.assign({},S.pay,p);}
-  if(o.conges)S.conges=Object.assign({},S.conges,o.conges);
+    if(p.mode==="mensuel"&&!p.monthly)p.mode="horaire";c.pay=Object.assign({},c.pay,p);}
+  if(o.conges)c.conges=Object.assign({},c.conges,o.conges);
+  if(o.contract)c.contract=Object.assign({},c.contract,o.contract);
+  return c;}
+function applySettings(o){if(!o)return;if("avatar" in o)PROFILE.avatar=o.avatar||"";
+  stash();JCFG.main=mergeCfg(JCFG.main||defCfg(),o);
+  if(Array.isArray(o.jobs)&&o.jobs.length){JOBS=o.jobs.filter(function(j){return j&&j.id;}).map(function(j){return {id:String(j.id),name:String(j.name||"")};});
+    if(!JOBS.length||JOBS[0].id!=="main"){JOBS=JOBS.filter(function(j){return j.id!=="main";});JOBS.unshift({id:"main",name:""});}}
+  var jc=o.jobCfg||{};JOBS.forEach(function(j){if(j.id!=="main"&&(jc[j.id]||!JCFG[j.id]))JCFG[j.id]=mergeCfg(JCFG[j.id]||defCfg(),jc[j.id]);});
+  if(!JOBS.some(function(j){return j.id===JOB;}))JOB="main";
+  unstash(JOB);FER_CACHE={};
   if(o.reminder){var t=Array.isArray(o.reminder.times)?o.reminder.times:(o.reminder.time?[o.reminder.time]:null);if(t&&t.length)S.reminder={times:t.slice(),recap:o.reminder.recap!==false};}}
 function load(){
-  try{var raw=localStorage.getItem("pt-days");if(raw)S.days=JSON.parse(raw)||{};
+  try{var raw=localStorage.getItem("pt-days");if(raw)setAllDays(JSON.parse(raw)||{});
     var st=localStorage.getItem("pt-settings");if(st)applySettings(JSON.parse(st));}catch(e){setStatus("Échec de lecture des données de ce navigateur.");}
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 }
@@ -892,10 +1077,21 @@ function load(){
 /* Combo donne à chaque salarié une adresse d'abonnement calendrier (Mes préférences > Synchronisation calendrier).
    On la lit via la fonction Netlify (le navigateur seul ne peut pas lire un autre site), ou on importe un fichier .ics. */
 S.plan={};S.combo={url:null,last:null,err:null,count:0};
-function loadPlan(){try{S.plan=JSON.parse(localStorage.getItem("pt-plan")||"{}")||{};var c=JSON.parse(localStorage.getItem("pt-combo")||"null");if(c)S.combo=Object.assign(S.combo,c);}catch(e){}
+function fixPlan(pl){Object.keys(pl).forEach(function(k){if(!Array.isArray(pl[k])){delete pl[k];return;}
   /* corrige les plannings déjà reçus : 00:00 – 00:00 = journée entière */
-  Object.keys(S.plan).forEach(function(k){S.plan[k]=S.plan[k].map(function(p){return !p.allday&&p.start==="00:00"&&p.end==="00:00"?{allday:true,title:p.title||""}:p;});});}
-function savePlanLocal(){try{localStorage.setItem("pt-plan",JSON.stringify(S.plan));localStorage.setItem("pt-combo",JSON.stringify(S.combo));}catch(e){}}
+  pl[k]=pl[k].map(function(p){return !p.allday&&p.start==="00:00"&&p.end==="00:00"?{allday:true,title:p.title||""}:p;});});return pl;}
+/* planning de chaque emploi : celui de l'emploi principal à sa place habituelle, les autres sous « __jobs » */
+function setAllPlan(data,combo){data=data||{};var x=data.__jobs,m=Object.assign({},data);delete m.__jobs;
+  JPLAN={main:{plan:fixPlan(m),combo:Object.assign(emptyCombo(),combo||{})}};
+  if(x&&typeof x==="object")Object.keys(x).forEach(function(id){var v=x[id]||{};JPLAN[id]={plan:fixPlan(Object.assign({},v.plan||{})),combo:Object.assign(emptyCombo(),v.combo||{})};});
+  var p=JPLAN[JOB]||(JPLAN[JOB]={plan:{},combo:emptyCombo()});S.plan=p.plan;S.combo=p.combo;}
+function comboPub(c){return {url:c.url,last:c.last,count:c.count,prov:c.prov,school:c.school};}
+function allPlanData(){stash();var d=Object.assign({},(JPLAN.main||{}).plan||{}),x={};
+  JOBS.forEach(function(j){if(j.id!=="main"&&JPLAN[j.id])x[j.id]={plan:JPLAN[j.id].plan,combo:comboPub(JPLAN[j.id].combo)};});
+  if(Object.keys(x).length)d.__jobs=x;return d;}
+function mainCombo(){stash();return (JPLAN.main||{}).combo||emptyCombo();}
+function loadPlan(){try{setAllPlan(JSON.parse(localStorage.getItem("pt-plan")||"{}")||{},JSON.parse(localStorage.getItem("pt-combo")||"null"));}catch(e){}}
+function savePlanLocal(){try{localStorage.setItem("pt-plan",JSON.stringify(allPlanData()));localStorage.setItem("pt-combo",JSON.stringify(mainCombo()));}catch(e){}}
 function savePlan(){savePlanLocal();pushPlan();}
 /* ---------- comptes et base en ligne (Supabase) ---------- */
 /* Sans configuration (config.js vide), iolite fonctionne seul sur le téléphone, comme avant. */
@@ -911,9 +1107,9 @@ function firstName(){return (PROFILE.first_name||"").trim();}
 function greet(t){var n=firstName();return n?n+", "+t.charAt(0).toLowerCase()+t.slice(1):t;}
 
 function saveProfileLocal(){lsSet("pt-profile",JSON.stringify(PROFILE));}
-function pushDays(){if(!cloudReady)return;var up=[],del=[],now=new Date().toISOString();
-  Object.keys(S.days).forEach(function(k){var j=JSON.stringify(S.days[k]);if(cloudSnap[k]!==j)up.push({user_id:USER.id,day:k,data:S.days[k],updated_at:now});});
-  Object.keys(cloudSnap).forEach(function(k){if(!S.days[k])del.push(k);});
+function pushDays(){if(!cloudReady)return;var up=[],del=[],now=new Date().toISOString(),all=allDaysMap();
+  Object.keys(all).forEach(function(k){var j=JSON.stringify(all[k]);if(cloudSnap[k]!==j)up.push({user_id:USER.id,day:k,data:all[k],updated_at:now});});
+  Object.keys(cloudSnap).forEach(function(k){if(!all[k])del.push(k);});
   var jobs=[];
   if(up.length)jobs.push(SB.from("days").upsert(up).then(function(r){if(r.error)throw r.error;up.forEach(function(x){cloudSnap[x.day]=JSON.stringify(x.data);});}));
   if(del.length)jobs.push(SB.from("days").delete().eq("user_id",USER.id).in("day",del).then(function(r){if(r.error)throw r.error;del.forEach(function(k){delete cloudSnap[k];});}));
@@ -923,21 +1119,22 @@ function pushProfile(extra){saveProfileLocal();if(!cloudReady)return Promise.res
   return SB.from("profiles").upsert(row).then(function(r){if(r.error)throw r.error;}).catch(cloudErr);}
 function pushProfileSoon(){clearTimeout(timers.p);timers.p=setTimeout(pushProfile,800);}
 function pushPlan(){if(!cloudReady)return;
-  SB.from("plans").upsert({user_id:USER.id,data:S.plan,combo:{url:S.combo.url,last:S.combo.last,count:S.combo.count},updated_at:new Date().toISOString()})
+  var mc=mainCombo();SB.from("plans").upsert({user_id:USER.id,data:allPlanData(),combo:comboPub(mc),updated_at:new Date().toISOString()})
     .then(function(r){if(r.error)throw r.error;}).catch(cloudErr);}
 function pullAll(){var u=USER.id;
   return Promise.all([SB.from("profiles").select("*").eq("id",u).maybeSingle(),SB.from("days").select("day,data").eq("user_id",u),SB.from("plans").select("data,combo").eq("user_id",u).maybeSingle()])
     .then(function(rs){rs.forEach(function(r){if(r.error)throw r.error;});return {profile:rs[0].data,days:rs[1].data||[],plan:rs[2].data};});}
 /* efface ce que le navigateur garde (changement de compte, déconnexion) */
 function resetLocal(){["pt-days","pt-settings","pt-plan","pt-combo","pt-seen","pt-profile","pt-notified"].forEach(function(k){lsSet(k,null);});
-  S.days={};S.plan={};S.combo={url:null,last:null,err:null,count:0};PROFILE={first_name:"",last_name:"",onboarded:false};
-  if(DEFAULTS){var d=JSON.parse(DEFAULTS);S.target=d.target;S.pay=d.pay;S.conges=d.conges;S.reminder=d.reminder;}}
-function cacheLocal(){lsSet("pt-days",JSON.stringify(S.days));lsSet("pt-settings",JSON.stringify(settingsObj()));savePlanLocal();saveProfileLocal();}
+  lsSet("pt-job",null);JOBS=[{id:"main",name:""}];JOB="main";JCFG={};S.days={};JDAYS={main:S.days};S.plan={};S.combo=emptyCombo();JPLAN={main:{plan:S.plan,combo:S.combo}};
+  PROFILE={first_name:"",last_name:"",onboarded:false};
+  if(DEFAULTS){var d=JSON.parse(DEFAULTS);cfgSet(defCfg());S.reminder=d.reminder;}JCFG.main=cfgNow();}
+function cacheLocal(){lsSet("pt-days",JSON.stringify(allDaysMap()));lsSet("pt-settings",JSON.stringify(settingsObj()));savePlanLocal();saveProfileLocal();}
 
 /* ---------- démarrage ---------- */
 function boot(){
-  DEFAULTS=JSON.stringify({target:S.target,pay:S.pay,conges:S.conges,reminder:S.reminder});
-  load();loadPlan();try{PROFILE=Object.assign(PROFILE,JSON.parse(lsGet("pt-profile")||"{}"));}catch(e){}
+  DEFAULTS=JSON.stringify({target:S.target,pay:S.pay,conges:S.conges,reminder:S.reminder,contract:S.contract});
+  load();loadPlan();restoreJob();try{PROFILE=Object.assign(PROFILE,JSON.parse(lsGet("pt-profile")||"{}"));}catch(e){}
   if(!cloudOn()){ /* mode sans compte */
     if(!PROFILE.onboarded)startOnboarding();else enterApp();return;}
   if(!window.supabase||!window.supabase.createClient){ /* bibliothèque indisponible (hors ligne) */
@@ -956,14 +1153,14 @@ function startUser(user){
   pullAll().then(function(r){
     var owner=lsGet("pt-owner");
     if(owner&&owner!==user.id)resetLocal();              /* autre compte sur ce téléphone */
-    if(r.days.length){S.days={};r.days.forEach(function(x){S.days[x.day]=x.data;});}
+    if(r.days.length){var mp={};r.days.forEach(function(x){mp[x.day]=x.data;});setAllDays(mp);}
     /* premier passage : les saisies faites sur ce téléphone sans compte sont gardées et envoyées */
     cloudSnap={};r.days.forEach(function(x){cloudSnap[x.day]=JSON.stringify(x.data);});
     if(r.profile){PROFILE={first_name:r.profile.first_name||"",last_name:r.profile.last_name||"",onboarded:!!r.profile.onboarded};
       applySettings(r.profile.settings);if(r.profile.seen)lsSet("pt-seen",JSON.stringify(Object.assign(getSeen(),r.profile.seen)));}
     else if(owner!==user.id){PROFILE.onboarded=false;}
-    if(r.plan){S.plan=r.plan.data||{};S.combo=Object.assign({url:null,last:null,err:null,count:0},r.plan.combo||{});}
-    lsSet("pt-owner",user.id);cloudReady=true;cacheLocal();
+    if(r.plan)setAllPlan(r.plan.data,r.plan.combo);
+    restoreJob();lsSet("pt-owner",user.id);cloudReady=true;cacheLocal();
     pushDays();if(!r.plan&&(S.combo.url||Object.keys(S.plan).length))pushPlan();
     if(!PROFILE.onboarded)startOnboarding();else{enterApp();}
   }).catch(function(){
@@ -1015,7 +1212,7 @@ function authSubmit(){
 }
 
 /* ---------- questionnaire de bienvenue (première connexion) ---------- */
-var OB_STEPS=["name","start","hours","pay","charges","meal","maj","rem","combo","done"];
+var OB_STEPS=["name","ctype","start","hours","pay","charges","meal","maj","rem","combo","done"];
 function startOnboarding(){OB={i:0};gate(true);renderOnboarding();}
 function renderOnboarding(){
   var st=OB_STEPS[OB.i],P=S.pay,n=OB_STEPS.length-1,pct=Math.round(Math.min(OB.i,n)/n*100),from=OB.last==null?0:OB.last;OB.last=pct;
@@ -1023,8 +1220,11 @@ function renderOnboarding(){
   if(st==="name"){skip=false;q="Bienvenue sur iolite";sub="Comment vous appelez-vous ?";
     body='<div class="field"><label for="ob-first">Prénom</label><input id="ob-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
       '<div class="field"><label for="ob-last">Nom</label><input id="ob-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div><p class="auth-msg" id="ob-msg"></p>';}
-  else if(st==="start"){q="Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés acquis.";
-    body='<div class="field"><label for="ob-start">Début du contrat</label><input id="ob-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>';}
+  else if(st==="ctype"){q="Quel est votre contrat ?";sub="Pour vos rappels de fin de période d'essai et de fin de contrat.";
+    body='<div class="maj-list">'+CTYPES.map(function(x){return '<button class="maj" data-obct="'+x.id+'" aria-pressed="'+(ct().type===x.id)+'"><span class="radio"></span><span><b>'+x.n+'</b><small>'+x.sub+'</small></span></button>';}).join("")+'</div>';}
+  else if(st==="start"){q=fixedTerm()?"Quelles sont les dates de votre contrat ?":"Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés et votre période d'essai.";
+    body='<div class="field"><label for="ob-start">Début du contrat</label><input id="ob-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
+      (fixedTerm()?'<div class="field" style="margin-top:12px"><label for="ob-end">Fin du contrat</label><input id="ob-end" class="txt" type="date" data-cend value="'+esc(ct().end||"")+'"></div>':'');}
   else if(st==="hours"){q="Combien d'heures par semaine ?";sub="Les heures prévues à votre contrat.";
     body='<div class="stepper big"><button data-target="-1" aria-label="Une heure de moins">−</button><output id="tgt">'+S.target+' h</output><button data-target="1" aria-label="Une heure de plus">+</button></div>';}
   else if(st==="pay"){q="Quel est votre salaire brut ?";sub="Remplissez l'un des deux : l'autre se calcule tout seul.";
@@ -1038,7 +1238,8 @@ function renderOnboarding(){
     body='<div class="choices two"><button class="choice'+(P.mealsOn?" on":"")+'" data-obmeal="1">Oui</button><button class="choice'+(P.mealsOn?"":" on")+'" data-obmeal="0">Non</button></div>'+
       (P.mealsOn?'<div class="field money" style="margin-top:16px"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div><p class="snote">Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.</p>':'');}
   else if(st==="maj"){q="Comment sont majorées vos heures sup ?";sub="";
-    var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 %, +20 %, puis +50 %"],["custom","Ma convention ou mon accord","Vous saisirez vos taux dans Réglages"],["none","Aucune majoration","Payées au taux normal"]];
+    q="Quelle est votre convention collective ?";sub="Son nom figure sur votre fiche de paie. Elle fixe vos majorations : heures sup, nuit, dimanche, jours fériés.";
+    var opts=[["legal","Code du travail","Je ne sais pas, ou pas de convention"],["hcr","Hôtels, cafés, restaurants (HCR)","IDCC 1979"]].concat(CONV.map(function(c){return [c[0],c[1],c[2]];}),[["custom","Une autre convention","Vous saisirez vos taux dans Réglages"]]);
     body='<div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-obmaj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div>';}
   else if(st==="rem"){q="À quelle heure vous rappeler ?";sub="Si rien n'est pointé, iolite vous envoie une notification à ces horaires.";
     var times=S.reminder.times||[];
@@ -1059,6 +1260,7 @@ function obClick(ds){
   if(!OB)return false;
   if(ds.obsplit){S.pay.split=ds.obsplit==="1";saveSettings();renderOnboarding();return true;}
   if(ds.obmeal){S.pay.mealsOn=ds.obmeal==="1";saveSettings();renderOnboarding();return true;}
+  if(ds.obct){ct().type=ds.obct;if(ds.obct==="stage")ct().essai=false;saveSettings();renderOnboarding();return true;}
   if(ds.obmaj){S.pay.maj=ds.obmaj;updateEq();saveSettings();renderOnboarding();return true;}
   if(!ds.ob)return false;
   var st=OB_STEPS[OB.i];
@@ -1149,15 +1351,15 @@ function widenIcs(u){try{var x=new URL(u);if(!/anonymous_cal\.jsp$/i.test(x.path
 function syncCombo(manual){
   var u=(S.combo.url||"").trim();if(!u||syncing)return Promise.resolve();
   if(!/^(https?|webcal):\/\/[^\s]+\.[^\s]+/i.test(u)){S.combo.err="Cette adresse n'est pas valide. Collez l'adresse complète, qui commence par https:// ou webcal://.";savePlan();comboMsg(S.combo.err);return Promise.resolve();}
-  syncing=true;if(manual)comboMsg("Synchronisation…");
+  syncing=true;if(manual)comboMsg("Synchronisation…");var jid=JOB;
   var https=u.replace(/^webcal:/i,"https:"),wide=widenIcs(https);
   function get(x){return fetch("/.netlify/functions/combo?url="+encodeURIComponent(x),{cache:"no-store"})
     .then(function(r){if(!r.ok)throw new Error("proxy "+r.status);return r.text();})
     .catch(function(){return fetch(x,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http "+r.status);return r.text();});})
     .then(function(t){if(!/BEGIN:VCALENDAR/.test(t))throw new Error("ics");return t;});}
   return (wide!==https?get(wide).catch(function(){return get(https);}):get(https))
-    .then(function(t){mergePlan(parseICS(t));})
-    .catch(function(){S.combo.err="Impossible de lire ce planning. Vérifiez que l'adresse est bien celle de l'abonnement calendrier (iCal / .ics).";savePlan();})
+    .then(function(t){var p=parseICS(t);withJob(jid,function(){mergePlan(p);});})
+    .catch(function(){withJob(jid,function(){S.combo.err="Impossible de lire ce planning. Vérifiez que l'adresse est bien celle de l'abonnement calendrier (iCal / .ics).";savePlan();});})
     .then(function(){syncing=false;if(OB||document.body.classList.contains("gate")){comboMsg(comboStatus());return;}if(S.tab==="params")renderParams();else if(S.tab!=="alerts")render();updateBadge();});}
 function autoSync(){var l=S.combo.last?new Date(S.combo.last):null;if(S.combo.url&&(!l||new Date()-l>2*3600*1000))syncCombo(false);}
 function comboMsg(t){var m=document.getElementById("combo-msg");if(m)m.textContent=t;}
@@ -1246,7 +1448,7 @@ function countUp(){var el=view.querySelector(".big[data-count]");if(!el)return;v
 /* bande des jours de la semaine affichée, comme un sélecteur */
 function weekStrip(){var m=monday(S.cur),t=new Date(),L=["L","M","M","J","V","S","D"],h='<div class="strip" role="group" aria-label="Jours de la semaine">';
   for(var i=0;i<7;i++){var d=addDays(m,i),k=key(d),on=sameDay(d,S.cur),has=entered(S.days[k]);
-    h+='<button class="sd'+(on?" on":"")+(sameDay(d,t)?" now":"")+'" data-day="'+k+'" aria-label="'+cap(JOURS[d.getDay()])+' '+d.getDate()+'"><span>'+L[i]+'</span><b>'+d.getDate()+'</b><i'+(has?' class="has"':'')+'></i></button>';}
+    h+='<button class="sd'+(on?" on":"")+(sameDay(d,t)?" now":"")+'" data-day="'+k+'" aria-label="'+cap(JOURS[d.getDay()])+' '+d.getDate()+'"><span>'+L[i]+'</span><b'+(ferName(d)?' class="fer"':'')+'>'+d.getDate()+'</b><i'+(has?' class="has"':'')+'></i></button>';}
   return h+'</div>';}
 
 /* ===== Page Shift : glisser à gauche ou à droite sur la semaine (semaine suivante / précédente) ou sur les cartes du jour (jour suivant / précédent) ===== */
@@ -1281,41 +1483,58 @@ function recent(s,f,n){var out=[],ks=Object.keys(S.days).sort().reverse();
 
 /* étapes de l'assistant selon les réponses déjà données */
 function wizSteps(){var d=shiftData(),m=modeOf(d),st=["type"];
+  if(W.absPick||m==="abs"){st.push("abs");var a=absOf(d);if(a&&a.k!=="unpaid")st.push("absh");return st;}
   if(!W.typed)return st;
-  if(m==="conge"||m==="off")return st;
+  if(m==="conge"||m==="off"||m==="repos")return st;
   var list=m==="continue"?["cont"]:["midi","soir"].filter(function(s){return !(W.skip&&W.skip[s]);});
   list.forEach(function(s){st.push("start:"+s,"end:"+s,"pause:"+s);if(mealsOn())st.push("repas:"+s);});
   return st;}
+/* heures d'une absence : celles du planning (cours prévus), sinon les heures habituelles, sinon 1/5 du contrat */
+function absDefault(k,id){var p=k.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]);if(planShifts(k).length)return Math.round(planTotal(k)/5)*5;
+  var t=typicalMin(dt);return Math.round((t||S.target*60/5)/15)*15;}
 function wizStart(){var d=shiftData(),had={};SVCS.forEach(function(s){if(d[s]&&(d[s].start||d[s].end||d[s].pause))had[s]=1;});
   W={k:key(S.cur),i:0,typed:!!S.days[key(S.cur)],had:had,pt:{},skip:{},
   svcs:modeOf(d)==="coupure"&&(d.midi||d.soir)?["midi","soir"].filter(function(s){return d[s];}):["midi","soir"]};renderShift();}
 function wizNext(){var st=wizSteps();W.i++;if(W.i>=st.length){W=null;}renderShift();window.scrollTo(0,0);}
 function wizBack(){if(W.i===0){W=null;}else W.i--;renderShift();}
 
+/* étiquettes du jour : férié, dimanche, nuit, majorations */
+function dayTags(dt,d,r){var t=[],fn=ferName(dt);
+  if(fn)t.push('<span class="'+(isMay1(dt)&&r.worked&&!r.abs?"hot":"")+'">Férié · '+esc(fn)+(isMay1(dt)&&r.worked&&!r.abs?" · payé double":"")+'</span>');
+  else if(isSolid(dt))t.push('<span>Journée de solidarité</span>');
+  if(r.worked&&!r.abs){var x=dayExtra(dt),X=extCfg();
+    if(x.night>=1)t.push('<span>'+fmt(x.night)+' de nuit</span>');
+    var sp=dt.getDay()===0?X.sun:0,fp=fn&&!isMay1(dt)&&seniority(dt)>=X.ferSen?X.fer:0;
+    if(sp>0&&sp>=fp)t.push('<span class="hot">Dimanche · +'+sp+' %</span>');
+    else if(fp>0)t.push('<span class="hot">Férié travaillé · +'+fp+' %</span>');}
+  else if(fn&&!r.worked){var fc=ferChomeMin(dt);if(fc)t.push('<span>Payé '+fmt(fc)+'</span>');}
+  return t.length?'<div class="day-tags">'+t.join("")+'</div>':"";}
 function renderShift(){
   dateHead();
   if(W&&W.k!==key(S.cur))W=null;
   if(W){renderWizard();return;}
   var d=shiftData(),r=dayCalc(d),k=key(S.cur),pl=planOf(k),pt=planTotal(k),has=entered(d);
-  var m=modeOf(d),word=S.days[k]&&m==="repos"?"Repos":S.days[k]&&m==="conge"?"Congé payé":null;
-  var h=weekStrip()+'<section class="hero"><div><div class="lbl">'+(word?"Journée":"Total de la journée")+'</div><div class="big'+(word?" word":"")+'"'+(word?'':' data-count="'+Math.round(r.total)+'"')+'>'+(word||fmt(r.total))+'</div></div></section>';
+  var m=modeOf(d),ab=absOf(d),word=S.days[k]&&m==="repos"?"Repos":S.days[k]&&m==="conge"?"Congé payé":ab&&ab.k!=="work"?ab.n:null;
+  var h=jobBar()+weekStrip()+'<section class="hero"><div><div class="lbl">'+(word?"Journée":"Total de la journée")+'</div><div class="big'+(word?" word":"")+'"'+(word?'':' data-count="'+Math.round(r.total)+'"')+'>'+(word||fmt(r.total))+'</div></div></section>'+dayTags(S.cur,d,r);
   /* deux cartes identiques : prévu sur Combo, puis pointé */
   function rowHtml2(label,sub,val){return '<div class="sum-row"><span class="sum-t">'+label+(sub?'<small>'+sub+'</small>':'')+'</span><span class="sum-v">'+val+'</span></div>';}
   function slotSub(v){return esc(v.start||"?")+' / '+esc(v.end||"?")+' · pause '+(v.pause||0)+' min'+(v.repas===true?' · repas':'');}
   var plRows="",ps=planToSvcs(k);
   if(pl.length&&pl[0].allday)plRows=isAbsence(pl[0])?rowHtml2(esc(pl[0].title),"Journée entière","1j"):rowHtml2("Repos","Aucun créneau planifié","0h00");
-  else if(ps)["midi","soir","cont"].forEach(function(sv){var v=ps[sv];if(!v)return;var c=svcCalc(v);plRows+=rowHtml2(svcLabel(sv),slotSub(v),c?fmt(c.net):"");});
+  else if(ps)["midi","soir","cont"].forEach(function(sv){var v=ps[sv];if(!v)return;var c=svcCalc(v);plRows+=rowHtml2(S.combo.school?"Cours":svcLabel(sv),slotSub(v),c?fmt(c.net):"");});
   else if(planRest(k))plRows=rowHtml2("Repos","Aucun créneau planifié","0h00");
-  if(plRows)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot combo"></i>Prévu sur '+provName()+'</span></div>'+plRows+'</section>';
-  if(has&&!active(d).length)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span></div>'+(m==="repos"?rowHtml2("Repos","Journée non travaillée","0h00"):
-      S.cur.getDay()===0?rowHtml2("Congé payé","Dimanche non décompté","0j"):rowHtml2("Congé payé","1 jour décompté · "+joursMot(congesInfo(new Date()).reste)+" restant"+(Math.abs(congesInfo(new Date()).reste)>1?"s":""),"1j"))+'</section>';
+  if(plRows)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot combo"></i>'+(S.combo.school&&ps?"École prévue sur ":"Prévu sur ")+provName()+'</span></div>'+plRows+'</section>';
+  if(has&&ab)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span></div>'+rowHtml2(ab.n,ab.k==="work"?"Temps de travail · compté dans vos heures":ab.k==="paid"?"Absence payée · hors heures sup":ab.sub,ab.k==="unpaid"?"1j":fmt(+d.h||0))+'</section>';
+  else if(has&&!active(d).length)h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span></div>'+(m==="repos"?rowHtml2("Repos",ferName(S.cur)?"Jour férié chômé":"Journée non travaillée","0h00"):
+      S.cur.getDay()===0?rowHtml2("Congé payé","Dimanche non décompté","0j"):ferName(S.cur)?rowHtml2("Congé payé","Jour férié : non décompté de vos congés","0j"):rowHtml2("Congé payé","1 jour décompté · "+joursMot(congesInfo(new Date()).reste)+" restant"+(Math.abs(congesInfo(new Date()).reste)>1?"s":""),"1j"))+'</section>';
   if(has&&active(d).length){var rows="";
     active(d).forEach(function(sv){var v=d[sv],c=svcCalc(v);if(!v||!(v.start||v.end))return;rows+=rowHtml2(svcLabel(sv),slotSub(v),c?fmt(c.net):"");});
     h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span>'+'</div>'+rows+'</section>';}
   if(has){
     h+='<div class="dock-sp"></div><div class="dock"><button class="btn-main" data-wiz="start">Modifier</button></div>';
   }else{
-    h+='<div class="dock-sp"></div><div class="dock"><button class="btn-main" data-wiz="start">Pointer cette journée</button></div>';
+    var sch=S.combo.school&&ps&&k<=key(new Date());
+    h+='<div class="dock-sp'+(sch?" two":"")+'"></div><div class="dock">'+(sch?'<button class="btn-main" data-schoolday>C\'était un jour d\'école · '+fmt(planTotal(k))+'</button><button class="btn-alt" data-wiz="start">Pointer autre chose</button>':'<button class="btn-main" data-wiz="start">Pointer cette journée</button>')+'</div>';
   }
   view.innerHTML=h;countUp();updateBadge();checkReminder();
 }
@@ -1330,10 +1549,21 @@ function renderWizard(){
   if(step==="type"){
     q="Quel type de journée ?";
     eyebrow=pl.length?"Prévu sur "+provName()+" : "+planText(pl):planRest(k)?"Prévu sur "+provName()+" : repos":"";
-    var cur=!S.days[k]?null:modeOf(d)==="repos"?"off":modeOf(d);
+    var cur=!S.days[k]?null:modeOf(d)==="repos"?"off":modeOf(d),fn=ferName(S.cur),ch=[["coupure","Coupée",""],["off","Repos",fn?"Jour férié chômé":""],["conge","Congé payé",fn?"Un jour férié n'est pas décompté":""],["abs","Autre absence","Maladie, école, formation, RTT…"]];
+    if(fn)eyebrow=(eyebrow?eyebrow+" · ":"")+"Férié : "+esc(fn);
+    var school=S.combo.school&&planShifts(k).length;
+    if(school)ch.unshift(["ecole","École","Prévu : "+fmt(planTotal(k))+" de cours"]);
     body='<div class="choices">'+
-      [["coupure","Coupée",""],["off","Repos",""],["conge","Congé payé",""]].map(function(o){
-        return '<button class="choice'+(cur===o[0]?" on":"")+'" data-wiztype="'+o[0]+'">'+o[1]+(o[2]?'<small>'+o[2]+'</small>':'')+'</button>';}).join("")+'</div>';
+      ch.map(function(o){var on=o[0]==="ecole"?(d.abs==="ecole"):o[0]==="abs"?(cur==="abs"&&d.abs!=="ecole"):cur===o[0];
+        return '<button class="choice'+(on?" on":"")+'" '+(o[0]==="ecole"?'data-wizabs="ecole"':'data-wiztype="'+o[0]+'"')+'>'+o[1]+(o[2]?'<small>'+o[2]+'</small>':'')+'</button>';}).join("")+'</div>';
+  }else if(step==="abs"){
+    q="Quelle absence ?";eyebrow=ferName(S.cur)?"Férié : "+esc(ferName(S.cur)):"";
+    body='<div class="choices">'+ABS.map(function(a){return '<button class="choice'+(d.abs===a.id?" on":"")+'" data-wizabs="'+a.id+'">'+a.n+'<small>'+a.sub+'</small></button>';}).join("")+'</div>';
+  }else if(step==="absh"){
+    var a2=absOf(d);eyebrow=a2?a2.n:"";q=a2&&a2.k==="work"?"Combien d'heures ?":"Combien d'heures sont payées ?";
+    body='<div class="stepper big"><button data-wizabsh="-15" aria-label="Retirer 15 minutes">−</button><output id="wiz-absh">'+fmt(+d.h||0)+'</output><button data-wizabsh="15" aria-label="Ajouter 15 minutes">+</button></div>'+
+      '<p class="snote">'+(a2&&a2.id==="ecole"?"Les heures de cours comptent comme du temps de travail : elles entrent dans vos heures de la semaine et votre salaire.":a2&&a2.k==="work"?"Le temps de formation demandé par l'employeur compte comme du temps de travail.":"Ces heures sont payées comme d'habitude, mais ne comptent pas dans les heures sup.")+'</p>';
+    next=true;
   }else if(parts[0]==="start"||parts[0]==="end"){
     var f=parts[0],v=(d[s]&&d[s][f])||"",sug=[],pp=planFor(k,s);
     if(pp&&pp[f])sug.push(pp[f]);recent(s,f,4).forEach(function(x){if(sug.indexOf(x)<0&&sug.length<4)sug.push(x);});
@@ -1363,10 +1593,15 @@ function wizClick(ds){
   if(ds.wiz==="next"){var ti=document.getElementById("wiz-time");if(ti&&ti.value){svcObj(ti.dataset.wizs)[ti.dataset.wizf]=ti.value;tidy(key(S.cur));}wizNext();return true;}
   if(ds.wiztype){var x=dayRef(),t=ds.wiztype;W.typed=true;
     if(t==="off"){S.days[x.k]={mode:"repos"};saveDays();W=null;renderShift();return true;}
-    if(t==="conge"){x.d.mode="conge";delete x.d.midi;delete x.d.soir;delete x.d.cont;tidy(x.k);W=null;renderShift();return true;}
+    if(t==="conge"){S.days[x.k]={mode:"conge"};saveDays();W=null;renderShift();return true;}
+    if(t==="abs"){W.absPick=true;tidy(x.k);wizNext();return true;}
     if(t==="continue"){x.d.mode="continue";delete x.d.midi;delete x.d.soir;}
-    else{W.svcs=["midi","soir"];W.skip={};x.d.mode="coupure";delete x.d.cont;}
+    else{W.svcs=["midi","soir"];W.skip={};W.absPick=false;x.d.mode="coupure";delete x.d.cont;delete x.d.abs;delete x.d.h;}
     tidy(x.k);wizNext();return true;}
+  if(ds.wizabs){var z=dayRef(),aa=ABSK[ds.wizabs];W.typed=true;W.absPick=true;
+    S.days[z.k]={mode:"abs",abs:aa.id,h:aa.k==="unpaid"?0:absDefault(z.k,aa.id)};saveDays();
+    if(aa.k==="unpaid"){W=null;renderShift();return true;}W.i=wizSteps().indexOf("absh");renderShift();return true;}
+  if(ds.wizabsh){var dd=S.days[key(S.cur)];if(dd){dd.h=Math.max(0,Math.min(720,(+dd.h||0)+(+ds.wizabsh)));saveDays();var oo=document.getElementById("wiz-absh");if(oo)oo.textContent=fmt(dd.h);}return true;}
   /* « je n'ai pas travaillé ce matin / cet après-midi » */
   if(ds.wizskip){var y=dayRef(),sk=ds.wizskip;W.skip=W.skip||{};W.skip[sk]=true;delete y.d[sk];
     if(!y.d.midi&&!y.d.soir&&W.skip.midi&&(W.skip.soir||sk==="soir")){S.days[y.k]={mode:"repos"};saveDays();W=null;renderShift();return true;}
@@ -1406,16 +1641,47 @@ function payHero(p,label,pct,pctLbl){var det=false;try{det=localStorage.getItem(
       '<div><span>Heures sup ('+hh(p.supH)+')</span><b>'+eur2(p.sup)+'</b></div>'+
       (p.maj>0?'<div><span>dont majorations</span><b>'+eur2(p.maj)+'</b></div>':'')+
       (p.cp>0?'<div><span>Congés payés</span><b>'+eur2(p.cp)+'</b></div>':'')+
+      (p.xm>0?'<div><span>Majorations nuit, dimanche, fériés</span><b>'+eur2(p.xm)+'</b></div>':'')+
+      (p.fer>0?'<div><span>Jours fériés chômés ('+hh(p.ferH)+')</span><b>'+eur2(p.fer)+'</b></div>':'')+
+      (p.absP>0?'<div><span>Absences payées ('+hh(p.absH)+')</span><b>'+eur2(p.absP)+'</b></div>':'')+
+      (p.solid>0?'<div><span>Journée de solidarité ('+fmt(p.solid)+' non payées)</span><b>0 €</b></div>':'')+
       (p.an>0?'<div><span>Avantage en nature repas ('+p.meals+' × '+eur2(p.mealPrice)+')</span><b>+'+eur2(p.an)+'</b></div>':'')+
       '<div><span>Cotisations ('+String(p.ch).replace(".",",")+' %)</span><b>−'+eur2(p.brut-p.net0)+'</b></div>'+
       (p.an>0?'<div><span>Retenue repas fournis</span><b>−'+eur2(p.an)+'</b></div>':'')+
     '</div></div></section>';}
-function sumPay(list){var o=null;list.forEach(function(p){if(!p)return;if(!o){o=Object.assign({},p);return;}["brut","base","an","net0","net","normH","supH","maj","sup","cp","meals"].forEach(function(k){o[k]+=p[k];});});return o;}
+function sumPay(list){var o=null;list.forEach(function(p){if(!p)return;if(!o){o=Object.assign({},p);return;}["brut","base","an","net0","net","normH","supH","maj","sup","cp","meals","fer","ferH","absP","absH","xm","night","sun","ferW","solid"].forEach(function(k){o[k]+=p[k]||0;});});return o;}
 function congesCard(){var c=congesInfo(new Date()),tot=c.acq+c.rep,pct=tot>0?Math.max(0,c.reste)/tot:0;
   return '<section class="panel st-cp"><div class="st-cp-ring">'+dotRing(pct,104,"mint")+'<span><b>'+jours(c.reste).replace(" j","")+'</b><small>jours restants</small></span></div>'+
     '<div class="st-cp-t"><h3>Congés payés</h3><small>depuis le '+(c.fromContract?c.start.getDate()+' '+MOIS_C[c.start.getMonth()]+' '+c.start.getFullYear():'1er juin '+c.start.getFullYear())+'</small>'+
     '<div class="st-cp-n"><span><i class="mint"></i>Acquis <b>'+jours(tot)+'</b></span><span><i class="coral"></i>Pris <b>'+jours(c.pris)+'</b></span></div></div></section>';}
 
+/* petite mention sous une barre vide : congé, absence, férié, repos */
+function dayAlt(dt,r,d){if(r.conge)return "CP";if(r.abs)return (ABSK[r.abs]||{}).n.split(" ")[0].slice(0,6);if(ferName(dt)&&!r.worked)return "Férié";return r.mode==="repos"&&d&&d.mode?"Repos":"·";}
+/* choix de l'emploi affiché (seulement avec plusieurs emplois) */
+function jobBar(){if(JOBS.length<2)return "";return '<div class="jobsw" role="group" aria-label="Emploi affiché">'+JOBS.map(function(j){return '<button data-job="'+esc(j.id)+'" aria-pressed="'+(j.id===JOB)+'">'+esc(jobName(j))+'</button>';}).join("")+'</div>';}
+/* heures particulières : nuit, dimanche, fériés, école, formation, absences */
+function extrasPanel(md,p){var L=[],X=extCfg();
+  function line(t,sub,v){L.push('<div class="xr"><span>'+t+(sub?'<small>'+sub+'</small>':'')+'</span><b>'+v+'</b></div>');}
+  function pc(n){return n>0?"+"+String(n).replace(".",",")+" %":"sans majoration";}
+  if(md.night>=1)line("Heures de nuit",fmtWin(X.win)+" · "+(X.nb.length?X.nb.map(function(b){return "+"+b[2]+" %";}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(" / "):"sans majoration"),fmt(md.night));
+  if(md.sun>=1)line("Heures le dimanche",pc(X.sun),fmt(md.sun));
+  if(md.fer-md.may1>=1)line("Heures un jour férié",pc(X.fer)+(X.ferSen?" après "+X.ferSen+" mois d'ancienneté":""),fmt(md.fer-md.may1));
+  if(md.may1>=1)line("Heures le 1er mai","payées double",fmt(md.may1));
+  if(md.ferChome)line("Jours fériés chômés",md.ferInWeeks?"payés, comptés dans les heures sup":"payés, hors heures sup",md.ferChome+" j");
+  if(md.solid>=1)line("Journée de solidarité","non payée",fmt(md.solid));
+  if(md.ecole>=1)line("École","temps de travail, compris dans le total",fmt(md.ecole));
+  if(md.formation>=1)line("Formation","temps de travail, compris dans le total",fmt(md.formation));
+  ABS.forEach(function(a){if(a.k==="work"||!md.abs[a.id])return;var n=md.abs[a.id];line(a.n,a.k==="paid"?"payé":"non payé par l'employeur",n+" j");});
+  if(p&&p.xm>0)line("Majorations","nuit, dimanche, fériés",eur2(p.xm));
+  if(!L.length)return "";
+  return '<section class="panel st-x"><h3>Heures particulières</h3><div class="xl">'+L.join("")+'</div></section>';}
+function fmtWin(w){function f(m){return Math.floor(m/60)+" h"+(m%60?String(m%60).padStart(2,"0"):"");}return "de "+f(w[0])+" à "+f(w[1]);}
+/* tous les emplois : heures et net de chacun, puis le total */
+function allJobsPanel(fn,when){if(JOBS.length<2)return "";var L=[],th=0,tn=0,anyP=false;
+  JOBS.forEach(function(j){var o=withJob(j.id,fn);th+=o.h;if(o.p){tn+=o.p.net;anyP=true;}
+    L.push('<div class="xr"><span>'+esc(jobName(j))+'<small>'+fmt(o.h)+'</small></span><b>'+(o.p?eur(o.p.net)+" net":"—")+'</b></div>');});
+  L.push('<div class="xr tot"><span>Total<small>'+fmt(th)+'</small></span><b>'+(anyP?eur(tn)+" net":"")+'</b></div>');
+  return '<section class="panel st-x"><h3>Tous vos emplois '+when+'</h3><div class="xl">'+L.join("")+'</div></section>';}
 function renderStats(){
   var now=new Date(),ready=payReady(),h='';
   h+='<div class="seg st-seg" role="tablist">'+[["week","Semaine"],["month","Mois"],["year","Année"]].map(function(o){return '<button data-sv="'+o[0]+'" aria-pressed="'+(STV===o[0])+'">'+o[1]+'</button>';}).join("")+'</div>';
@@ -1423,19 +1689,20 @@ function renderStats(){
   if(STV==="week"){
     var m=monday(S.statW),wEnd=addDays(m,6),rows=[],wt=0,wWorked=0,wRep=0,L=["L","M","M","J","V","S","D"];
     for(var i=0;i<7;i++){var x=addDays(m,i),r=dayCalc(dayOf(x));rows.push({d:x,r:r,data:dayOf(x)||{}});wt+=r.total;wRep+=r.repas;if(r.worked)wWorked++;}
-    var sup=Math.max(0,wt/60-35),wp=rangePlan(rows.map(function(o){return o.d;}));
-    var p=ready?payCalc({weeks:[wt],repas:wRep,congeH:rows.filter(function(o){return o.r.conge&&o.d.getDay()!==0;}).length*S.target/6}):null;
-    h+=payHero(p,"S"+isoWeek(m),S.target?wt/(S.target*60):0,"de "+S.target+" h");
+    var wp=rangePlan(rows.map(function(o){return o.d;}));
+    var wd=weekData(m),p=ready?payCalc(wd):null,sup=supHours(wd.weeks);
+    h+=jobBar()+payHero(p,"S"+isoWeek(m),S.target?wt/(S.target*60):0,"de "+S.target+" h");
     h+=navPill("wk","S"+isoWeek(m)+" · "+shortDate(m)+" – "+shortDate(wEnd));
     var sel=-1;rows.forEach(function(o,i){if(sameDay(o.d,now))sel=i;});
     h+='<section class="panel st-chart"><div class="st-ch-h"><div><span class="st-k">Heures de la semaine</span><b class="st-big" data-cntm="'+wt+'">'+fmt(wt)+'</b></div>'+(wp?'<span class="chip '+(wp.diff>0?"up":wp.diff<0?"down":"eq")+'">'+(wp.diff>0?"+":"")+fmt(wp.diff)+'</span>':'')+'</div>'+
-      pillBars(rows.map(function(o,i){return {lbl:L[i],v:o.r.total,txt:fmt(o.r.total),aria:cap(JOURS[o.d.getDay()])+" "+o.d.getDate(),alt:o.r.conge?"CP":o.r.mode==="repos"&&o.data.mode?"Repos":"·",cls:(dayFlag(o.d)?"alert":"")+(sameDay(o.d,now)?" today":"")};}),sel,"week",true)+'</section>';
+      pillBars(rows.map(function(o,i){return {lbl:L[i],v:o.r.total,txt:fmt(o.r.total),aria:cap(JOURS[o.d.getDay()])+" "+o.d.getDate(),alt:dayAlt(o.d,o.r,o.data),cls:(dayFlag(o.d)?"alert":"")+(sameDay(o.d,now)?" today":"")};}),sel,"week",true)+'</section>';
     h+='<div class="bento">'+
       tile("coral","Heures sup",hh(sup),sup>0?"+35h / sem.":"aucune")+
       (mealsOn()?tile("mint","Repas fournis",String(wRep),"repas"):tile("mint","Jours travaillés",String(wWorked),"cette semaine"))+
       tile("lilac","Moyenne / jour",fmt(wWorked?wt/wWorked:0),wWorked+" jour"+(wWorked>1?"s":"")+" travaillé"+(wWorked>1?"s":""))+
       (wp?tile("lav","Prévu sur "+provName(),fmt(wp.plan),(wp.diff>0?"+":"")+fmt(wp.diff)+" d'écart"):tile("lav","Objectif",S.target+" h",wt>=S.target*60?"atteint":"reste "+fmt(S.target*60-wt)))+
     '</div>';
+    h+=extrasPanel(wd,p)+allJobsPanel(function(){var d=weekData(m);return {h:d.total,p:payReady()?payCalc(d):null};},"cette semaine");
     h+='<section class="panel st-days"><h3>Détail des jours</h3><div class="list">'+rows.map(rowHtml).join("")+'</div></section>';
   }
 
@@ -1443,35 +1710,36 @@ function renderStats(){
     var y=S.statM.getFullYear(),mo=S.statM.getMonth(),md=monthData(y,mo),pm=new Date(y,mo-1,1),prev=monthData(pm.getFullYear(),pm.getMonth());
     var nDays=new Date(y,mo+1,0).getDate(),mp=rangePlan((function(){var a=[];for(var q=1;q<=nDays;q++)a.push(new Date(y,mo,q));return a;})());
     var mPay=ready?payCalc(md):null,msup=supHours(md.weeks);
-    h+=payHero(mPay,MOIS[mo],S.target?md.total/(S.target*60*nDays/7):0,"de l'objectif");
+    h+=jobBar()+payHero(mPay,MOIS[mo],S.target?md.total/(S.target*60*nDays/7):0,"de l'objectif");
     h+=navPill("mo",cap(MOIS[mo])+" "+y);
     /* calendrier coloré */
     var first=new Date(y,mo,1),last=new Date(y,mo,nDays),g='<div class="cal-h">'+["L","M","M","J","V","S","D"].map(function(l){return '<span>'+l+'</span>';}).join("")+'</div>';
     for(var w=monday(first);w<=last;w=addDays(w,7)){var wsum=0;g+='<div class="cal-r">';
       for(var j=0;j<7;j++){var dd=addDays(w,j),inM=dd.getMonth()===mo;if(!inM){g+='<span class="cal-c out"></span>';continue;}
         var rr=dayCalc(dayOf(dd)),k2=key(dd),c="";wsum+=rr.total;
-        if(rr.conge)c="cp";else if(rr.mode==="repos"&&dayOf(dd))c="off";else if(rr.worked)c=dayFlag(dd)?"alert":rr.total>=480?"h3":rr.total>=300?"h2":"h1";else if(planShifts(k2).length&&k2>key(now))c="plan";
-        g+='<button class="cal-c '+c+(sameDay(dd,now)?" today":"")+'" style="--i:'+dd.getDate()+'" data-goday="'+k2+'" aria-label="'+cap(JOURS[dd.getDay()])+' '+dd.getDate()+(rr.worked?" : "+fmt(rr.total):"")+'">'+(c==="off"?'<i>×</i>':dd.getDate())+'</button>';}
+        if(rr.conge)c="cp";else if(rr.abs&&rr.abs!=="ecole"&&rr.abs!=="formation")c="ab";else if(rr.mode==="repos"&&dayOf(dd))c="off";else if(rr.worked)c=dayFlag(dd)?"alert":rr.total>=480?"h3":rr.total>=300?"h2":"h1";else if(planShifts(k2).length&&k2>key(now))c="plan";
+        g+='<button class="cal-c '+c+(ferName(dd)?" fer":"")+(sameDay(dd,now)?" today":"")+'" style="--i:'+dd.getDate()+'" data-goday="'+k2+'" aria-label="'+cap(JOURS[dd.getDay()])+' '+dd.getDate()+(rr.worked?" : "+fmt(rr.total):"")+'">'+(c==="off"?'<i>×</i>':dd.getDate())+'</button>';}
       g+='</div>';}
     var diffPct=prev.total?((md.total-prev.total)/prev.total*100):NaN;
     h+='<section class="panel st-cal"><div class="st-ch-h"><div><span class="st-k">Effectué en '+MOIS[mo]+'</span><b class="st-big" data-cntm="'+md.total+'">'+fmt(md.total)+'</b></div>'+(prev.total?'<div class="st-cmp">'+chip(diffPct,"%")+'</div>':'')+'</div>'+
       '<div class="cal">'+g+'</div>'+
-      '<div class="cal-leg"><span><i class="h3"></i>Travaillé</span><span><i class="alert"></i>Alerte</span><span><i class="cp"></i>Congé</span><span><i class="plan"></i>Prévu</span></div></section>';
+      '<div class="cal-leg"><span><i class="h3"></i>Travaillé</span><span><i class="alert"></i>Alerte</span><span><i class="cp"></i>Congé</span><span><i class="ab"></i>Absence</span><span><i class="plan"></i>Prévu</span><span><i class="fer"></i>Férié</span></div></section>';
     h+='<div class="bento">'+
       tile("lav","Jours travaillés",String(md.worked),md.congeDays?md.congeDays+" jour"+(md.congeDays>1?"s":"")+" de congé":"ce mois-ci")+
       tile("coral","Heures sup",hh(msup),"+35h / sem.")+
       (mealsOn()?tile("mint","Repas fournis",String(md.repas),mPay&&mPay.an?eur2(mPay.an)+" d'avantage":""):tile("mint","Moyenne / jour",fmt(md.worked?md.total/md.worked:0),"sur le mois"))+
       (mp?tile("lilac","Prévu sur "+provName(),fmt(mp.plan),(mp.diff>0?"+":"")+fmt(mp.diff)+" d'écart"):tile("lilac","Meilleure journée",fmt(md.best),""))+
     '</div>';
+    h+=extrasPanel(md,mPay)+allJobsPanel(function(){var d=monthData(y,mo);return {h:d.total,p:payReady()?payCalc(d):null};},"en "+MOIS[mo]);
     h+=congesCard();
   }
 
   else{
     var yy=S.statY,items=[],tot={h:0,s:0},pays=[];
-    for(var k=0;k<12;k++){var d2=monthData(yy,k),sp=supHours(d2.weeks),p2=ready&&(d2.total||d2.congeDays)?payCalc(d2):null;tot.h+=d2.total;tot.s+=sp;pays.push(p2);
+    for(var k=0;k<12;k++){var d2=monthData(yy,k),sp=supHours(d2.weeks),p2=ready&&(d2.total||d2.congeDays||d2.ferChome||d2.absPaidH)?payCalc(d2):null;tot.h+=d2.total;tot.s+=sp;pays.push(p2);
       items.push({lbl:"JFMAMJJASOND"[k],v:d2.total,txt:fmt(d2.total),aria:MOIS[k],alt:"0h",cls:yy===now.getFullYear()&&k===now.getMonth()?"today":""});}
     var yp=sumPay(pays),done=yy<now.getFullYear()?12:yy>now.getFullYear()?0:now.getMonth()+1;
-    h+=payHero(yp,String(yy),S.target&&done?tot.h/(S.target*60*52/12*done):0,"de l'objectif");
+    h+=jobBar()+payHero(yp,String(yy),S.target&&done?tot.h/(S.target*60*52/12*done):0,"de l'objectif");
     h+=navPill("yr",String(yy));
     var ysel=STSEL.year;if(ysel==null)ysel=yy===now.getFullYear()?now.getMonth():11;
     var sm=monthData(yy,ysel),spay=pays[ysel];
@@ -1495,7 +1763,8 @@ function statNums(){if(!window.requestAnimationFrame||(window.matchMedia&&matchM
     el.textContent=m?fmt(0):eur(0);requestAnimationFrame(step);});}
 function svcSub(v){return svcCalc(v)?v.start+" / "+v.end:"";}
 function rowHtml(o){var mx=720,r=o.r,d=o.data,act=active(d);
-  var sub=r.conge?"Congé payé":r.mode==="repos"?"Repos":act.map(function(s){return svcSub(d[s]);}).filter(Boolean).join(" · ");
+  var sub=r.conge?"Congé payé":r.abs?ABSK[r.abs].n:r.mode==="repos"?"Repos":act.map(function(s){return svcSub(d[s]);}).filter(Boolean).join(" · ");
+  var fn=ferName(o.d);if(fn)sub=(sub?sub+" · ":"")+"férié";
   var pdf=planDiff(o.d);if(pdf)sub+=(sub?" · ":"")+"prévu "+fmt(planTotal(key(o.d)));
   var bars='<span class="bline">'+act.map(function(s){return r[s]?'<span class="bar '+CLS[s]+'" style="width:'+Math.min(40,r[s]/mx*55)+'%"></span>'+(d[s].repas===true?'<span class="meal '+CLS[s]+'">repas</span>':''):'';}).join("")+'</span>';
   return '<div class="li"><span class="d">'+JOURS[o.d.getDay()].slice(0,3)+'.<small>'+shortDate(o.d)+'</small></span>'+
@@ -1514,9 +1783,95 @@ function message(a){var v='<b>'+a.val+'</b>';
     case "run":return "C'est votre "+a.val+"ᵉ jour de travail d'affilée. Pensez à prendre votre repos hebdomadaire.";
     case "week":return "Vous avez fait "+v+" cette semaine, au-delà des 48 h maximum.";
     case "today":return "Vous n'avez encore rien pointé aujourd'hui.";
-    case "over":return "Vous avez travaillé "+v+" de plus que prévu sur votre planning "+provName()+".";
-    case "recap":return a.text;}
+    case "over":return "Vous avez travaillé "+v+" de plus que prévu sur votre planning "+(a.prov||provName())+".";
+    case "cumw":return "Avec tous vos emplois, vous avez fait "+v+" cette semaine. La limite de 48 h vaut pour le total de vos emplois : votre employeur peut vous demander combien d'heures vous faites ailleurs.";
+    case "cumd":return "Avec tous vos emplois, vous avez travaillé "+v+" ce jour-là, au-delà des 10 h maximum par jour.";
+    case "recap":case "trial":case "cend":return a.text;}
   return a.label;}
+/* ---------- contrat : type, dates, période d'essai ---------- */
+var CTYPES=[
+  {id:"cdi",n:"CDI",sub:"Contrat à durée indéterminée"},
+  {id:"cdd",n:"CDD",sub:"Contrat à durée déterminée, job étudiant, remplacement"},
+  {id:"saison",n:"CDD saisonnier",sub:"Saison d'été, d'hiver, vendanges…"},
+  {id:"appr",n:"Apprentissage",sub:"Alternance, contrat d'apprentissage"},
+  {id:"pro",n:"Contrat de professionnalisation",sub:"Alternance, en CDD"},
+  {id:"interim",n:"Intérim",sub:"Mission de travail temporaire"},
+  {id:"stage",n:"Stage",sub:"Convention de stage"}];
+var CTK={};CTYPES.forEach(function(c){CTK[c.id]=c;});
+/* CDI : durée maximale selon la catégorie, renouvellement compris (art. L1221-19 et L1221-21) */
+var CATS=[{id:"emp",n:"Ouvrier ou employé",m:2,max:4},{id:"tech",n:"Agent de maîtrise ou technicien",m:3,max:6},{id:"cadre",n:"Cadre",m:4,max:8}];
+var CATK={};CATS.forEach(function(c){CATK[c.id]=c;});
+function ct(){return S.contract||(S.contract={type:"cdi",cat:"emp",essai:true,eu:null,ru:null});}
+function pdate(v){if(!v||!/^\d{4}-\d{2}-\d{2}$/.test(v))return null;var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function contractEnd(){return ct().type==="cdi"?null:pdate(ct().end);}
+function fixedTerm(){return ct().type!=="cdi";}
+/* fin d'une durée qui commence le jour a (inclus) */
+function addPeriod(a,n,u){if(u==="m"){var e=new Date(a.getFullYear(),a.getMonth()+n,a.getDate());return addDays(e,-1);}return addDays(a,(u==="s"?7*n:n)-1);}
+function unitWord(n,u){return u==="m"?n+" mois":u==="s"?n+" semaine"+(n>1?"s":""):n+" jour"+(n>1?"s":"");}
+function daysBetween(a,b){return Math.round((new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate()))/864e5);}
+/* jours travaillés dans l'entreprise depuis le début (sans les jours d'école) */
+function companyDays(from,to){var n=0,list=[];for(var d=new Date(from);d<=to;d=addDays(d,1)){var r=dayCalc(dayOf(d));if(r.worked&&r.abs!=="ecole"){n++;list.push(new Date(d));}}return {n:n,list:list};}
+/* durée légale (ou habituelle) de la période d'essai pour ce contrat */
+function trialLegal(){var c=ct(),cs=contractStart(),ce=contractEnd(),t=c.type;
+  if(t==="stage")return null;
+  if(t==="cdi"){var k=CATK[c.cat]||CATS[0];return {n:k.m,u:"m",max:k.max,ren:true,txt:k.m+" mois au maximum pour un "+k.n.toLowerCase()+", renouvelable une fois (durée totale "+k.max+" mois au plus)"};}
+  if(t==="appr")return {n:45,u:"t",ren:false,txt:"les 45 premiers jours de formation pratique en entreprise, consécutifs ou non (les jours d'école ne comptent pas)"};
+  if(t==="interim"){var L=cs&&ce?daysBetween(cs,ce)+1:0,n=!L||L<=31?2:L<=61?3:5;return {n:n,u:"t",ren:false,txt:"2 jours travaillés pour une mission d'un mois au plus, 3 jours jusqu'à 2 mois, 5 jours au-delà"};}
+  /* CDD, saisonnier, professionnalisation : 1 jour par semaine, 2 semaines au plus (contrat de 6 mois au plus) ou 1 mois */
+  if(!cs||!ce)return {n:14,u:"j",ren:false,txt:"1 jour par semaine de contrat, 2 semaines au plus si le contrat dure 6 mois ou moins, 1 mois au plus au-delà",need:true};
+  var six=ce<=addDays(new Date(cs.getFullYear(),cs.getMonth()+6,cs.getDate()),-1);
+  if(six){var w=Math.ceil((daysBetween(cs,ce)+1)/7);return {n:Math.min(14,w),u:"j",ren:false,txt:"1 jour par semaine de contrat, 2 semaines au plus pour un contrat de 6 mois ou moins"};}
+  return {n:1,u:"m",ren:false,txt:"1 mois au plus pour un contrat de plus de 6 mois"};}
+/* période d'essai calculée : début, fin (prolongée des absences), état */
+function trialInfo(){var c=ct(),cs=contractStart();if(!cs||c.essai===false)return null;var L=trialLegal();if(!L)return null;
+  var n=num(c.en),u=c.eu||L.u;if(!(n>0)){n=L.n;u=L.u;}
+  var o={start:cs,n:n,u:u,legal:L,renewed:false,ext:0};
+  if(u==="t"){ /* compté en jours travaillés (apprentissage, intérim) */
+    var today=new Date(),cd=companyDays(cs,addDays(today,0));o.done=cd.n;o.worked=true;
+    if(cd.n>=n){o.end=cd.list[n-1];}else{o.end=null;o.left=n-cd.n;}
+    var ce=contractEnd();if(ce&&o.end&&o.end>ce)o.end=ce;return o;}
+  var end=addPeriod(cs,n,u);
+  if(c.ren&&L.ren){var rn=num(c.rn),ru=c.ru||"m";if(rn>0){end=addPeriod(addDays(end,1),rn,ru);o.renewed=true;o.rn=rn;o.ru=ru;}}
+  /* une absence (maladie, congés, absence non payée…) prolonge la période d'essai d'autant */
+  var ext=0;for(var it=0;it<6;it++){var cnt=0,lim=addDays(end,ext);
+    for(var d=new Date(cs);d<=lim;d=addDays(d,1)){var x=dayOf(d);if(x&&(modeOf(x)==="conge"||(absOf(x)&&absOf(x).k!=="work")))cnt++;}
+    if(cnt===ext)break;ext=cnt;}
+  o.ext=ext;o.end=addDays(end,ext);var ce2=contractEnd();if(ce2&&o.end>ce2)o.end=ce2;
+  /* durée totale maximale pour un CDI */
+  if(c.type==="cdi")o.tooLong=addPeriod(cs,n,u)>addPeriod(cs,L.n,"m")||addDays(o.end,-ext)>addPeriod(cs,L.max,"m");
+  return o;}
+/* délai de prévenance pour rompre la période d'essai (art. L1221-25 et L1221-26) */
+function prevenance(dt){var cs=contractStart();if(!cs)return "";var j=daysBetween(cs,dt)+1,emp=j<8?"24 h":j<=31?"48 h":j<=92?"2 semaines":"1 mois";
+  return "Si votre employeur rompt l'essai maintenant, il doit vous prévenir "+emp+" avant ; si c'est vous, "+(j<8?"24 h":"48 h")+" avant.";}
+/* ce que vous touchez à la fin du contrat */
+function endRights(){var t=ct().type;
+  if(t==="cdd")return "Vous devriez toucher une indemnité de fin de contrat (prime de précarité) de 10 % de vos salaires bruts, sauf exceptions (job étudiant pendant les vacances scolaires, refus d'un CDI équivalent, rupture de votre fait…), et une indemnité pour les congés payés non pris.";
+  if(t==="saison")return "Un CDD saisonnier ne donne pas de prime de précarité (sauf accord plus favorable), mais vos congés non pris sont payés (indemnité de 10 %).";
+  if(t==="interim")return "Vous touchez une indemnité de fin de mission de 10 % de vos salaires bruts et une indemnité de congés payés de 10 %.";
+  if(t==="appr"||t==="pro")return "Pas de prime de précarité en fin d'alternance, mais vos congés non pris sont payés.";
+  if(t==="stage")return "Demandez votre attestation de stage. Au-delà de 2 mois, la gratification est obligatoire.";
+  return "";}
+function brutSince(a,b){var t=0;if(!payReady())return 0;for(var m=new Date(a.getFullYear(),a.getMonth(),1);m<=b;m=new Date(m.getFullYear(),m.getMonth()+1,1)){var md=monthData(m.getFullYear(),m.getMonth());if(md.total||md.congeDays||md.ferChome||md.absPaidH)t+=payCalc(md).base;}return t;}
+/* messages de la page Alertes liés au contrat */
+function contractMsgs(){var out=[],t=new Date(),tk=key(t),c=ct(),cs=contractStart();if(!cs)return out;
+  function push(dt,kind,text,id){if(key(dt)>tk||dt<addDays(t,-45))return;out.push({dt:dt,kind:kind,text:text,id:id});}
+  var tr=trialInfo();
+  if(tr){
+    if(tr.worked){var n=tr.n;
+      if(tr.end){push(tr.end,"trial","Fin de votre période d'essai : vous avez atteint vos <b>"+n+" jours</b> "+(c.type==="appr"?"de formation en entreprise":"de travail")+". Le contrat ne peut plus être rompu librement.","trial:end:"+key(tr.end));}
+      else if(tr.left<=10&&tr.done>0)push(t,"trial","Période d'essai : <b>"+tr.done+" jour"+(tr.done>1?"s":"")+" sur "+n+"</b> "+(c.type==="appr"?"en entreprise (les jours d'école ne comptent pas)":"travaillés")+". Jusqu'à la fin, vous ou votre employeur pouvez mettre fin au contrat sans motif"+(c.type==="appr"?", par écrit.":"."),"trial:left:"+tr.left+":"+key(cs));}
+    else if(tr.end){var e=tr.end,ed=fdate(key(e));
+      [15,7,2].forEach(function(n){var d=addDays(e,-n);if(d<cs)return;
+        push(d,"trial","Votre période d'essai se termine le <b>"+ed+"</b>, dans "+n+" jours"+(tr.ext?" (prolongée de "+tr.ext+" jour"+(tr.ext>1?"s":"")+" d'absence)":"")+". Jusque-là, chacun peut rompre le contrat sans motif. "+prevenance(d)+
+          (tr.legal.ren&&!tr.renewed?" Un renouvellement n'est possible qu'une fois, avec votre accord écrit, si votre convention et votre contrat le prévoient.":""),"trial:"+n+":"+key(e));});
+      push(addDays(e,1),"trial","Votre période d'essai est terminée depuis le <b>"+ed+"</b>. Votre contrat ne peut plus être rompu sans motif ni procédure.","trial:done:"+key(e));}}
+  var ce=contractEnd();
+  if(ce&&fixedTerm()){var cn=CTK[c.type].n,cd=fdate(key(ce)),b=brutSince(cs,ce),pr=(c.type==="cdd"||c.type==="interim")&&b>0?" D'après vos heures, cela ferait environ <b>"+eur(b*0.1)+"</b> brut.":"";
+    [30,15,7].forEach(function(n){var d=addDays(ce,-n);if(d<cs)return;
+      push(d,"cend","Votre "+(c.type==="stage"?"stage":c.type==="interim"?"mission d'intérim":cn)+" se termine le <b>"+cd+"</b>, dans "+n+" jours. "+endRights()+(n<=15?pr:"")+
+        (c.type==="cdd"&&n===30?" Un CDD peut être renouvelé deux fois au plus, dans la limite de 18 mois en général : parlez-en à votre employeur si vous souhaitez continuer.":""),"cend:"+n+":"+key(ce));});
+    push(ce,"cend","Dernier jour de votre "+(c.type==="stage"?"stage":cn)+" aujourd'hui. Votre employeur doit vous remettre un certificat de travail, une attestation France Travail et un reçu pour solde de tout compte."+pr,"cend:0:"+key(ce));}
+  return out;}
 /* ---------- résumé de la semaine : le dimanche à partir de 20 h ---------- */
 var RECAP_H=20;
 function recapReady(m){var sun=addDays(m,6),t=new Date();if(key(sun)<key(t))return true;return key(sun)===key(t)&&t.getHours()>=RECAP_H;}
@@ -1525,18 +1880,33 @@ function recapText(m){var wt=weekTotal(m),days=0,rep=0;for(var i=0;i<7;i++){var 
   var t="Résumé de la semaine "+isoWeek(m)+" : <b>"+fmt(wt)+"</b> sur "+days+" jour"+(days>1?"s":"")+(sup>0?", dont <b>"+hh(sup)+"</b> d'heures sup":"")+".";
   if(pl&&Math.abs(pl.diff)>=15)t+=" C'est "+(pl.diff>0?"<b>"+fmt(pl.diff)+"</b> de plus":"<b>"+fmt(-pl.diff)+"</b> de moins")+" que prévu sur "+provName()+".";
   if(rep)t+=" "+rep+" repas fourni"+(rep>1?"s":"")+".";
-  if(payReady()){var md={weeks:[wt],repas:rep,congeH:0};var p=payCalc(md);t+=" Environ <b>"+eur(p.net)+"</b> net.";}
+  if(payReady()){var p=payCalc(weekData(m));t+=" Environ <b>"+eur(p.net)+"</b> net.";}
   return t;}
 function recapOf(m){if(!recapReady(m)||!weekTotal(m)||addDays(m,6)<addDays(new Date(),-28))return null;var sun=addDays(m,6);return {dt:sun,kind:"recap",text:recapText(m),id:"recap:"+key(m),late:true};}
 /* toutes les alertes, dans l'ordre chronologique, chacune avec un identifiant stable */
-function allMessages(){var msgs=[];
+/* alertes d'un emploi (celui affiché) */
+function jobMessages(){var msgs=[];
   weeksWithData().slice().reverse().forEach(function(m){
     weekAlerts(m).forEach(function(a){
       if(a.dt)a.id=a.kind+":"+key(a.dt);
       else{var end=addDays(m,6);a.dt=end>new Date()?new Date():end;a.id="week:"+key(m);}
+      if(a.kind==="over")a.prov=provName();
       msgs.push(a);});});
   if(S.reminder.recap!==false)weeksWithData().forEach(function(m){var r=recapOf(m);if(r)msgs.push(r);});
-  if(reminderDue()){var t=new Date();msgs.push({dt:t,kind:"today",val:"",id:"today:"+key(t)});}
+  contractMsgs().forEach(function(a){msgs.push(a);});
+  return msgs;}
+/* plusieurs emplois : les durées maximales valent pour le total (48 h par semaine, 10 h par jour) */
+function cumAlerts(){var Wk={},D={},out=[],t=new Date();
+  JOBS.forEach(function(j){withJob(j.id,function(){Object.keys(S.days).forEach(function(k){var r=dayCalc(S.days[k]);if(!r.total)return;var p=k.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]),wk=key(monday(dt));
+    Wk[wk]=(Wk[wk]||0)+r.total;D[k]=D[k]||{t:0,n:0,dt:dt};D[k].t+=r.total;D[k].n++;});});});
+  Object.keys(Wk).forEach(function(wk){if(Wk[wk]<=WEEK_MAX)return;var p=wk.split("-"),m=new Date(+p[0],+p[1]-1,+p[2]),end=addDays(m,6);
+    out.push({dt:end>t?t:end,kind:"cumw",val:fmt(Wk[wk]),id:"cumw:"+wk});});
+  Object.keys(D).forEach(function(k){var x=D[k];if(x.n>=2&&x.t>DAY_MAX)out.push({dt:x.dt,kind:"cumd",val:fmt(x.t),id:"cumd:"+k});});
+  return out;}
+function allMessages(){var msgs=[],multi=JOBS.length>1;
+  JOBS.forEach(function(j){withJob(j.id,function(){jobMessages().forEach(function(a){if(multi){a.job=jobName(j);if(j.id!=="main")a.id=j.id+"|"+a.id;}msgs.push(a);});});});
+  if(multi)cumAlerts().forEach(function(a){msgs.push(a);});
+  if(JOBS.every(function(j){return withJob(j.id,reminderDue);})){var t=new Date();msgs.push({dt:t,kind:"today",val:"",id:"today:"+key(t)});}
   msgs.sort(function(x,y){return key(x.dt)<key(y.dt)?-1:key(x.dt)>key(y.dt)?1:((x.kind==="week")+(x.late?2:0))-((y.kind==="week")+(y.late?2:0));});
   return msgs;}
 /* alertes déjà lues (mémorisées dans ce navigateur) */
@@ -1554,7 +1924,8 @@ function renderAlerts(){
       var today=sameDay(a.dt,new Date()),yest=sameDay(a.dt,addDays(new Date(),-1));
       h+='<div class="day-sep"><span>'+(today?"Aujourd'hui":yest?"Hier":cap(JOURS[a.dt.getDay()])+" "+a.dt.getDate()+" "+MOIS[a.dt.getMonth()])+'</span></div>';prevDay=k;}
     var first=!open;if(!open)openGrp();
-    h+='<p class="bubble'+(isNew?" new":"")+'">'+(first?greet(message(a)):message(a))+'</p>';});
+    var tx=(a.job?'<b>'+esc(a.job)+'</b> · ':'')+message(a);
+    h+='<p class="bubble'+(isNew?" new":"")+'">'+(first&&!a.job?greet(tx):tx)+'</p>';});
   close();h+='</div>';
   view.innerHTML=h;
   var sep=document.getElementById("new-sep");
@@ -1581,14 +1952,19 @@ var IC={
   out:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
   trash:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/>',
   key:'<circle cx="8" cy="14" r="4"/><path d="M11 11l8-8M16 6l2 2"/>',
-  mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/>'};
+  mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/>',
+  doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  bag:'<rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V5h6v2M3 12h18"/>'};
 function ico(n){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>';}
 var CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 function row(o){var tag=o.label?'label':'button',attr=o.label?' for="'+o.label+'"':' '+o.attr;
   return '<'+tag+' class="srow'+(o.cls?" "+o.cls:"")+'"'+attr+'>'+(o.icon?ico(o.icon):'')+'<span class="srow-t">'+o.t+(o.sub?'<small>'+o.sub+'</small>':'')+'</span>'+
     (o.v!=null?'<span class="srow-v">'+o.v+'</span>':'')+(o.toggle!=null?'<span class="tgl'+(o.toggle?' on':'')+'" aria-hidden="true"></span>':o.chev===false?'':CHEV)+'</'+tag+'>';}
 function group(title,rows,after){return '<section class="sgrp">'+(title?'<h2>'+title+'</h2>':'')+'<div class="scard">'+rows.join("")+'</div>'+(after||'')+'</section>';}
-var MAJ_NAMES={legal:"Code du travail",hcr:"HCR",custom:"Personnalisée",none:"Aucune"};CONV.forEach(function(c){MAJ_NAMES[c[0]]=c[1];});
+var MAJ_NAMES={legal:"Code du travail",hcr:"HCR",custom:"Personnalisée",none:"Aucune"};
+var MAJ_SHORT={legal:"Code du travail",hcr:"HCR",rapide:"Restauration rapide",collect:"Collectivités",alim:"Commerce alimentaire",syntec:"Syntec",metal:"Métallurgie",btp:"Bâtiment",custom:"Personnalisée",none:"Aucune"};CONV.forEach(function(c){MAJ_NAMES[c[0]]=c[1];});
 function fdate(v){if(!v)return "";var p=v.split("-");return (+p[2])+" "+MOIS_C[+p[1]-1]+" "+p[0];}
 function initials(){var f=(PROFILE.first_name||"").trim(),l=(PROFILE.last_name||"").trim();return ((f[0]||"")+(l[0]||"")).toUpperCase()||"?";}
 /* photo de profil : recadrée en carré 256 px, gardée avec les réglages (synchronisée avec le compte) */
@@ -1607,13 +1983,17 @@ function renderParams(){
   setHead("Réglages","Votre compte et vos préférences");
   var P=S.pay,R=S.reminder,mail=USER&&USER.email?USER.email:"",name=((PROFILE.first_name||"")+" "+(PROFILE.last_name||"")).trim();
   var payV=S.target+" h · "+(P.mode==="mensuel"&&num(P.monthly)?String(P.monthly).replace(".",",")+" €/mois":(P.rate?String(P.rate).replace(".",",")+" €/h":"—"));
-  var h='<div class="sett">';
+  var h='<div class="sett">'+jobBar();
   h+='<button class="prof-card" data-sub="profil">'+avatarHtml()+'<span class="prof-t"><b>'+esc(name||"Votre profil")+'</b><small>'+esc(mail||"Prénom et nom")+'</small></span>'+CHEV+'</button>';
-  h+=group("Travail",[
+  var X=extCfg(),c=ct(),ce=contractEnd(),nv=[];if(X.nb.length)nv.push("nuit");if(X.sun>0)nv.push("dim. +"+X.sun+" %");
+  h+=group(JOBS.length>1?"Travail · "+esc(jobName(JOB)):"Travail",[
+    row({icon:"doc",t:"Contrat",v:(CTK[c.type]||CTYPES[0]).n+(ce?" · fin "+fdate(c.end).replace(/ \d{4}$/,""):S.conges.start?" · depuis "+fdate(S.conges.start).replace(/ \d{4}$/,""):""),attr:'data-sub="contrat"'}),
     row({icon:"pay",t:"Salaire",v:payV,attr:'data-sub="pay"'}),
-    row({icon:"sup",t:"Heures sup",v:MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
-    row({icon:"meal",t:"Repas fournis",v:mealsOn()?(P.meal?String(P.meal).replace(".",",")+" €":"Oui"):"Non",attr:'data-sub="meal"'}),
-    row({icon:"cp",t:"Début du contrat",v:S.conges.start?fdate(S.conges.start):"",attr:'data-sub="conges"'})]);
+    row({icon:"sup",t:"Convention",v:MAJ_SHORT[P.maj]||MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
+    row({icon:"moon",t:"Nuit et dimanche",v:nv.length?"majorés":"",attr:'data-sub="nuit"'}),
+    row({icon:"flag",t:"Jours fériés",v:(REGIONS.filter(function(r){return r[0]===ferReg();})[0]||REGIONS[0])[1].replace("France métropolitaine","Métropole"),attr:'data-sub="fer"'}),
+    row({icon:"meal",t:"Repas fournis",v:mealsOn()?(P.meal?String(P.meal).replace(".",",")+" €":"Oui"):"Non",attr:'data-sub="meal"'})]);
+  h+=group("Emplois",[row({icon:"bag",t:JOBS.length>1?"Mes emplois":"Plusieurs emplois",sub:JOBS.length>1?"":"Deux employeurs, job étudiant et alternance…",v:JOBS.length>1?JOBS.length+" emplois":"",attr:'data-sub="jobs"'})]);
   h+=group("Notifications",[
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
     row({icon:"recap",t:"Résumé de la semaine",sub:"Le dimanche à 20 h",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
@@ -1627,7 +2007,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.53</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.54</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1650,11 +2030,11 @@ function renderSub(){
       '<div class="field money"><label for="pay-monthly">Au mois (brut)</label><input id="pay-monthly" data-pay="monthly" inputmode="decimal" autocomplete="off" placeholder="1 900"><em>€</em></div>'+
       '<div class="field money"><label for="pay-charges">Cotisations salariales (brut → net)</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>'+
       '</div><p class="snote">Remplissez le taux horaire ou le salaire mensuel : l\'autre se calcule tout seul.</p>';}
-  else if(k==="maj"){t="Heures sup";
+  else if(k==="maj"){t="Convention collective";
     var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Hôtels, cafés, restaurants (HCR)","IDCC 1979 · +10 % de la 36ᵉ à la 39ᵉ heure, +20 % de la 40ᵉ à la 43ᵉ, +50 % au-delà"],["custom","Ma convention ou mon accord","Saisissez vous-même les taux prévus par votre convention collective ou votre accord d'entreprise"],["none","Aucune majoration","Les heures sup sont payées au taux normal"]];
     var mc=P.majc||{},btn=function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';};
     var conv=CONV.map(function(c){return [c[0],c[1],c[2]+" · +25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"];});
-    b='<section class="sgrp"><h2>Majoration</h2><div class="maj-list">'+opts.slice(0,2).concat(conv,opts.slice(2)).map(btn).join("")+'</div></section>'+
+    b='<section class="sgrp"><h2>Votre convention</h2><div class="maj-list">'+opts.slice(0,2).concat(conv,opts.slice(2)).map(btn).join("")+'</div><p class="snote">Son nom figure sur votre fiche de paie. Elle fixe vos majorations d\'heures sup, et aussi celles de nuit, du dimanche et des jours fériés (voir Nuit et dimanche, Jours fériés).</p></section>'+
       (P.maj==="custom"?'<section class="sgrp"><h2>Vos taux</h2><div class="set">'+
         '<div class="field money"><label for="mc-t1">Majoration à partir de la 36ᵉ heure</label><input id="mc-t1" data-majc="t1" inputmode="decimal" autocomplete="off" placeholder="25" value="'+esc(mc.t1==null?"":mc.t1)+'"><em>%</em></div>'+
         '<div class="field money"><label for="mc-h1">Jusqu\'à la</label><input id="mc-h1" data-majc="h1" inputmode="numeric" autocomplete="off" placeholder="43" value="'+esc(mc.h1==null?"":mc.h1)+'"><em>ᵉ h</em></div>'+
@@ -1663,10 +2043,59 @@ function renderSub(){
   else if(k==="meal"){t="Repas fournis";
     b=group("",[row({t:"Mon entreprise me fournit mes repas",sub:"iolite demande à chaque journée si un repas a été fourni",toggle:mealsOn(),attr:'data-mealson aria-pressed="'+mealsOn()+'"'})])+(!mealsOn()?'':'<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
       '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>');}
-  else if(k==="conges"){t="Début du contrat";
-    b='<div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
-      '</div>'+
-      '<p class="snote">Tout est calculé à partir de cette date : 2,5 jours acquis par mois travaillé (le premier mois au prorata), puis décomptés à chaque congé pointé.</p>';}
+  else if(k==="conges"||k==="contrat"){t="Contrat";var c=ct(),tl=trialLegal(),tr=trialInfo(),fx=fixedTerm();
+    var rb=function(attr,id,on,n,sub){return '<button class="maj" data-'+attr+'="'+id+'" aria-pressed="'+on+'"><span class="radio"></span><span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';};
+    var useg=function(attr,cur,list){return '<div class="seg" role="group">'+list.map(function(u){return '<button data-'+attr+'="'+u[0]+'" aria-pressed="'+(cur===u[0])+'">'+u[1]+'</button>';}).join("")+'</div>';};
+    b='<section class="sgrp"><h2>Type de contrat</h2><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",x.id,c.type===x.id,x.n,x.sub);}).join("")+'</div></section>';
+    if(c.type==="cdi")b+='<section class="sgrp"><h2>Catégorie</h2><div class="maj-list">'+CATS.map(function(x){return rb("ccat",x.id,(c.cat||"emp")===x.id,x.n,"Période d'essai : "+x.m+" mois, "+x.max+" mois avec renouvellement");}).join("")+'</div></section>';
+    b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
+      (fx?'<div class="field"><label for="ct-end">Fin du contrat</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div>'+
+      '<p class="snote">Le début sert aussi au calcul de vos congés payés : 2,5 jours acquis par mois (le premier au prorata), 2 jours par mois pendant un arrêt maladie.'+(fx?' La fin déclenche des rappels 30, 15 et 7 jours avant.':'')+'</p></section>';
+    if(tl){b+='<section class="sgrp"><h2>Période d\'essai</h2>'+group("",[row({t:"Période d'essai",sub:"Elle n'existe que si elle est écrite dans votre contrat",toggle:c.essai!==false,attr:'data-essai aria-pressed="'+(c.essai!==false)+'"'})]);
+      if(c.essai!==false){var wk=tl.u==="t";
+        b+='<div class="set"><div class="field money"><label for="ct-en">Durée prévue au contrat</label><input id="ct-en" data-cen inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.en==null?"":c.en)+'"><em>'+(wk?"jours":"")+'</em></div>'+
+          (wk?'':useg("ceu",num(c.en)>0&&c.eu?c.eu:tl.u,[["j","Jours"],["s","Semaines"],["m","Mois"]]))+'</div>'+
+          '<p class="snote">Durée maximale : '+tl.txt+'. Laissez vide pour utiliser '+unitWord(tl.n,tl.u==="t"?"j":tl.u)+(wk?" travaillés":"")+'.'+(tl.need?" Indiquez la date de fin pour un calcul exact.":"")+'</p>';
+        if(tl.ren){b+=group("",[row({t:"Période d'essai renouvelée",sub:"Une seule fois, avec votre accord écrit",toggle:!!c.ren,attr:'data-cren aria-pressed="'+!!c.ren+'"'})]);
+          if(c.ren)b+='<div class="set"><div class="field money"><label for="ct-rn">Durée du renouvellement</label><input id="ct-rn" data-crn inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.rn==null?"":c.rn)+'"><em></em></div>'+useg("cru",c.ru||"m",[["j","Jours"],["s","Semaines"],["m","Mois"]])+'</div>'+
+            '<p class="snote">Le renouvellement doit être prévu par un accord de branche et par votre contrat. Durée totale au plus : '+tl.max+' mois.</p>';}
+        if(tr){var L=[];
+          if(tr.worked)L.push(row({t:tr.end?"Terminée le "+fdate(key(tr.end)):"En cours",sub:tr.end?"":"Encore "+tr.left+" jour"+(tr.left>1?"s":"")+" "+(c.type==="appr"?"en entreprise":"travaillé"+(tr.left>1?"s":"")),v:Math.min(tr.done,tr.n)+" / "+tr.n,chev:false}));
+          else{var left=daysBetween(new Date(),tr.end);L.push(row({t:"Fin le "+fdate(key(tr.end)),sub:(tr.renewed?"Renouvellement compris · ":"")+(tr.ext?"Prolongée de "+tr.ext+" jour"+(tr.ext>1?"s":"")+" d'absence":"Sans absence pendant l'essai"),v:left>=0?"J−"+left:"terminée",chev:false}));}
+          b+=group("",L);
+          if(tr.tooLong)b+='<p class="snote warn">Cette durée dépasse le maximum légal : '+tl.txt+'. Vérifiez votre contrat.</p>';
+          if(!tr.worked&&daysBetween(new Date(),tr.end)>=0)b+='<p class="snote">'+prevenance(new Date())+' Une absence (maladie, congés…) prolonge l\'essai d\'autant : iolite en tient compte avec vos journées pointées.</p>';}
+        else if(!S.conges.start)b+='<p class="snote">Indiquez le début du contrat pour calculer la fin de la période d\'essai.</p>';}
+      b+='</section>';}
+    var ce=contractEnd();
+    if(fx&&ce){var dl=daysBetween(new Date(),ce);b+='<section class="sgrp"><h2>Fin du contrat</h2>'+group("",[row({t:fdate(c.end),sub:dl>=0?"Dans "+dl+" jour"+(dl>1?"s":""):"Contrat terminé",chev:false})])+'<p class="snote">'+endRights()+'</p></section>';}}
+  else if(k==="fer"){t="Jours fériés";var X=extCfg(),eb=extBase(),o=S.pay.ov||{},yr=new Date().getFullYear(),up=[];
+    [yr,yr+1].forEach(function(y){var f=feries(y);Object.keys(f).sort().forEach(function(kk){if(kk>=key(new Date())&&up.length<6)up.push([kk,f[kk]]);});});
+    b='<section class="sgrp"><h2>Votre région</h2><div class="maj-list">'+REGIONS.map(function(r){return '<button class="maj" data-reg="'+r[0]+'" aria-pressed="'+(ferReg()===r[0])+'"><span class="radio"></span><span><b>'+r[1]+'</b><small>'+(r[2]||"11 jours fériés")+'</small></span></button>';}).join("")+'</div></section>'+
+      '<section class="sgrp"><h2>Jour férié travaillé</h2><div class="set"><div class="field money"><label for="ov-fer">Majoration</label><input id="ov-fer" data-ov="fer" inputmode="decimal" autocomplete="off" placeholder="'+eb.fer+'" value="'+esc(o.fer==null?"":o.fer)+'"><em>%</em></div></div>'+
+      '<p class="snote">'+esc(MAJ_NAMES[S.pay.maj]||"Code du travail")+' : '+eb.fn+' Laissez vide pour appliquer ce taux.</p></section>'+
+      '<section class="sgrp"><h2>Jour férié chômé</h2>'+group("",[row({t:"Compter dans les heures sup",sub:"Seulement si votre convention ou votre entreprise le prévoit",toggle:S.pay.ferHS===true,attr:'data-ferhs aria-pressed="'+(S.pay.ferHS===true)+'"'})])+
+      '<p class="snote">Un jour férié chômé ne fait pas baisser votre salaire après 3 mois d\'ancienneté (sans condition pour le 1er mai) : iolite le paie sur la base de vos heures habituelles ce jour-là. Mais il ne compte pas comme du travail pour les heures sup (Cour de cassation), sauf disposition contraire. Un congé posé un jour férié chômé n\'est pas décompté.</p></section>'+
+      '<section class="sgrp"><h2>Journée de solidarité</h2>'+group("",[row({t:"Le lundi de Pentecôte",sub:"Journée travaillée sans salaire en plus (7 h au plus)",toggle:solidOn(),attr:'data-solid aria-pressed="'+solidOn()+'"'})])+
+      '<p class="snote">Votre employeur choisit la journée de solidarité (lundi de Pentecôte, RTT ou autre jour). Activez seulement si c\'est le lundi de Pentecôte chez vous.</p></section>'+
+      '<section class="sgrp"><h2>Prochains jours fériés</h2>'+group("",up.map(function(x){var p=x[0].split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);return row({t:x[1],sub:cap(JOURS[d.getDay()])+" "+fdate(x[0]),v:isMay1(d)?"payé double":"",chev:false});}))+'</section>';}
+  else if(k==="nuit"){t="Nuit et dimanche";var X2=extCfg(),eb2=extBase(),o2=S.pay.ov||{},nbTxt=eb2.nb.length?eb2.nb.map(function(b){return "+"+b[2]+" % "+fmtWin([b[0],b[1]]);}).join(", "):"aucune";
+    var hm2=function(m){return String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
+    b='<section class="sgrp"><h2>Travail de nuit</h2><div class="set">'+
+      '<div class="field"><label for="ov-ns">Début de la nuit</label><input id="ov-ns" class="txt" type="time" data-ov="ns" value="'+esc(o2.ns||hm2(X2.win[0]))+'"></div>'+
+      '<div class="field"><label for="ov-ne">Fin de la nuit</label><input id="ov-ne" class="txt" type="time" data-ov="ne" value="'+esc(o2.ne||hm2(X2.win[1]))+'"></div>'+
+      '<div class="field money"><label for="ov-night">Majoration de nuit</label><input id="ov-night" data-ov="night" inputmode="decimal" autocomplete="off" placeholder="'+(eb2.nb.length?"selon la convention":"0")+'" value="'+esc(o2.night==null?"":o2.night)+'"><em>%</em></div></div>'+
+      '<p class="snote">'+esc(MAJ_NAMES[S.pay.maj]||"Code du travail")+' : '+eb2.nn+' Saisissez un taux pour remplacer celui de la convention.</p></section>'+
+      '<section class="sgrp"><h2>Dimanche</h2><div class="set"><div class="field money"><label for="ov-sun">Majoration du dimanche</label><input id="ov-sun" data-ov="sun" inputmode="decimal" autocomplete="off" placeholder="'+eb2.sun+'" value="'+esc(o2.sun==null?"":o2.sun)+'"><em>%</em></div></div>'+
+      '<p class="snote">'+eb2.sn+'</p></section>'+
+      (eb2.max?'<p class="snote">Dans votre convention, les majorations ne se cumulent pas : pour chaque heure, seule la plus forte est comptée. Les heures sup restent majorées en plus.</p>':'<p class="snote">Les majorations de nuit, du dimanche et des fériés s\'ajoutent à celles des heures sup.</p>')+
+      (Object.keys(o2).some(function(x){return o2[x]!=null&&o2[x]!=="";})?'<div class="backup"><button data-ovreset>Revenir aux règles de la convention</button></div>':'');}
+  else if(k==="jobs"){t="Mes emplois";
+    b='<section class="sgrp"><h2>Emploi affiché</h2><div class="maj-list">'+JOBS.map(function(j){return '<button class="maj" data-job="'+esc(j.id)+'" aria-pressed="'+(j.id===JOB)+'"><span class="radio"></span><span><b>'+esc(jobName(j))+'</b><small>'+esc(withJob(j.id,function(){var c=ct();return (CTK[c.type]||CTYPES[0]).n+" · "+S.target+" h · "+(MAJ_NAMES[S.pay.maj]||"");}))+'</small></span></button>';}).join("")+'</div></section>'+
+      '<section class="sgrp"><h2>Noms</h2><div class="set">'+JOBS.map(function(j,i){return '<div class="field"><label for="jn-'+i+'">Emploi '+(i+1)+'</label><input id="jn-'+i+'" class="txt" data-jobname="'+esc(j.id)+'" placeholder="'+(i?"Ex. : Boulangerie":"Ex. : Restaurant")+'" value="'+esc(j.name||"")+'"></div>';}).join("")+'</div></section>'+
+      (JOBS.length<5?'<div class="backup"><button data-jobadd>Ajouter un emploi</button></div>':'')+
+      '<p class="snote">Chaque emploi a ses propres journées, salaire, convention, contrat et planning. Choisissez l\'emploi en haut des pages Shift, Statistiques et Réglages. Les durées maximales (10 h par jour, 48 h par semaine) valent pour le total de vos emplois : iolite vous prévient si vous les dépassez.</p>';
+    if(JOBS.length>1&&JOB!=="main")b+='<div class="backup"><button class="danger-btn" data-jobdel="'+esc(JOB)+'">'+(JOBDEL===JOB?"Confirmer : supprimer « "+esc(jobName(JOB))+" » et ses journées":"Supprimer « "+esc(jobName(JOB))+" »")+'</button></div>';}
   else if(k==="rem"){t="Rappels";var times=R.times||[];
     b='<div class="set"><div class="rem-list">'+times.map(function(x,n){return '<div class="rem-row"><input type="time" id="rem-'+n+'" data-remidx="'+n+'" value="'+esc(x)+'" aria-label="Horaire de rappel '+(n+1)+'">'+
       (times.length>1?'<button class="rem-del" data-remdel="'+n+'" aria-label="Supprimer cet horaire">×</button>':'')+'</div>';}).join("")+'</div>'+
@@ -1676,6 +2105,7 @@ function renderSub(){
     b='<section class="sgrp"><div class="set"><div class="field"><label for="combo-url">Adresse du calendrier (iCal / .ics)</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://… ou webcal://…" value="'+esc(S.combo.url||"")+'"></div>'+
       (S.combo.url?'<div class="backup"><button data-combosync>Synchroniser maintenant</button></div>':'')+'</div>'+
       '<p class="snote" id="combo-msg">'+esc(comboStatus()||(S.combo.url&&pv.help?pv.help:"Collez l'adresse d'abonnement calendrier de votre planning. Elle fonctionne avec Combo, Skello, Planday, les emplois du temps ADE, Google Agenda, iCloud et tout logiciel qui propose un lien iCal."))+'</p></section>'+
+      (S.combo.url?group("",[row({t:"C'est mon emploi du temps d'école",sub:"Alternance : les cours comptent comme temps de travail",toggle:!!S.combo.school,attr:'data-school aria-pressed="'+!!S.combo.school+'"'})]):'')+
       (!S.combo.url?'<section class="sgrp"><h2>Où trouver l\'adresse ?</h2><div class="scard">'+PROVS.slice(0,3).map(function(p){return '<div class="srow help-row"><span class="srow-t">'+p.n+'<small>'+esc(p.help)+'</small></span></div>';}).join("")+
         '<div class="srow help-row"><span class="srow-t">Autres logiciels<small>Cherchez « synchronisation calendrier », « lien iCal » ou « s\'abonner » dans votre profil ou vos paramètres.</small></span></div></div></section>':'');
     dock=S.combo.url?'<div class="dock-sp"></div><div class="dock">'+group("",[row({t:"Déconnecter "+(pv.id==="autre"?"le planning":pv.n),chev:false,cls:"danger",attr:'data-combooff'})])+'</div>':'';}
@@ -1685,7 +2115,7 @@ function renderSub(){
   if(k==="pay")updateEq();
 }
 /* ---------- compte : mot de passe, e-mail, suppression ---------- */
-var ACC=null,ACCMSG="";
+var ACC=null,ACCMSG="",JOBDEL=null;
 function accHtml(){return (ACC==="pw"||ACC==="mail"?accForm(ACC):"")+(ACCMSG&&ACC!=="del"?'<p class="note acc-ok">'+esc(ACCMSG)+'</p>':"");}
 function accForm(k){var cur='<div class="field"><label for="acc-cur">Mot de passe actuel</label><div class="pw-wrap"><input id="acc-cur" type="password" autocomplete="current-password">'+eyeBtn("acc-cur")+'</div></div>';
   var h='<div class="acc-form">';
@@ -1755,6 +2185,24 @@ document.addEventListener("click",function(e){
   if(ds.accgo){accGo(ds.accgo);return;}
   if("hardreload" in ds){hardReload(ds);return;}
   if(wizClick(ds))return;
+  if(ds.job){JOBDEL=null;switchJob(ds.job);return;}
+  if(ds.ctype){ct().type=ds.ctype;if(ds.ctype==="stage")ct().essai=false;else if(ct().essai===false&&ds.ctype!=="stage")ct().essai=true;ct().en=null;saveSettings();renderParams();return;}
+  if(ds.ccat){ct().cat=ds.ccat;saveSettings();renderParams();return;}
+  if("essai" in ds){ct().essai=ct().essai===false;saveSettings();renderParams();return;}
+  if(ds.ceu){ct().eu=ds.ceu;saveSettings();renderParams();return;}
+  if("cren" in ds){ct().ren=!ct().ren;saveSettings();renderParams();return;}
+  if(ds.cru){ct().ru=ds.cru;saveSettings();renderParams();return;}
+  if(ds.reg){S.pay.reg=ds.reg;FER_CACHE={};saveSettings();renderParams();return;}
+  if("ferhs" in ds){S.pay.ferHS=S.pay.ferHS!==true;saveSettings();renderParams();return;}
+  if("solid" in ds){S.pay.solid=!solidOn();FER_CACHE={};saveSettings();renderParams();return;}
+  if("ovreset" in ds){S.pay.ov={};saveSettings();renderParams();return;}
+  if("school" in ds){S.combo.school=!S.combo.school;savePlan();renderParams();return;}
+  if("jobadd" in ds){var nid="j"+Date.now().toString(36);JOBS.push({id:nid,name:""});JCFG[nid]=defCfg();JDAYS[nid]={};JPLAN[nid]={plan:{},combo:emptyCombo()};
+    saveSettings();switchJob(nid);var f=document.getElementById("jn-"+(JOBS.length-1));if(f)f.focus();return;}
+  if(ds.jobdel){if(JOBDEL!==ds.jobdel){JOBDEL=ds.jobdel;renderParams();return;}var did=ds.jobdel;JOBDEL=null;if(did==="main")return;
+    if(JOB===did){stash();unstash("main");lsSet("pt-job","main");}
+    JOBS=JOBS.filter(function(j){return j.id!==did;});delete JCFG[did];delete JDAYS[did];delete JPLAN[did];saveSettings();saveDays();savePlan();render();return;}
+  if("schoolday" in ds){var sk=key(S.cur);S.days[sk]={mode:"abs",abs:"ecole",h:Math.round(planTotal(sk))};saveDays();renderShift();return;}
   if(ds.day){var p=ds.day.split("-");S.cur=new Date(+p[0],+p[1]-1,+p[2]);W=null;render();return;}
   if("combosync" in ds){syncCombo(true);return;}
   if(ds.prov){S.combo.prov=ds.prov;savePlanLocal();renderParams();return;}
@@ -1776,7 +2224,7 @@ document.addEventListener("click",function(e){
 });
 function bkMsg(t){var m=document.getElementById("bk-msg");if(m)m.textContent=t;}
 function exportData(){
-  var data={app:"iolite",version:3,exportedAt:new Date().toISOString(),days:S.days,settings:settingsObj(),plan:S.plan,combo:{url:S.combo.url}};
+  var data={app:"iolite",version:4,exportedAt:new Date().toISOString(),days:allDaysMap(),settings:settingsObj(),plan:allPlanData(),combo:{url:mainCombo().url}};
   var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download="iolite-"+key(new Date())+".json";document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(url);},2000);bkMsg("Sauvegarde téléchargée.");
@@ -1784,6 +2232,8 @@ function exportData(){
 view.addEventListener("submit",function(e){if(e.target.id==="auth-form"){e.preventDefault();authSubmit();}});
 view.addEventListener("keydown",function(e){if(e.key==="Enter"&&OB&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-ob="next"]');if(b)b.click();return;}if(e.key==="Enter"&&W&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-wiz="next"]');if(b)b.click();}});
 view.addEventListener("change",function(e){var i=e.target;
+  if(!OB&&SUB==="jobs"&&i.dataset.jobname!=null){renderParams();return;}
+  if(!OB&&SUB==="contrat"&&("cpstart" in i.dataset||"cend" in i.dataset||"cen" in i.dataset||"crn" in i.dataset)){var y=window.scrollY;renderParams();window.scrollTo(0,y);return;}
   if(i.id==="av-file"){setAvatar(i.files&&i.files[0]);i.value="";return;}
   if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;S.combo.last=null;S.combo.err=null;var pd=provOf(S.combo.url);if(pd)S.combo.prov=pd.id;savePlan();syncCombo(true);return;}
   if(i.id==="ics-file"&&i.files&&i.files[0]){var fr=new FileReader();fr.onload=function(){try{mergePlan(parseICS(fr.result));renderParams();}catch(x){comboMsg("Ce fichier n'est pas un calendrier .ics.");}};fr.readAsText(i.files[0]);i.value="";return;}
@@ -1791,7 +2241,7 @@ view.addEventListener("change",function(e){var i=e.target;
   if(i.id!=="imp-file"||!i.files||!i.files[0])return;
   var r=new FileReader();
   r.onload=function(){try{var d=JSON.parse(r.result);if(!d||(d.app!=="iolite"&&d.app!=="ma-pointeuse")||typeof d.days!=="object")throw 0;
-      S.days=d.days||{};applySettings(d.settings);if(d.plan)S.plan=d.plan;if(d.combo&&d.combo.url)S.combo.url=d.combo.url;savePlan();saveDays();saveSettings();
+      setAllDays(d.days||{});applySettings(d.settings);if(d.plan)setAllPlan(d.plan,Object.assign({},mainCombo(),d.combo&&d.combo.url?{url:d.combo.url}:{}));savePlan();saveDays();saveSettings();
       renderParams();var n=Object.keys(S.days).length;bkMsg(n+(n>1?" journées importées.":" journée importée."));}
     catch(x){bkMsg("Ce fichier n'est pas une sauvegarde iolite.");}};
   r.readAsText(i.files[0]);i.value="";});
@@ -1801,6 +2251,11 @@ view.addEventListener("input",function(e){var i=e.target;
     updateEq(i);saveSettings();return;}
   if(i.dataset.majc){S.pay.majc=S.pay.majc||{};S.pay.majc[i.dataset.majc]=i.value.trim()||null;saveSettings();return;}
   if("cpstart" in i.dataset){S.conges.start=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
+  if("cend" in i.dataset){ct().end=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
+  if("cen" in i.dataset){ct().en=i.value.trim()||null;saveSettings();return;}
+  if("crn" in i.dataset){ct().rn=i.value.trim()||null;saveSettings();return;}
+  if(i.dataset.ov){S.pay.ov=S.pay.ov||{};var ov=i.value.trim();if(ov==="")delete S.pay.ov[i.dataset.ov];else S.pay.ov[i.dataset.ov]=ov;saveSettings();return;}
+  if(i.dataset.jobname){var jj=JOBS.filter(function(j){return j.id===i.dataset.jobname;})[0];if(jj){jj.name=i.value;saveSettings();}return;}
   if("cp" in i.dataset){S.conges.report=i.value.trim()===""?null:i.value.trim();saveSettings();return;}
   if(i.id==="wiz-time"&&i.value){svcObj(i.dataset.wizs)[i.dataset.wizf]=i.value;tidy(key(S.cur));return;}
   if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;savePlan();return;}
