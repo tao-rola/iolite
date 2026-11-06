@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.52">
+<meta name="description" content="iolite version 0.53">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -669,7 +669,10 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .eye svg{width:21px;height:21px}.eye[aria-pressed="true"]{color:var(--ink)}
 .help-row{cursor:default}.help-row small{white-space:normal;line-height:1.4;margin-top:4px}
-.wiz-skip{display:block;margin:22px auto 0;border:0;background:none;color:var(--soir);font:inherit;font-size:15.5px;font-weight:600;padding:10px 6px;cursor:pointer}
+.wiz-skip{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:22px 0 0;padding:16px 18px;border:0;border-radius:999px;font:inherit;font-size:16px;font-weight:700;color:var(--ink);
+  background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.28),0 10px 26px -14px rgba(0,0,0,.6);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);cursor:pointer}
+.wiz-skip:active{background:rgba(255,255,255,.2)}
+.wiz-skip svg{width:20px;height:20px;flex:none;opacity:.9}
 .prov-list{display:flex;flex-wrap:wrap;gap:8px}
 .prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .prov.on{background:#fff;color:#15122A}
@@ -1338,7 +1341,7 @@ function renderWizard(){
     eyebrow=svcLabel(s);q=f==="start"?"À quelle heure avez-vous commencé ?":"À quelle heure avez-vous fini ?";
     body='<input type="time" class="wiz-time" id="wiz-time" data-wizf="'+f+'" data-wizs="'+s+'" value="'+esc(v)+'">'+
       (sug.length?'<div class="quick">'+sug.map(function(x){return '<button data-wizset="'+x+'">'+x+(pp&&pp[f]===x?' · Prévu':'')+'</button>';}).join("")+'</div>':'')+
-      (f==="start"&&(s==="midi"||s==="soir")?'<button class="wiz-skip" data-wizskip="'+s+'">'+(s==="midi"?"Je n'ai pas travaillé ce matin":"Je n'ai pas travaillé cet après-midi")+'</button>':'');
+      (f==="start"&&(s==="midi"||s==="soir")?'<button class="wiz-skip" data-wizskip="'+s+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>'+(s==="midi"?"Je n'ai pas travaillé ce matin":"Je n'ai pas travaillé cet après-midi")+'</button>':'');
     next=true;
   }else if(parts[0]==="pause"){
     var o=svcObj(s);if(!W.had[s]&&!W.pt[s]){var pp2=planFor(k,s),rp=recent(s,"pause",1);o.pause=pp2&&pp2.pause!=null?pp2.pause:(rp.length?rp[0]:0);W.pt[s]=1;tidy(k);}
@@ -1624,7 +1627,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.52</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.53</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
