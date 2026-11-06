@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.44">
+<meta name="description" content="iolite version 0.45">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -709,7 +709,7 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 <script>
 (function(){
 "use strict";
-var SVCS=["midi","soir","cont"], NAMES={midi:"Service du midi",soir:"Service du soir",cont:"Journée continue"}, CLS={midi:"m",soir:"s",cont:"c"};
+var SVCS=["midi","soir","cont"], NAMES={midi:"Matin",soir:"Après-midi",cont:"Journée continue"}, CLS={midi:"m",soir:"s",cont:"c"};
 var JOURS=["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 var MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 var MOIS_C=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
@@ -1064,7 +1064,13 @@ function planRest(k){var pl=planOf(k);if(!planCovers(k))return false;return !pl.
 function planText(pl){if(pl.length&&pl[0].allday)return isAbsence(pl[0])?esc(pl[0].title):"repos";return pl.filter(function(p){return !p.allday;}).map(function(p){return p.start+" / "+p.end;}).join(" · ");}
 /* répartit les créneaux prévus en services iolite */
 function planToSvcs(k){var sh=planShifts(k),o={};if(!sh.length)return null;
-  if(sh.length>=2){o.mode="coupure";o.midi=sh[0];o.soir=sh[sh.length-1];return o;}
+  if(sh.length>=2){ /* plusieurs créneaux (ex. cours d'un emploi du temps) : on colle ceux qui se suivent, puis on coupe à la plus longue pause */
+    var L=sh.slice().sort(function(x,y){return toMin(x.start)-toMin(y.start);}),B=[];
+    L.forEach(function(x){var b=B[B.length-1];if(b&&toMin(x.start)-toMin(b.end)<=15){if(toMin(x.end)>toMin(b.end))b.end=x.end;}else B.push({start:x.start,end:x.end,pause:0});});
+    if(B.length===1){sh=[B[0]];}
+    else{var cut=1,gap=-1;for(var q=1;q<B.length;q++){var g=toMin(B[q].start)-toMin(B[q-1].end);if(g>gap){gap=g;cut=q;}}
+      var A=B.slice(0,cut),Z=B.slice(cut);
+      o.mode="coupure";o.midi={start:A[0].start,end:A[A.length-1].end,pause:0};o.soir={start:Z[0].start,end:Z[Z.length-1].end,pause:0};return o;}}
   var p=sh[0],a=toMin(p.start),c=svcCalc(p);
   if(c&&c.amp>=420){o.mode="continue";o.cont=p;}
   else if(a<16*60){o.mode="coupure";o.midi=p;}else{o.mode="coupure";o.soir=p;}
@@ -1117,14 +1123,21 @@ var PROVS=[
 function provOf(url){try{var h=new URL(String(url||"").replace(/^webcal:/i,"https:")).hostname;for(var i=0;i<PROVS.length;i++)if(PROVS[i].re.test(h))return PROVS[i];}catch(e){}return null;}
 function provSel(){return provOf(S.combo.url)||{id:"autre",n:"votre planning",help:""};}
 function provName(){return S.combo.url?provSel().n:"votre planning";}
+/* ADE (emplois du temps) ne renvoie par défaut que les semaines à venir : on demande aussi les jours passés,
+   depuis le début du contrat (au plus 6 mois), jusqu'à 8 semaines après aujourd'hui */
+function widenIcs(u){try{var x=new URL(u);if(!/anonymous_cal\.jsp$/i.test(x.pathname))return u;
+  var t=new Date(),cs=contractStart(),from=addDays(t,-183);if(cs&&cs>from)from=cs;var to=addDays(t,7*Math.max(8,+x.searchParams.get("nbWeeks")||0));
+  x.searchParams.delete("nbWeeks");x.searchParams.set("firstDate",key(from));x.searchParams.set("lastDate",key(to));return x.toString();}catch(e){return u;}}
 function syncCombo(manual){
   var u=(S.combo.url||"").trim();if(!u||syncing)return Promise.resolve();
   if(!/^(https?|webcal):\/\/[^\s]+\.[^\s]+/i.test(u)){S.combo.err="Cette adresse n'est pas valide. Collez l'adresse complète, qui commence par https:// ou webcal://.";savePlan();comboMsg(S.combo.err);return Promise.resolve();}
   syncing=true;if(manual)comboMsg("Synchronisation…");
-  var https=u.replace(/^webcal:/i,"https:");
-  return fetch("/.netlify/functions/combo?url="+encodeURIComponent(https),{cache:"no-store"})
+  var https=u.replace(/^webcal:/i,"https:"),wide=widenIcs(https);
+  function get(x){return fetch("/.netlify/functions/combo?url="+encodeURIComponent(x),{cache:"no-store"})
     .then(function(r){if(!r.ok)throw new Error("proxy "+r.status);return r.text();})
-    .catch(function(){return fetch(https,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http "+r.status);return r.text();});})
+    .catch(function(){return fetch(x,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http "+r.status);return r.text();});})
+    .then(function(t){if(!/BEGIN:VCALENDAR/.test(t))throw new Error("ics");return t;});}
+  return (wide!==https?get(wide).catch(function(){return get(https);}):get(https))
     .then(function(t){mergePlan(parseICS(t));})
     .catch(function(){S.combo.err="Impossible de lire ce planning. Vérifiez que l'adresse est bien celle de l'abonnement calendrier (iCal / .ics).";savePlan();})
     .then(function(){syncing=false;if(OB||document.body.classList.contains("gate")){comboMsg(comboStatus());return;}if(S.tab==="params")renderParams();else if(S.tab!=="alerts")render();updateBadge();});}
@@ -1301,7 +1314,7 @@ function renderWizard(){
     eyebrow=pl.length?"Prévu sur "+provName()+" : "+planText(pl):planRest(k)?"Prévu sur "+provName()+" : repos":"";
     var cur=!S.days[k]?null:modeOf(d)==="repos"?"off":modeOf(d);
     body='<div class="choices">'+
-      [["continue","Continue",""],["coupure","Coupure",""],["off","Repos",""],["conge","Congé payé",""]].map(function(o){
+      [["continue","Continue",""],["coupure","Coupée","Matin et après-midi"],["off","Repos",""],["conge","Congé payé",""]].map(function(o){
         return '<button class="choice'+(cur===o[0]?" on":"")+'" data-wiztype="'+o[0]+'">'+o[1]+(o[2]?'<small>'+o[2]+'</small>':'')+'</button>';}).join("")+'</div>';
   }else if(parts[0]==="start"||parts[0]==="end"){
     var f=parts[0],v=(d[s]&&d[s][f])||"",sug=[],pp=planFor(k,s);
@@ -1474,7 +1487,7 @@ function message(a){var v='<b>'+a.val+'</b>';
   switch(a.kind){
     case "rest":return "Seulement "+v+" de repos avant cette journée. Le minimum légal est de 11 h.";
     case "long":return "Vous avez travaillé "+v+" ce jour-là, au-delà des 10 h maximum par jour.";
-    case "amp":return "Votre journée s'est étalée sur "+v+" du premier au dernier service. L'amplitude maximale est de 13 h.";
+    case "amp":return "Votre journée s'est étalée sur "+v+" entre le début et la fin de votre journée. L'amplitude maximale est de 13 h.";
     case "run":return "C'est votre "+a.val+"ᵉ jour de travail d'affilée. Pensez à prendre votre repos hebdomadaire.";
     case "week":return "Vous avez fait "+v+" cette semaine, au-delà des 48 h maximum.";
     case "today":return "Vous n'avez encore rien pointé aujourd'hui.";
@@ -1590,7 +1603,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.44</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.45</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
