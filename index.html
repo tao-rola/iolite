@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.57">
+<meta name="description" content="iolite version 0.58">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -705,32 +705,33 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 .sett .maj-list{display:flex;flex-direction:column;gap:8px}
 @media (prefers-reduced-motion:no-preference){.sett.sub{animation:subin .32s cubic-bezier(.2,.8,.2,1) both}}
 @keyframes subin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
-/* page Shift : la date, les flèches et la semaine restent en haut ; seul le contenu du jour défile */
+/* page Shift : la date, les flèches et la semaine restent en haut ; seul le contenu du jour défile.
+   L'en-tête n'a aucun fond : c'est le contenu qui défile dans sa propre zone, et s'efface en douceur sous la semaine.
+   Le fond animé de la page reste donc unique, sans aucune délimitation. */
 .shead{display:flex;flex-direction:column;gap:14px}
 #dayhead:empty{display:none}
 body.fixtop .shead{position:fixed;top:0;left:0;right:0;z-index:6;gap:10px;
-  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));
-  isolation:isolate}
-/* sous l'en-tête : une copie exacte du fond animé, calée au même endroit que celui de la page, pour que rien ne se voie */
-.shead-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;visibility:hidden}
-body.fixtop .shead-bg{visibility:visible;
-  -webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 22px),transparent)}
-.shead-bg .aura{position:absolute;top:0;left:0;right:0;bottom:auto;height:calc(100vh + 240px);z-index:auto}
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 body.fixtop .shead>*{width:100%;max-width:430px;margin-left:auto;margin-right:auto}
-body.fixtop #view{padding-top:var(--sh,180px)}
 body.fixtop #dayhead .strip{margin-top:0}
+body.fixtop #view{position:fixed;left:0;right:0;top:var(--shb,180px);bottom:0;margin:0;max-width:none;z-index:1;
+  overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:18px max(16px,calc((100% - 430px)/2),env(safe-area-inset-right,0px)) calc(108px + env(safe-area-inset-bottom,0px)) max(16px,calc((100% - 430px)/2),env(safe-area-inset-left,0px));
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22px);mask-image:linear-gradient(180deg,transparent 0,#000 22px)}
+body.fixtop #view::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
 <div class="aura" aria-hidden="true"><i></i><i></i><i></i></div><div class="sbar" aria-hidden="true"></div>
 <div class="wrap">
-  <div class="shead" id="shead"><div class="shead-bg" aria-hidden="true"><div class="aura"><i></i><i></i><i></i></div></div><header class="top" id="top">
+  <div class="shead" id="shead"><header class="top" id="top">
     <div class="top-title"><b id="title">…</b><small id="subtitle"></small></div>
     <div class="nav-cap" id="navcap"><button class="nav-btn" id="prev" aria-label="Jour précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="nav-btn" id="next" aria-label="Jour suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <span class="top-logo" id="toplogo" aria-hidden="true"></span>
   </header><div id="dayhead"></div></div>
   <main id="view" class="wrap"></main>
   <div class="status" id="status" role="status"></div>
+  <div id="dockhost"></div>
 </div>
 
 <nav class="tabs" aria-label="Pages">
@@ -1523,19 +1524,15 @@ function dayTags(dt,d,r){var t=[],fn=ferName(dt);
   return t.length?'<div class="day-tags">'+t.join("")+'</div>':"";}
 /* en-tête fixe de la page Shift (semaine, emplois) ; le contenu est décalé de sa hauteur */
 function dayHead(html){var dh=document.getElementById("dayhead");if(dh.innerHTML!==html)dh.innerHTML=html;fixTop();}
-function fixTop(){var on=S.tab==="shift"&&!document.body.classList.contains("gate");document.body.classList.toggle("fixtop",on);
-  if(!on){document.getElementById("dayhead").innerHTML="";return;}
-  var sh=document.getElementById("shead");document.body.style.setProperty("--sh",Math.max(0,sh.offsetHeight-safeTop())+"px");syncAura();}
-/* les bulles du fond sous l'en-tête bougent exactement en même temps que celles de la page */
-function syncAura(){try{var a=document.querySelectorAll("body>.aura i"),c=document.querySelectorAll(".shead-bg .aura i");
-  for(var i=0;i<a.length&&i<c.length;i++){var x=a[i].getAnimations?a[i].getAnimations()[0]:null,y=c[i].getAnimations?c[i].getAnimations()[0]:null;if(x&&y&&x.startTime!=null&&y.startTime!==x.startTime)y.startTime=x.startTime;}}catch(e){}}
-function safeTop(){var t=document.getElementById("shead");var c=parseFloat(getComputedStyle(t).paddingTop)||0;return c;}
+function fixTop(){var on=S.tab==="shift"&&!W&&!document.body.classList.contains("gate");document.body.classList.toggle("fixtop",on);
+  if(!on){document.getElementById("dayhead").innerHTML="";document.getElementById("dockhost").innerHTML="";return;}
+  var sh=document.getElementById("shead");document.body.style.setProperty("--shb",Math.round(sh.getBoundingClientRect().bottom-4)+"px");}
 window.addEventListener("resize",function(){if(document.body.classList.contains("fixtop"))fixTop();});
 function renderShift(){
   dateHead();
   if(W&&W.k!==key(S.cur))W=null;
-  if(W){dayHead("");renderWizard();return;}
-  var d=shiftData(),r=dayCalc(d),k=key(S.cur),pl=planOf(k),pt=planTotal(k),has=entered(d);
+  if(W){dayHead("");view.scrollTop=0;renderWizard();return;}
+  var dock="",d=shiftData(),r=dayCalc(d),k=key(S.cur),pl=planOf(k),pt=planTotal(k),has=entered(d);
   var m=modeOf(d),ab=absOf(d),word=S.days[k]&&m==="repos"?"Repos":S.days[k]&&m==="conge"?"Congé payé":ab&&ab.k!=="work"?ab.n:null;
   dayHead(jobBar()+weekStrip());
   var h='<section class="hero"><div><div class="lbl">'+(word?"Journée":"Total de la journée")+'</div><div class="big'+(word?" word":"")+'"'+(word?'':' data-count="'+Math.round(r.total)+'"')+'>'+(word||fmt(r.total))+'</div></div></section>'+dayTags(S.cur,d,r);
@@ -1554,12 +1551,13 @@ function renderShift(){
     active(d).forEach(function(sv){var v=d[sv],c=svcCalc(v);if(!v||!(v.start||v.end))return;rows+=rowHtml2(svcLabel(sv),slotSub(v),c?fmt(c.net):"");});
     h+='<section class="svc sum-card"><div class="card-h"><span><i class="card-dot"></i>Pointé</span>'+'</div>'+rows+'</section>';}
   if(has){
-    h+='<div class="dock-sp"></div><div class="dock"><button class="btn-main" data-wiz="start">Modifier</button></div>';
+    h+='<div class="dock-sp"></div>';dock='<div class="dock"><button class="btn-main" data-wiz="start">Modifier</button></div>';
   }else{
     var sch=false;
-    h+='<div class="dock-sp'+(sch?" two":"")+'"></div><div class="dock">'+(sch?'<button class="btn-main" data-schoolday>C\'était un jour d\'école · '+fmt(planTotal(k))+'</button><button class="btn-alt" data-wiz="start">Pointer autre chose</button>':'<button class="btn-main" data-wiz="start">Pointer cette journée</button>')+'</div>';
+    h+='<div class="dock-sp'+(sch?" two":"")+'"></div>';dock='<div class="dock">'+(sch?'<button class="btn-main" data-schoolday>C\'était un jour d\'école · '+fmt(planTotal(k))+'</button><button class="btn-alt" data-wiz="start">Pointer autre chose</button>':'<button class="btn-main" data-wiz="start">Pointer cette journée</button>')+'</div>';
   }
-  view.innerHTML=h;countUp();updateBadge();checkReminder();
+  var nk=key(S.cur);if(view.dataset.k!==nk){view.dataset.k=nk;view.scrollTop=0;}
+  view.innerHTML=h;document.getElementById("dockhost").innerHTML=dock;countUp();updateBadge();checkReminder();
 }
 
 /* une question par écran */
@@ -2021,7 +2019,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.57</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.58</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
