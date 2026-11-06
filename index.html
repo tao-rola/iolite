@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.46">
+<meta name="description" content="iolite version 0.47">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -789,6 +789,9 @@ function updateBadge(){var b=document.getElementById("al-badge");if(!b)return;va
 var MAJ={legal:[[35,1],[43,1.25],[1e9,1.5]],hcr:[[35,1],[39,1.10],[43,1.20],[1e9,1.5]],none:[[1e9,1]]};
 /* majoration personnalisée : taux de sa convention ou de son accord d'entreprise */
 function majCustom(){var c=S.pay.majc||{},t1=num(c.t1),h1=num(c.h1),t2=num(c.t2);if(!(t1>=0))t1=25;if(!(h1>35))h1=43;if(!(t2>=0))t2=50;return [[35,1],[h1,1+t1/100],[1e9,1+t2/100]];}
+/* conventions courantes qui appliquent les taux du Code du travail (+25 % puis +50 %) */
+var CONV=[["rapide","Restauration rapide","IDCC 1501"],["collect","Restauration de collectivités","IDCC 1266"],["alim","Commerce de détail et de gros à prédominance alimentaire","IDCC 2216"],
+  ["syntec","Bureaux d'études techniques (Syntec)","IDCC 1486"],["metal","Métallurgie","IDCC 3248"],["btp","Bâtiment (ouvriers)","IDCC 1596 / 1597"]];
 function factor(h){var t=S.pay.maj==="custom"?majCustom():(MAJ[S.pay.maj]||MAJ.legal);for(var i=0;i<t.length;i++)if(h<=t[i][0])return t[i][1];return 1;}
 function payReady(){return S.pay.mode==="mensuel"?num(S.pay.monthly)>0:num(S.pay.rate)>0;}
 /* brut d'une semaine de h heures payée 1 €/h, majorations comprises */
@@ -1566,7 +1569,7 @@ function row(o){var tag=o.label?'label':'button',attr=o.label?' for="'+o.label+'
   return '<'+tag+' class="srow'+(o.cls?" "+o.cls:"")+'"'+attr+'>'+(o.icon?ico(o.icon):'')+'<span class="srow-t">'+o.t+(o.sub?'<small>'+o.sub+'</small>':'')+'</span>'+
     (o.v!=null?'<span class="srow-v">'+o.v+'</span>':'')+(o.toggle!=null?'<span class="tgl'+(o.toggle?' on':'')+'" aria-hidden="true"></span>':o.chev===false?'':CHEV)+'</'+tag+'>';}
 function group(title,rows,after){return '<section class="sgrp">'+(title?'<h2>'+title+'</h2>':'')+'<div class="scard">'+rows.join("")+'</div>'+(after||'')+'</section>';}
-var MAJ_NAMES={legal:"Code du travail",hcr:"Convention HCR",custom:"Personnalisée",none:"Aucune"};
+var MAJ_NAMES={legal:"Code du travail",hcr:"Convention HCR",custom:"Personnalisée",none:"Aucune"};CONV.forEach(function(c){MAJ_NAMES[c[0]]=c[1];});
 function fdate(v){if(!v)return "";var p=v.split("-");return (+p[2])+" "+MOIS_C[+p[1]-1]+" "+p[0];}
 function initials(){var f=(PROFILE.first_name||"").trim(),l=(PROFILE.last_name||"").trim();return ((f[0]||"")+(l[0]||"")).toUpperCase()||"?";}
 /* photo de profil : recadrée en carré 256 px, gardée avec les réglages (synchronisée avec le compte) */
@@ -1605,7 +1608,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.46</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.47</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1630,8 +1633,11 @@ function renderSub(){
       '</div><p class="snote">Remplissez le taux horaire ou le salaire mensuel : l\'autre se calcule tout seul.</p>';}
   else if(k==="maj"){t="Heures sup";
     var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Convention HCR","Hôtels, cafés, restaurants : +10 % de la 36ᵉ à la 39ᵉ, +20 % de la 40ᵉ à la 43ᵉ, +50 % au-delà"],["custom","Ma convention ou mon accord","Saisissez vous-même les taux prévus par votre convention collective ou votre accord d'entreprise"],["none","Aucune majoration","Les heures sup sont payées au taux normal"]];
-    var mc=P.majc||{};
-    b='<section class="sgrp"><h2>Majoration</h2><div class="maj-list">'+opts.map(function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';}).join("")+'</div></section>'+
+    var mc=P.majc||{},btn=function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';};
+    var conv=CONV.map(function(c){return [c[0],c[1],c[2]+" · +25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"];});
+    b='<section class="sgrp"><h2>Majoration</h2><div class="maj-list">'+opts.slice(0,2).map(btn).join("")+'</div></section>'+
+      '<section class="sgrp"><h2>Autres conventions</h2><div class="maj-list">'+conv.map(btn).join("")+'</div></section>'+
+      '<section class="sgrp"><h2>Autre cas</h2><div class="maj-list">'+opts.slice(2).map(btn).join("")+'</div></section>'+
       (P.maj==="custom"?'<section class="sgrp"><h2>Vos taux</h2><div class="set">'+
         '<div class="field money"><label for="mc-t1">Majoration à partir de la 36ᵉ heure</label><input id="mc-t1" data-majc="t1" inputmode="decimal" autocomplete="off" placeholder="25" value="'+esc(mc.t1==null?"":mc.t1)+'"><em>%</em></div>'+
         '<div class="field money"><label for="mc-h1">Jusqu\'à la</label><input id="mc-h1" data-majc="h1" inputmode="numeric" autocomplete="off" placeholder="43" value="'+esc(mc.h1==null?"":mc.h1)+'"><em>ᵉ h</em></div>'+
