@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.42">
+<meta name="description" content="iolite version 0.43">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -664,6 +664,10 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 .dock{position:fixed;left:0;right:0;margin:0 auto;max-width:430px;z-index:7;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));bottom:calc(max(10px,calc(env(safe-area-inset-bottom,0px) - 12px)) + 82px)}
 .dock .btn-main{width:100%;margin:0}.dock .sgrp{gap:0}
 .dock-sp{height:64px;flex:none}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:52px!important;width:100%}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.eye svg{width:21px;height:21px}.eye[aria-pressed="true"]{color:var(--ink)}
 .prov-list{display:flex;flex-wrap:wrap;gap:8px}
 .prov{border:0;border-radius:999px;padding:10px 16px;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink);background:var(--surface);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:var(--glass-hi);cursor:pointer}
 .prov.on{background:#fff;color:#15122A}
@@ -976,7 +980,7 @@ function showAuth(mode,msg){AUTHMODE=mode;gate(true);
   var h='<div class="auth"><div class="auth-logo">'+BOT+'</div><h1 class="wiz-q">'+t[0]+'</h1><p class="auth-sub">'+t[1]+'</p>';
   if(mode!=="check"){h+='<form class="auth-form" id="auth-form" novalidate>';
     if(mode!=="reset")h+='<div class="field"><label for="au-mail">E-mail</label><input id="au-mail" type="email" autocomplete="email" inputmode="email" required></div>';
-    if(mode!=="forgot")h+='<div class="field"><label for="au-pass">Mot de passe</label><input id="au-pass" type="password" autocomplete="'+(mode==="login"?"current-password":"new-password")+'" minlength="6" required></div>';
+    if(mode!=="forgot")h+='<div class="field"><label for="au-pass">Mot de passe</label><div class="pw-wrap"><input id="au-pass" type="password" autocomplete="'+(mode==="login"?"current-password":"new-password")+'" minlength="6" required>'+eyeBtn("au-pass")+'</div></div>';
     h+='<p class="auth-msg" id="au-msg" role="alert">'+esc(msg||"")+'</p>';
     h+='<button class="btn-main" type="submit">'+{login:"Se connecter",signup:"Créer mon compte",forgot:"Envoyer le lien",reset:"Enregistrer"}[mode]+'</button></form>';}
   else h+='<p class="auth-msg" id="au-msg">'+esc(msg||"")+'</p>';
@@ -1585,7 +1589,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.42</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.43</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1637,9 +1641,9 @@ function renderSub(){
 /* ---------- compte : mot de passe, e-mail, suppression ---------- */
 var ACC=null,ACCMSG="";
 function accHtml(){return (ACC==="pw"||ACC==="mail"?accForm(ACC):"")+(ACCMSG&&ACC!=="del"?'<p class="note acc-ok">'+esc(ACCMSG)+'</p>':"");}
-function accForm(k){var cur='<div class="field"><label for="acc-cur">Mot de passe actuel</label><input id="acc-cur" type="password" autocomplete="current-password"></div>';
+function accForm(k){var cur='<div class="field"><label for="acc-cur">Mot de passe actuel</label><div class="pw-wrap"><input id="acc-cur" type="password" autocomplete="current-password">'+eyeBtn("acc-cur")+'</div></div>';
   var h='<div class="acc-form">';
-  if(k==="pw")h+=cur+'<div class="field"><label for="acc-new">Nouveau mot de passe</label><input id="acc-new" type="password" autocomplete="new-password" placeholder="6 caractères minimum"></div>';
+  if(k==="pw")h+=cur+'<div class="field"><label for="acc-new">Nouveau mot de passe</label><div class="pw-wrap"><input id="acc-new" type="password" autocomplete="new-password" placeholder="6 caractères minimum">'+eyeBtn("acc-new")+'</div></div>';
   else if(k==="mail")h+='<div class="field"><label for="acc-mail">Nouvelle adresse e-mail</label><input id="acc-mail" class="txt" type="email" inputmode="email" autocomplete="email" spellcheck="false"></div>'+cur;
   else h+='<p class="note">Votre compte et toutes vos données (journées pointées, réglages, planning) seront effacés définitivement. Pensez à exporter vos données avant si vous voulez les garder.</p>'+cur;
   h+='<p class="note acc-err" id="acc-msg"></p><div class="backup"><button class="'+(k==="del"?"danger-btn":"")+'" data-accgo="'+k+'">'+(k==="del"?"Supprimer définitivement":"Enregistrer")+'</button><button class="imp" '+(k==="del"?'data-sub=""':'data-acc=""')+'>Annuler</button></div></div>';
@@ -1683,6 +1687,13 @@ function keepScroll(fn){var y=window.scrollY;fn();render();window.scrollTo(0,y);
 /* un appui sur la carte du salaire déplie ou replie le détail */
 function togglePay(sec){var on=sec.getAttribute("aria-expanded")!=="true";sec.setAttribute("aria-expanded",String(on));
   var pf=sec.querySelector(".pay-fold");if(pf)pf.classList.toggle("open",on);try{localStorage.setItem("pt-paydet",on?"1":"0");}catch(e){}}
+/* petit œil dans les champs de mot de passe : afficher / masquer ce qui est saisi */
+var EYE_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+var EYE_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+function eyeBtn(id){return '<button type="button" class="eye" data-eye="'+id+'" aria-label="Afficher le mot de passe" aria-pressed="false">'+EYE_ON+'</button>';}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-eye]");if(!b)return;e.preventDefault();var i=document.getElementById(b.dataset.eye);if(!i)return;
+  var show=i.type==="password";i.type=show?"text":"password";b.setAttribute("aria-pressed",show);b.setAttribute("aria-label",show?"Masquer le mot de passe":"Afficher le mot de passe");b.innerHTML=show?EYE_OFF:EYE_ON;
+  try{i.focus({preventScroll:true});var n=i.value.length;i.setSelectionRange(n,n);}catch(x){}},true);
 document.addEventListener("click",function(e){var pp=e.target.closest("[data-paypanel]");if(pp){togglePay(pp);}});
 document.addEventListener("keydown",function(e){var pp=e.target.closest&&e.target.closest("[data-paypanel]");if(pp&&(e.key==="Enter"||e.key===" ")){e.preventDefault();togglePay(pp);}});
 document.addEventListener("click",function(e){
