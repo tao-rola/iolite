@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.55">
+<meta name="description" content="iolite version 0.56">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -705,16 +705,27 @@ html,body,.strip,.hero,.sum-card{touch-action:pan-y}
 .sett .maj-list{display:flex;flex-direction:column;gap:8px}
 @media (prefers-reduced-motion:no-preference){.sett.sub{animation:subin .32s cubic-bezier(.2,.8,.2,1) both}}
 @keyframes subin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+/* page Shift : la date, les flèches et la semaine restent en haut ; seul le contenu du jour défile */
+.shead{display:flex;flex-direction:column;gap:14px}
+#dayhead:empty{display:none}
+body.fixtop .shead{position:fixed;top:0;left:0;right:0;z-index:6;gap:10px;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));
+  background:linear-gradient(180deg,rgba(74,76,149,.9) 0%,rgba(66,64,138,.7) 60%,rgba(58,54,124,.45) 100%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);
+  -webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 16px),transparent)}
+body.fixtop .shead>*{width:100%;max-width:430px;margin-left:auto;margin-right:auto}
+body.fixtop #view{padding-top:var(--sh,180px)}
+body.fixtop #dayhead .strip{margin-top:0}
 </style>
 </head>
 <body>
 <div class="aura" aria-hidden="true"><i></i><i></i><i></i></div><div class="sbar" aria-hidden="true"></div>
 <div class="wrap">
-  <header class="top" id="top">
+  <div class="shead" id="shead"><header class="top" id="top">
     <div class="top-title"><b id="title">…</b><small id="subtitle"></small></div>
     <div class="nav-cap" id="navcap"><button class="nav-btn" id="prev" aria-label="Jour précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="nav-btn" id="next" aria-label="Jour suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <span class="top-logo" id="toplogo" aria-hidden="true"></span>
-  </header>
+  </header><div id="dayhead"></div></div>
   <main id="view" class="wrap"></main>
   <div class="status" id="status" role="status"></div>
 </div>
@@ -1168,7 +1179,7 @@ function startUser(user){
     else{view.innerHTML='<div class="gate-load">'+BOT+'<p>Impossible de joindre la base en ligne.</p><button class="btn-main" data-retry>Réessayer</button></div>';}
   });
 }
-function gate(on){document.body.classList.toggle("gate",on);}
+function gate(on){document.body.classList.toggle("gate",on);if(on){document.body.classList.remove("fixtop");document.getElementById("dayhead").innerHTML="";}}
 function enterApp(){OB=null;gate(false);render();mirror();autoSync();checkReminder();}
 function signOut(){var go=function(){SUB=null;resetLocal();lsSet("pt-owner",null);USER=null;cloudReady=false;W=null;showAuth("login","Vous êtes déconnecté.");};
   if(SB)SB.auth.signOut().then(go,go);else go();}
@@ -1434,7 +1445,7 @@ function render(){
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false");});
   var sh=S.tab==="shift";document.getElementById("top").classList.toggle("day",sh);document.getElementById("navcap").hidden=!sh;document.getElementById("toplogo").hidden=true;
   if(!sh)setHead({stats:"Statistiques",alerts:"Alertes",params:"Réglages"}[S.tab],{stats:"Vos heures et votre salaire",alerts:"Ce qu'iolite a remarqué",params:"Votre compte et vos préférences"}[S.tab]);
-  if(S.tab==="shift")renderShift();else if(S.tab==="stats")renderStats();else if(S.tab==="alerts")renderAlerts();else renderParams();
+  if(S.tab==="shift")renderShift();else{fixTop();if(S.tab==="stats")renderStats();else if(S.tab==="alerts")renderAlerts();else renderParams();}
   updateBadge();
 }
 function setHead(t,s){document.getElementById("title").textContent=t;document.getElementById("subtitle").innerHTML=s||"";}
@@ -1453,7 +1464,7 @@ function weekStrip(){var m=monday(S.cur),t=new Date(),L=["L","M","M","J","V","S"
 
 /* ===== Page Shift : glisser à gauche ou à droite sur la semaine (semaine suivante / précédente) ou sur les cartes du jour (jour suivant / précédent) ===== */
 var SW=null,SWIPED=0;
-function swEls(z){return z==="week"?[view.querySelector(".strip")]:[].slice.call(view.querySelectorAll(".hero,.sum-card"));}
+function swEls(z){return z==="week"?[document.querySelector("#dayhead .strip")]:[].slice.call(view.querySelectorAll(".hero,.sum-card"));}
 document.addEventListener("touchstart",function(e){SW=null;if(S.tab!=="shift"||W||e.touches.length!==1||document.body.classList.contains("gate"))return;
   /* la bande des jours change de semaine ; partout ailleurs sur la page (sauf la barre d'onglets) on change de jour */
   var z=e.target.closest(".tabs")?null:e.target.closest(".strip")?"week":"day";if(!z)return;
@@ -1467,7 +1478,7 @@ function swEnd(){if(!SW)return;var o=SW;SW=null;if(!o.h)return;
   o.els.forEach(function(el){el.style.transition="transform .25s cubic-bezier(.2,.8,.2,1),opacity .25s";el.style.transform="";el.style.opacity="";});}
 document.addEventListener("touchend",swEnd);document.addEventListener("touchcancel",swEnd);
 /* un glissement ne doit pas valoir un appui sur un jour de la semaine */
-view.addEventListener("click",function(e){if(Date.now()-SWIPED<450){e.stopPropagation();e.preventDefault();}},true);
+[view,document.getElementById("dayhead")].forEach(function(el){el.addEventListener("click",function(e){if(Date.now()-SWIPED<450){e.stopPropagation();e.preventDefault();}},true);});
 
 /* ===== Page Shift : récapitulatif du jour + saisie question par question ===== */
 function shiftData(){return S.days[key(S.cur)]||{};}
@@ -1507,13 +1518,21 @@ function dayTags(dt,d,r){var t=[],fn=ferName(dt);
     if(fp>0)t.push('<span class="hot">Férié travaillé · +'+fp+' %</span>');}
   else if(fn&&!r.worked){var fc=ferChomeMin(dt);if(fc)t.push('<span>Payé '+fmt(fc)+'</span>');}
   return t.length?'<div class="day-tags">'+t.join("")+'</div>':"";}
+/* en-tête fixe de la page Shift (semaine, emplois) ; le contenu est décalé de sa hauteur */
+function dayHead(html){var dh=document.getElementById("dayhead");if(dh.innerHTML!==html)dh.innerHTML=html;fixTop();}
+function fixTop(){var on=S.tab==="shift"&&!document.body.classList.contains("gate");document.body.classList.toggle("fixtop",on);
+  if(!on){document.getElementById("dayhead").innerHTML="";return;}
+  var sh=document.getElementById("shead");document.body.style.setProperty("--sh",Math.max(0,sh.offsetHeight-safeTop())+"px");}
+function safeTop(){var t=document.getElementById("shead");var c=parseFloat(getComputedStyle(t).paddingTop)||0;return c;}
+window.addEventListener("resize",function(){if(document.body.classList.contains("fixtop"))fixTop();});
 function renderShift(){
   dateHead();
   if(W&&W.k!==key(S.cur))W=null;
-  if(W){renderWizard();return;}
+  if(W){dayHead("");renderWizard();return;}
   var d=shiftData(),r=dayCalc(d),k=key(S.cur),pl=planOf(k),pt=planTotal(k),has=entered(d);
   var m=modeOf(d),ab=absOf(d),word=S.days[k]&&m==="repos"?"Repos":S.days[k]&&m==="conge"?"Congé payé":ab&&ab.k!=="work"?ab.n:null;
-  var h=jobBar()+weekStrip()+'<section class="hero"><div><div class="lbl">'+(word?"Journée":"Total de la journée")+'</div><div class="big'+(word?" word":"")+'"'+(word?'':' data-count="'+Math.round(r.total)+'"')+'>'+(word||fmt(r.total))+'</div></div></section>'+dayTags(S.cur,d,r);
+  dayHead(jobBar()+weekStrip());
+  var h='<section class="hero"><div><div class="lbl">'+(word?"Journée":"Total de la journée")+'</div><div class="big'+(word?" word":"")+'"'+(word?'':' data-count="'+Math.round(r.total)+'"')+'>'+(word||fmt(r.total))+'</div></div></section>'+dayTags(S.cur,d,r);
   /* deux cartes identiques : prévu sur Combo, puis pointé */
   function rowHtml2(label,sub,val){return '<div class="sum-row"><span class="sum-t">'+label+(sub?'<small>'+sub+'</small>':'')+'</span><span class="sum-v">'+val+'</span></div>';}
   function slotSub(v){return esc(v.start||"?")+' / '+esc(v.end||"?")+' · pause '+(v.pause||0)+' min'+(v.repas===true?' · repas':'');}
@@ -1996,7 +2015,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.55</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.56</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
