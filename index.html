@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.50">
+<meta name="description" content="iolite version 0.51">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -793,6 +793,8 @@ function majCustom(){var c=S.pay.majc||{},t1=num(c.t1),h1=num(c.h1),t2=num(c.t2)
 var CONV=[["rapide","Restauration rapide","IDCC 1501"],["collect","Restauration de collectivités","IDCC 1266"],["alim","Commerce de détail et de gros à prédominance alimentaire","IDCC 2216"],
   ["syntec","Bureaux d'études techniques (Syntec)","IDCC 1486"],["metal","Métallurgie","IDCC 3248"],["btp","Bâtiment (ouvriers)","IDCC 1596 / 1597"]];
 /* repas fournis par l'entreprise : sans réponse (anciens comptes) on garde la question */
+/* journées coupées (matin et après-midi séparés) : sans réponse (anciens comptes) on garde le choix */
+function splitOn(){return S.pay.split!==false;}
 function mealsOn(){return S.pay.mealsOn!==false;}
 function factor(h){var t=S.pay.maj==="custom"?majCustom():(MAJ[S.pay.maj]||MAJ.legal);for(var i=0;i<t.length;i++)if(h<=t[i][0])return t[i][1];return 1;}
 function payReady(){return S.pay.mode==="mensuel"?num(S.pay.monthly)>0:num(S.pay.rate)>0;}
@@ -1009,7 +1011,7 @@ function authSubmit(){
 }
 
 /* ---------- questionnaire de bienvenue (première connexion) ---------- */
-var OB_STEPS=["name","start","hours","pay","charges","meal","maj","rem","combo","done"];
+var OB_STEPS=["name","start","hours","split","pay","charges","meal","maj","rem","combo","done"];
 function startOnboarding(){OB={i:0};gate(true);renderOnboarding();}
 function renderOnboarding(){
   var st=OB_STEPS[OB.i],P=S.pay,n=OB_STEPS.length-1,pct=Math.round(Math.min(OB.i,n)/n*100),from=OB.last==null?0:OB.last;OB.last=pct;
@@ -1026,6 +1028,8 @@ function renderOnboarding(){
       '<div class="field money"><label for="pay-rate">À l\'heure (brut)</label><input id="pay-rate" data-pay="rate" inputmode="decimal" autocomplete="off" placeholder="12,50"><em>€</em></div></div>';}
   else if(st==="charges"){q="Vos cotisations salariales ?";sub="La part retirée du brut pour obtenir le net. Environ 22 % en général.";
     body='<div class="field money"><label for="pay-charges">Cotisations</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>';}
+  else if(st==="split"){if(S.pay.split===undefined)S.pay.split=false;q="Vos journées sont-elles coupées en deux ?";sub="Par exemple un service le midi et un autre le soir, avec une longue pause entre les deux. Sinon, vous saisirez simplement votre heure d'arrivée et de départ.";
+    body='<div class="choices two"><button class="choice'+(P.split?" on":"")+'" data-obsplit="1">Oui</button><button class="choice'+(P.split?"":" on")+'" data-obsplit="0">Non</button></div>';}
   else if(st==="meal"){if(S.pay.mealsOn===undefined)S.pay.mealsOn=false;q="Votre entreprise vous fournit-elle vos repas ?";sub="Si oui, iolite vous demandera à chaque journée si un repas vous a été fourni.";
     body='<div class="choices two"><button class="choice'+(P.mealsOn?" on":"")+'" data-obmeal="1">Oui</button><button class="choice'+(P.mealsOn?"":" on")+'" data-obmeal="0">Non</button></div>'+
       (P.mealsOn?'<div class="field money" style="margin-top:16px"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div><p class="snote">Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.</p>':'');}
@@ -1049,6 +1053,7 @@ function renderOnboarding(){
 }
 function obClick(ds){
   if(!OB)return false;
+  if(ds.obsplit){S.pay.split=ds.obsplit==="1";saveSettings();renderOnboarding();return true;}
   if(ds.obmeal){S.pay.mealsOn=ds.obmeal==="1";saveSettings();renderOnboarding();return true;}
   if(ds.obmaj){S.pay.maj=ds.obmaj;updateEq();saveSettings();renderOnboarding();return true;}
   if(!ds.ob)return false;
@@ -1219,7 +1224,7 @@ function remMsg(t){var m=document.getElementById("rem-msg");if(m)m.textContent=t
 
 /* ---------- rendu ---------- */
 var view=document.getElementById("view");
-function render(){
+function render(){NAMES.cont=splitOn()?"Journée continue":"Journée";
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false");});
   var sh=S.tab==="shift";document.getElementById("top").classList.toggle("day",sh);document.getElementById("navcap").hidden=!sh;document.getElementById("toplogo").hidden=true;
   if(!sh)setHead({stats:"Statistiques",alerts:"Alertes",params:"Réglages"}[S.tab],{stats:"Vos heures et votre salaire",alerts:"Ce qu'iolite a remarqué",params:"Votre compte et vos préférences"}[S.tab]);
@@ -1264,7 +1269,7 @@ var W=null; /* assistant en cours : {k, i, svcs} */
 function dayRef(){var k=key(S.cur),d=S.days[k]||(S.days[k]={mode:modeOf(S.days[k])});if(!d.mode)d.mode=modeOf(d);return {k:k,d:d};}
 function tidy(k){var d=S.days[k];if(d&&isBlank(d))delete S.days[k];saveDays();}
 function svcObj(s){var x=dayRef();return x.d[s]||(x.d[s]={start:"",end:"",pause:0,repas:null});}
-function svcLabel(s){return s==="cont"?"Journée continue":NAMES[s];}
+function svcLabel(s){return NAMES[s];}
 
 /* dernières valeurs utilisées pour un service (raccourcis) */
 function recent(s,f,n){var out=[],ks=Object.keys(S.days).sort().reverse();
@@ -1323,7 +1328,7 @@ function renderWizard(){
     eyebrow=pl.length?"Prévu sur "+provName()+" : "+planText(pl):planRest(k)?"Prévu sur "+provName()+" : repos":"";
     var cur=!S.days[k]?null:modeOf(d)==="repos"?"off":modeOf(d);
     body='<div class="choices">'+
-      [["continue","Continue",""],["coupure","Coupée","Matin et après-midi"],["off","Repos",""],["conge","Congé payé",""]].map(function(o){
+      (splitOn()?[["continue","Continue",""],["coupure","Coupée","Matin et après-midi"],["off","Repos",""],["conge","Congé payé",""]]:[["continue","Travaillée",""],["off","Repos",""],["conge","Congé payé",""]]).map(function(o){
         return '<button class="choice'+(cur===o[0]?" on":"")+'" data-wiztype="'+o[0]+'">'+o[1]+(o[2]?'<small>'+o[2]+'</small>':'')+'</button>';}).join("")+'</div>';
   }else if(parts[0]==="start"||parts[0]==="end"){
     var f=parts[0],v=(d[s]&&d[s][f])||"",sug=[],pp=planFor(k,s);
@@ -1553,6 +1558,7 @@ function renderAlerts(){
 /* ===== Page Réglages : liste groupée façon iOS, chaque ligne ouvre sa page ===== */
 var SUB=null; /* sous-page ouverte dans Réglages */
 var IC={
+  split:'<path d="M4 6h6M4 18h6M14 6h6M14 18h6"/><path d="M7 6v12M17 6v12" stroke-dasharray="2 3"/>',
   pay:'<path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 10v4M17.5 10v4"/>',
   sup:'<path d="M4 17l5-5 4 4 7-7"/><path d="M14 9h6v6"/>',
   meal:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10"/><path d="M17 21V3c-2 1.5-3 4-3 7h3"/>',
@@ -1597,6 +1603,7 @@ function renderParams(){
   h+=group("Travail",[
     row({icon:"pay",t:"Salaire",v:payV,attr:'data-sub="pay"'}),
     row({icon:"sup",t:"Heures sup",v:MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
+    row({icon:"split",t:"Journées coupées",sub:"Matin et après-midi séparés",toggle:splitOn(),attr:'data-spliton aria-pressed="'+splitOn()+'"'}),
     row({icon:"meal",t:"Repas fournis",v:mealsOn()?(P.meal?String(P.meal).replace(".",",")+" €":"Oui"):"Non",attr:'data-sub="meal"'}),
     row({icon:"cp",t:"Début du contrat",v:S.conges.start?fdate(S.conges.start):"",attr:'data-sub="conges"'})]);
   h+=group("Notifications",[
@@ -1612,7 +1619,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.50</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.51</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -1752,6 +1759,7 @@ document.addEventListener("click",function(e){
   if(ds.yr){ST_ANIM=true;STSEL.year=null;keepScroll(function(){S.statY+=(+ds.yr);});return;}
   if(ds.target){S.target=Math.max(1,Math.min(60,S.target+(+ds.target)));updateEq();saveSettings();var o=document.getElementById("tgt");if(o)o.textContent=S.target+" h";return;}
   if(ds.maj){S.pay.maj=ds.maj;updateEq();saveSettings();renderParams();return;}
+  if("spliton" in ds){S.pay.split=!splitOn();saveSettings();renderParams();return;}
   if("mealson" in ds){S.pay.mealsOn=!mealsOn();saveSettings();renderParams();return;}
   if("recap" in ds){S.reminder.recap=S.reminder.recap===false;saveSettings();mirror();renderParams();updateBadge();return;}
   if("remadd" in ds){var ts=S.reminder.times;ts.push(ts.length?"21:00":"22:00");saveSettings();if(OB)renderOnboarding();else renderParams();return;}
