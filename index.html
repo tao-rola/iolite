@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.66">
+<meta name="description" content="iolite version 0.67">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -904,6 +904,7 @@ var REGIONS=[["metro","France métropolitaine",""],["alsace","Alsace-Moselle","+
 var FER_CACHE={};
 function ferReg(){return S.pay.reg||"metro";}
 function solidOn(){return S.pay.solid===true;}
+function feriesFor(y,rg){var o=S.pay.reg;S.pay.reg=rg;try{return feries(y);}finally{S.pay.reg=o;}}
 function feries(y){var rg=ferReg(),ck=y+rg;if(FER_CACHE[ck])return FER_CACHE[ck];var e=easter(y),o={};
   function add(d,n){o[key(d)]=n;}
   add(new Date(y,0,1),"Jour de l'an");add(addDays(e,1),"Lundi de Pâques");add(new Date(y,4,1),"Fête du Travail");add(new Date(y,4,8),"Victoire de 1945");
@@ -2063,7 +2064,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.66</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.67</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2108,11 +2109,7 @@ function renderSub(){
   }
   else if(k==="fer"){t="Jours fériés";var X=extCfg(),eb=extBase(),o=S.pay.ov||{},yr=new Date().getFullYear(),up=[];
     var lim=key(addDays(new Date(),365));[yr,yr+1].forEach(function(y){var f=feries(y);Object.keys(f).sort().forEach(function(kk){if(kk>=key(new Date())&&kk<lim)up.push([kk,f[kk]]);});});
-    b='<section class="sgrp"><h2>Votre région</h2><div class="maj-list">'+REGIONS.map(function(r){return '<button class="maj" data-reg="'+r[0]+'" aria-pressed="'+(ferReg()===r[0])+'"><span class="radio"></span><span><b>'+r[1]+'</b><small>'+(r[2]||"11 jours fériés")+'</small></span></button>';}).join("")+'</div></section>'+
-      '<section class="sgrp"><h2>Jour férié travaillé</h2><div class="set"><div class="field money"><label for="ov-fer">Majoration</label><input id="ov-fer" data-ov="fer" inputmode="decimal" autocomplete="off" placeholder="'+eb.fer+'" value="'+esc(o.fer==null?"":o.fer)+'"><em>%</em></div></div>'+
-      '<p class="snote">'+esc(MAJ_NAMES[S.pay.maj]||"Code du travail")+' : '+eb.fn+' Laissez vide pour appliquer ce taux.</p></section>'+
-      '<section class="sgrp"><h2>Jour férié chômé</h2>'+group("",[row({t:"Compter dans les heures sup",sub:"Seulement si votre convention ou votre entreprise le prévoit",toggle:S.pay.ferHS===true,attr:'data-ferhs aria-pressed="'+(S.pay.ferHS===true)+'"'})])+
-      '<p class="snote">Un jour férié chômé ne fait pas baisser votre salaire après 3 mois d\'ancienneté (sans condition pour le 1er mai) : iolite le paie sur la base de vos heures habituelles ce jour-là. Mais il ne compte pas comme du travail pour les heures sup (Cour de cassation), sauf disposition contraire. Un congé posé un jour férié chômé n\'est pas décompté.</p></section>'+
+    b='<section class="sgrp"><h2>Votre région</h2><div class="maj-list">'+REGIONS.map(function(r){return '<button class="maj" data-reg="'+r[0]+'" aria-pressed="'+(ferReg()===r[0])+'"><span class="radio"></span><span><b>'+r[1]+'</b><small>'+Object.keys(feriesFor(yr,r[0])).length+' jours fériés</small></span></button>';}).join("")+'</div></section>'+
       '<section class="sgrp"><h2>Journée de solidarité</h2>'+group("",[row({t:"Le lundi de Pentecôte",sub:"Journée travaillée sans salaire en plus (7 h au plus)",toggle:solidOn(),attr:'data-solid aria-pressed="'+solidOn()+'"'})])+
       '<p class="snote">Votre employeur choisit la journée de solidarité (lundi de Pentecôte, RTT ou autre jour). Activez seulement si c\'est le lundi de Pentecôte chez vous.</p></section>'+
       '<section class="sgrp"><h2>Prochains jours fériés</h2><div class="ferl">'+up.map(function(x){var p=x[0].split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);
