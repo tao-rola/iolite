@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.60">
+<meta name="description" content="iolite version 0.61">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1808,11 +1808,11 @@ var CTYPES=[
   {id:"cdi",n:"CDI",sub:"Contrat à durée indéterminée"},
   {id:"cdd",n:"CDD",sub:"Contrat à durée déterminée, job étudiant, remplacement"},
   {id:"saison",n:"CDD saisonnier",sub:"Saison d'été, d'hiver, vendanges…"},
+  {id:"interim",n:"Intérim",sub:"Mission de travail temporaire"},
   {id:"appr",form:"cdd",n:"CDD Apprentissage",sub:"Alternance avec un CFA · de 6 mois à 3 ans"},
   {id:"appr",form:"cdi",n:"CDI Apprentissage",sub:"Commence par une période d'apprentissage"},
   {id:"pro",form:"cdd",n:"CDD Contrat de professionnalisation",sub:"Alternance · de 6 à 24 mois"},
   {id:"pro",form:"cdi",n:"CDI Contrat de professionnalisation",sub:"Commence par une action de professionnalisation"},
-  {id:"interim",n:"Intérim",sub:"Mission de travail temporaire"},
   {id:"stage",n:"Stage",sub:"Convention de stage"}];
 var CTK={};CTYPES.forEach(function(c){if(!CTK[c.id])CTK[c.id]=c;});
 /* le type affiché dans la liste : pour l'alternance, il dépend aussi de la forme (CDD ou CDI) */
@@ -2067,7 +2067,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.60</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.61</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2114,8 +2114,7 @@ function renderSub(){
       b+='<section class="sgrp"><h2>Salaire minimum</h2><div class="set"><div class="field"><label for="ct-birth">Date de naissance</label><input id="ct-birth" class="txt" type="date" data-cbirth value="'+esc(c.birth||"")+'"></div></div>'+
         (c.type==="pro"?group("",[row({t:"Bac pro ou plus",sub:"Bac pro, diplôme pro de même niveau, ou diplôme supérieur",toggle:!!c.bac,attr:'data-cbac aria-pressed="'+!!c.bac+'"'})]):'')+
         (am?group("",[row({t:eur2(am.pct/100*SMIC_M)+" brut par mois",sub:am.txt,v:eur2(am.pct/100*SMIC_H)+"/h",chev:false})]):'<p class="snote">Indiquez votre date de naissance pour connaître votre salaire minimum légal : il dépend de votre âge'+(c.type==="appr"?" et de l\'année de votre contrat":" et de votre diplôme")+'.</p>')+
-        '<p class="snote">'+(c.type==="appr"?"Il augmente au début de chaque année de contrat, et le 1er du mois qui suit vos 18, 21 et 26 ans. ":"Il augmente le 1er du mois qui suit vos 21 et 26 ans. ")+
-        (ap?"Cotisations : un apprenti ne paie des cotisations que sur la part de son salaire au-delà de "+ap.pct+" % du SMIC"+(ap.old?" (contrat signé avant le 1er mars 2025)":" (contrat signé depuis le 1er mars 2025)")+" : iolite en tient compte dans le net estimé.":"Cotisations : un contrat de professionnalisation a les mêmes cotisations qu\'un salarié classique.")+'</p></section>';}
+        '</section>';}
     if(tl){b+='<section class="sgrp"><h2>Période d\'essai</h2>'+group("",[row({t:"Période d'essai",sub:"Elle n'existe que si elle est écrite dans votre contrat",toggle:c.essai!==false,attr:'data-essai aria-pressed="'+(c.essai!==false)+'"'})]);
       if(c.essai!==false){var wk=tl.u==="t";
         b+='<div class="set"><div class="field money"><label for="ct-en">Durée prévue au contrat</label><input id="ct-en" data-cen inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.en==null?"":c.en)+'"><em>'+(wk?"jours":"")+'</em></div>'+
