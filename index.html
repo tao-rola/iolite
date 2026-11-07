@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.61">
+<meta name="description" content="iolite version 0.62">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1833,18 +1833,6 @@ function altCdi(){return alt()&&ct().form==="cdi";}
 /* nom de la fin : en CDI, c'est seulement la fin de la période de formation, le contrat continue */
 function endWord(){var t=ct().type;if(altCdi())return t==="appr"?"Fin de la période d'apprentissage":"Fin de l'action de professionnalisation";return t==="stage"?"Fin du stage":t==="interim"?"Fin de la mission":"Fin du contrat";}
 var SMIC_H=12.31,SMIC_M=SMIC_H*151.67; /* SMIC brut au 1er juin 2026 */
-/* âge retenu à une date : il change le 1er jour du mois qui suit l'anniversaire */
-function ageAt(dt){var b=pdate(ct().birth);if(!b)return null;var a=dt.getFullYear()-b.getFullYear();
-  var bm=new Date(dt.getFullYear(),b.getMonth()+1,1);if(dt<bm)a--;return a;}
-/* salaire minimum légal de l'alternant (en % du SMIC), sauf minimum conventionnel plus favorable */
-function altMin(dt){if(!alt())return null;var a=ageAt(dt),cs=contractStart(),c=ct();if(a==null)return null;
-  if(c.type==="appr"){if(a>=26)return {pct:100,txt:"26 ans et plus : 100 % du SMIC (ou le minimum de votre convention s'il est plus élevé)"};
-    var y=cs?Math.min(3,Math.floor(Math.max(0,(dt.getFullYear()-cs.getFullYear())*12+dt.getMonth()-cs.getMonth()-(dt.getDate()<cs.getDate()?1:0))/12)+1):1;
-    var g=a<18?[27,39,55]:a<21?[43,51,67]:[53,61,78],pc=g[y-1];
-    return {pct:pc,txt:(a<18?"16-17 ans":a<21?"18-20 ans":"21-25 ans")+", "+y+(y===1?"ʳᵉ":"ᵉ")+" année : "+pc+" % du SMIC"+(a>=21?", ou ce pourcentage du minimum de votre convention s'il est plus élevé":"")};}
-  if(a>=26)return {pct:100,txt:"26 ans et plus : au moins le SMIC, et au moins 85 % du minimum de votre convention"};
-  var hi=!!c.bac,pc2=a<21?(hi?65:55):(hi?80:70);
-  return {pct:pc2,txt:(a<21?"Moins de 21 ans":"21-25 ans")+(hi?", avec un bac pro ou un diplôme pro de même niveau ou plus":", sans bac pro")+" : "+pc2+" % du SMIC"};}
 /* apprenti : cotisations salariales seulement au-delà de 50 % du SMIC (contrats signés depuis le 1er mars 2025), 79 % avant ;
    le contrat de professionnalisation a les cotisations habituelles */
 function apprSeuil(){if(ct().type!=="appr")return null;var cs=contractStart(),old=cs&&cs<new Date(2025,2,1);return {pct:old?79:50,old:old};}
@@ -1929,9 +1917,6 @@ function contractMsgs(){var out=[],t=new Date(),tk=key(t),c=ct(),cs=contractStar
       push(d,"cend","Votre "+(c.type==="stage"?"stage":c.type==="interim"?"mission d'intérim":cn)+" se termine le <b>"+cd+"</b>, dans "+n+" jours. "+endRights()+(n<=15?pr:"")+
         (c.type==="cdd"&&n===30?" Un CDD peut être renouvelé deux fois au plus, dans la limite de 18 mois en général : parlez-en à votre employeur si vous souhaitez continuer.":""),"cend:"+n+":"+key(ce));});
     push(ce,"cend","Dernier jour de votre "+(c.type==="stage"?"stage":cn)+" aujourd'hui. Votre employeur doit vous remettre un certificat de travail, une attestation France Travail et un reçu pour solde de tout compte."+pr,"cend:0:"+key(ce));}
-  var am=altMin(t),hr=hourly();
-  if(am&&hr>0&&hr<am.pct/100*SMIC_H-0.005)out.push({dt:t,kind:"cend",id:"altmin:"+t.getFullYear()+"-"+t.getMonth()+":"+am.pct,
-    text:"Votre taux horaire (<b>"+eur2(hr)+"</b>) est inférieur au minimum légal de votre "+(c.type==="appr"?"apprentissage":"contrat de professionnalisation")+" : <b>"+eur2(am.pct/100*SMIC_H)+"</b> brut de l'heure. "+am.txt.charAt(0).toUpperCase()+am.txt.slice(1)+". Vérifiez votre fiche de paie ou le salaire saisi."});
   return out;}
 /* ---------- résumé de la semaine : le dimanche à partir de 20 h ---------- */
 var RECAP_H=20;
@@ -2067,7 +2052,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.61</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.62</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2110,11 +2095,6 @@ function renderSub(){
     if(c.type==="cdi"||(c.type==="pro"&&c.form==="cdi"))b+='<section class="sgrp"><h2>Catégorie</h2><div class="maj-list">'+CATS.map(function(x){return rb("ccat",x.id,(c.cat||"emp")===x.id,x.n,"Période d'essai : "+x.m+" mois, "+x.max+" mois avec renouvellement");}).join("")+'</div></section>';
     b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div></section>';
-    if(alt()){var am=altMin(new Date()),ap=apprSeuil();
-      b+='<section class="sgrp"><h2>Salaire minimum</h2><div class="set"><div class="field"><label for="ct-birth">Date de naissance</label><input id="ct-birth" class="txt" type="date" data-cbirth value="'+esc(c.birth||"")+'"></div></div>'+
-        (c.type==="pro"?group("",[row({t:"Bac pro ou plus",sub:"Bac pro, diplôme pro de même niveau, ou diplôme supérieur",toggle:!!c.bac,attr:'data-cbac aria-pressed="'+!!c.bac+'"'})]):'')+
-        (am?group("",[row({t:eur2(am.pct/100*SMIC_M)+" brut par mois",sub:am.txt,v:eur2(am.pct/100*SMIC_H)+"/h",chev:false})]):'<p class="snote">Indiquez votre date de naissance pour connaître votre salaire minimum légal : il dépend de votre âge'+(c.type==="appr"?" et de l\'année de votre contrat":" et de votre diplôme")+'.</p>')+
-        '</section>';}
     if(tl){b+='<section class="sgrp"><h2>Période d\'essai</h2>'+group("",[row({t:"Période d'essai",sub:"Elle n'existe que si elle est écrite dans votre contrat",toggle:c.essai!==false,attr:'data-essai aria-pressed="'+(c.essai!==false)+'"'})]);
       if(c.essai!==false){var wk=tl.u==="t";
         b+='<div class="set"><div class="field money"><label for="ct-en">Durée prévue au contrat</label><input id="ct-en" data-cen inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.en==null?"":c.en)+'"><em>'+(wk?"jours":"")+'</em></div>'+
@@ -2242,7 +2222,6 @@ document.addEventListener("click",function(e){
   if(ds.ctype){ctPick(ds.ctype);saveSettings();renderParams();return;}
   if(ds.ccat){ct().cat=ds.ccat;saveSettings();renderParams();return;}
   if(ds.cform){ct().form=ds.cform;ct().en=null;ct().ren=false;saveSettings();renderParams();return;}
-  if("cbac" in ds){ct().bac=!ct().bac;saveSettings();renderParams();return;}
   if("essai" in ds){ct().essai=ct().essai===false;saveSettings();renderParams();return;}
   if(ds.ceu){ct().eu=ds.ceu;saveSettings();renderParams();return;}
   if("cren" in ds){ct().ren=!ct().ren;saveSettings();renderParams();return;}
@@ -2288,7 +2267,7 @@ view.addEventListener("submit",function(e){if(e.target.id==="auth-form"){e.preve
 view.addEventListener("keydown",function(e){if(e.key==="Enter"&&OB&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-ob="next"]');if(b)b.click();return;}if(e.key==="Enter"&&W&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-wiz="next"]');if(b)b.click();}});
 view.addEventListener("change",function(e){var i=e.target;
   if(!OB&&SUB==="jobs"&&i.dataset.jobname!=null){renderParams();return;}
-  if(!OB&&SUB==="contrat"&&("cpstart" in i.dataset||"cend" in i.dataset||"cen" in i.dataset||"crn" in i.dataset||"cbirth" in i.dataset)){var y=window.scrollY;renderParams();window.scrollTo(0,y);return;}
+  if(!OB&&SUB==="contrat"&&("cpstart" in i.dataset||"cend" in i.dataset||"cen" in i.dataset||"crn" in i.dataset)){var y=window.scrollY;renderParams();window.scrollTo(0,y);return;}
   if(i.id==="av-file"){setAvatar(i.files&&i.files[0]);i.value="";return;}
   if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;S.combo.last=null;S.combo.err=null;var pd=provOf(S.combo.url);if(pd)S.combo.prov=pd.id;savePlan();syncCombo(true);return;}
   if(i.id==="ics-file"&&i.files&&i.files[0]){var fr=new FileReader();fr.onload=function(){try{mergePlan(parseICS(fr.result));renderParams();}catch(x){comboMsg("Ce fichier n'est pas un calendrier .ics.");}};fr.readAsText(i.files[0]);i.value="";return;}
@@ -2307,7 +2286,6 @@ view.addEventListener("input",function(e){var i=e.target;
   if(i.dataset.majc){S.pay.majc=S.pay.majc||{};S.pay.majc[i.dataset.majc]=i.value.trim()||null;saveSettings();return;}
   if("cpstart" in i.dataset){S.conges.start=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
   if("cend" in i.dataset){ct().end=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
-  if("cbirth" in i.dataset){ct().birth=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
   if("cen" in i.dataset){ct().en=i.value.trim()||null;saveSettings();return;}
   if("crn" in i.dataset){ct().rn=i.value.trim()||null;saveSettings();return;}
   if(i.dataset.ov){S.pay.ov=S.pay.ov||{};var ov=i.value.trim();if(ov==="")delete S.pay.ov[i.dataset.ov];else S.pay.ov[i.dataset.ov]=ov;saveSettings();return;}
