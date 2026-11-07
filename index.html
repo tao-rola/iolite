@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.68">
+<meta name="description" content="iolite version 0.69">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -654,6 +654,14 @@ body:not(.gate) .wiz{padding-bottom:90px}
 .srow+.srow::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
 .srow+.srow:has(> .ico)::before{left:52px}
 /* liste des prochains jours fériés : simple tableau, rien de cliquable */
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pills button{border:0;border-radius:999px;padding:10px 15px;font:inherit;font-size:14.5px;font-weight:650;color:var(--ink);background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18);-webkit-tap-highlight-color:transparent}
+.pills button[aria-pressed="true"]{background:#fff;color:var(--accent-ink);box-shadow:0 0 18px rgba(255,255,255,.3)}
+.convc{border-radius:24px;padding:18px 18px 8px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);margin-top:4px}
+.convc>b{display:block;font-size:17px;font-weight:750}.convc>small{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.convc .xl{display:flex;flex-direction:column;margin-top:8px}
+.convc .xr{display:flex;justify-content:space-between;gap:12px;padding:11px 0;font-size:14.5px;font-weight:600}
+.convc .xr+.xr{box-shadow:0 -1px 0 var(--line)}.convc .xr b{font-weight:800;white-space:nowrap}
 .ferl{border-radius:24px;overflow:hidden;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
 .ferl .fr{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:12px;padding:12px 16px;position:relative}
 .ferl .fr+.fr::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--line)}
@@ -2064,7 +2072,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.68</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.69</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2087,11 +2095,20 @@ function renderSub(){
       '<div class="field money"><label for="pay-monthly">Au mois (brut)</label><input id="pay-monthly" data-pay="monthly" inputmode="decimal" autocomplete="off" placeholder="1 900"><em>€</em></div>'+
       '<div class="field money"><label for="pay-charges">Cotisations salariales (brut → net)</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>'+
       '</div>';}
-  else if(k==="maj"){t="Convention collective";
-    var opts=[["legal","Code du travail","+25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"],["hcr","Hôtels, cafés, restaurants (HCR)","IDCC 1979 · +10 % de la 36ᵉ à la 39ᵉ heure, +20 % de la 40ᵉ à la 43ᵉ, +50 % au-delà"],["custom","Ma convention ou mon accord","Saisissez vous-même les taux prévus par votre convention collective ou votre accord d'entreprise"],["none","Aucune majoration","Les heures sup sont payées au taux normal"]];
-    var mc=P.majc||{},btn=function(o){return '<button class="maj" data-maj="'+o[0]+'" aria-pressed="'+(P.maj===o[0])+'"><span class="radio"></span><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></button>';};
-    var conv=CONV.map(function(c){return [c[0],c[1],c[2]+" · +25 % de la 36ᵉ à la 43ᵉ heure, +50 % au-delà"];});
-    b='<section class="sgrp"><h2>Votre convention</h2><div class="maj-list">'+opts.slice(0,2).concat(conv,opts.slice(2)).map(btn).join("")+'</div><p class="snote">Son nom figure sur votre fiche de paie. Elle fixe vos majorations d\'heures sup et celle des jours fériés travaillés (voir Jours fériés).</p></section>'+
+  else if(k==="maj"){t="Convention";
+    /* pastilles : un nom court par convention, puis une seule carte qui résume les taux de celle choisie */
+    var mc=P.majc||{},list=["legal","hcr"].concat(CONV.map(function(c){return c[0];}),["custom","none"]);
+    var full={legal:["Code du travail",""],hcr:["Hôtels, cafés, restaurants","IDCC 1979"],custom:["Taux personnalisés","Votre convention ou votre accord d'entreprise"],none:["Aucune majoration",""]};
+    CONV.forEach(function(c){full[c[0]]=[c[1],c[2]];});
+    var tb=(P.maj==="custom"?majCustom():MAJ[P.maj]||MAJ.legal),lines=[];
+    if(P.maj==="none")lines.push(["Heures sup","au taux normal"]);
+    else if(P.maj!=="custom"){var from=36;tb.forEach(function(t2){if(t2[1]<=1)return;var to=t2[0]<1e8?Math.floor(t2[0]):null;
+        lines.push([to?"De la "+from+"ᵉ à la "+to+"ᵉ heure":"Au-delà de la "+(from-1)+"ᵉ heure","+"+Math.round((t2[1]-1)*100)+" %"]);if(to)from=to+1;});}
+    if(P.maj!=="custom"&&P.maj!=="none"){var eb3=extBase();lines.push(["Jour férié travaillé",eb3.fer>0?"+"+eb3.fer+" %"+(eb3.ferSen?" après "+eb3.ferSen/12+" an":""):"sans majoration"]);}
+    if(P.maj!=="custom")lines.push(["1er mai travaillé","payé double"]);
+    b='<section class="sgrp"><h2>Votre convention</h2><div class="pills">'+list.map(function(id){return '<button data-maj="'+id+'" aria-pressed="'+(P.maj===id)+'">'+esc(MAJ_SHORT[id]||full[id][0])+'</button>';}).join("")+'</div></section>'+
+      (P.maj==="custom"?'':'<section class="convc"><b>'+esc((full[P.maj]||full.legal)[0])+'</b>'+((full[P.maj]||full.legal)[1]?'<small>'+esc(full[P.maj][1])+'</small>':'')+
+      (lines.length?'<div class="xl">'+lines.map(function(l){return '<div class="xr"><span>'+l[0]+'</span><b>'+l[1]+'</b></div>';}).join("")+'</div>':'')+'</section>')+
       (P.maj==="custom"?'<section class="sgrp"><h2>Vos taux</h2><div class="set">'+
         '<div class="field money"><label for="mc-t1">Majoration à partir de la 36ᵉ heure</label><input id="mc-t1" data-majc="t1" inputmode="decimal" autocomplete="off" placeholder="25" value="'+esc(mc.t1==null?"":mc.t1)+'"><em>%</em></div>'+
         '<div class="field money"><label for="mc-h1">Jusqu\'à la</label><input id="mc-h1" data-majc="h1" inputmode="numeric" autocomplete="off" placeholder="43" value="'+esc(mc.h1==null?"":mc.h1)+'"><em>ᵉ h</em></div>'+
