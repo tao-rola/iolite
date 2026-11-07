@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.71">
+<meta name="description" content="iolite version 0.72">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2074,7 +2074,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.71</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.72</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2091,10 +2091,13 @@ function renderSub(){
       if(ACC==="pw"||ACC==="mail")b+='<div class="set">'+accForm(ACC)+'</div>';
       if(ACCMSG)b+='<p class="snote acc-ok">'+esc(ACCMSG)+'</p>';}}
   else if(k==="pay"){t="Heures et salaire";
+    /* trois encadrés : salaire, heures par semaine, cotisations */
     b='<div class="set">'+
-      '<div class="set-row"><span class="t">Heures par semaine</span><div class="stepper"><button data-target="-1" aria-label="Une heure de moins">−</button><output id="tgt">'+S.target+' h</output><button data-target="1" aria-label="Une heure de plus">+</button></div></div>'+
       '<div class="field money"><label for="pay-rate">À l\'heure (brut)</label><input id="pay-rate" data-pay="rate" inputmode="decimal" autocomplete="off" placeholder="12,50"><em>€</em></div>'+
       '<div class="field money"><label for="pay-monthly">Au mois (brut)</label><input id="pay-monthly" data-pay="monthly" inputmode="decimal" autocomplete="off" placeholder="1 900"><em>€</em></div>'+
+      '</div><div class="set">'+
+      '<div class="set-row"><span class="t">Heures par semaine</span><div class="stepper"><button data-target="-1" aria-label="Une heure de moins">−</button><output id="tgt">'+S.target+' h</output><button data-target="1" aria-label="Une heure de plus">+</button></div></div>'+
+      '</div><div class="set">'+
       '<div class="field money"><label for="pay-charges">Cotisations salariales (brut → net)</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>'+
       '</div>';}
   else if(k==="maj"){t="Convention";
@@ -2123,7 +2126,7 @@ function renderSub(){
     var rb=function(attr,id,on,n,sub){return '<button class="maj" data-'+attr+'="'+id+'" aria-pressed="'+on+'"><span class="radio"></span><span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';};
     var useg=function(attr,cur,list){return '<div class="seg" role="group">'+list.map(function(u){return '<button data-'+attr+'="'+u[0]+'" aria-pressed="'+(cur===u[0])+'">'+u[1]+'</button>';}).join("")+'</div>';};
     b='<section class="sgrp"><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",ctVal(x),ctSel(x),x.n,x.sub);}).join("")+'</div></section>';
-    b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
+    b+='<section class="sgrp"><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div></section>';
   }
   else if(k==="fer"){t="Jours fériés";var X=extCfg(),eb=extBase(),o=S.pay.ov||{},yr=new Date().getFullYear(),up=[];
@@ -2145,7 +2148,7 @@ function renderSub(){
   else if(k==="combo"){t="Planning";var pv=provSel();
     b='<section class="sgrp"><div class="set"><div class="field"><label for="combo-url">Adresse du calendrier (iCal / .ics)</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://… ou webcal://…" value="'+esc(S.combo.url||"")+'"></div>'+
       (S.combo.url?'<div class="backup two"><button data-combosync>Synchroniser</button><button class="soft-danger" data-combooff>Déconnecter</button></div>':'')+'</div>'+
-      '<p class="snote" id="combo-msg">'+esc(comboStatus()||(S.combo.url&&pv.help?pv.help:"Collez l'adresse d'abonnement calendrier de votre planning. Elle fonctionne avec Combo, Skello, Planday, les emplois du temps ADE, Google Agenda, iCloud et tout logiciel qui propose un lien iCal."))+'</p></section>'+
+      '<p class="snote" id="combo-msg">'+esc(comboStatus()||(S.combo.url&&pv.help?pv.help:""))+'</p></section>'+
       (!S.combo.url?'<section class="sgrp"><h2>Où trouver l\'adresse ?</h2><div class="scard">'+PROVS.slice(0,3).map(function(p){return '<div class="srow help-row"><span class="srow-t">'+p.n+'<small>'+esc(p.help)+'</small></span></div>';}).join("")+
         '<div class="srow help-row"><span class="srow-t">Autres logiciels<small>Cherchez « synchronisation calendrier », « lien iCal » ou « s\'abonner » dans votre profil ou vos paramètres.</small></span></div></div></section>':'');
   }
