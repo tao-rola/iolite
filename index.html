@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.69">
+<meta name="description" content="iolite version 0.70">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2072,7 +2072,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.69</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.70</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2113,7 +2113,7 @@ function renderSub(){
         '<div class="field money"><label for="mc-t1">Majoration à partir de la 36ᵉ heure</label><input id="mc-t1" data-majc="t1" inputmode="decimal" autocomplete="off" placeholder="25" value="'+esc(mc.t1==null?"":mc.t1)+'"><em>%</em></div>'+
         '<div class="field money"><label for="mc-h1">Jusqu\'à la</label><input id="mc-h1" data-majc="h1" inputmode="numeric" autocomplete="off" placeholder="43" value="'+esc(mc.h1==null?"":mc.h1)+'"><em>ᵉ h</em></div>'+
         '<div class="field money"><label for="mc-t2">Majoration au-delà</label><input id="mc-t2" data-majc="t2" inputmode="decimal" autocomplete="off" placeholder="50" value="'+esc(mc.t2==null?"":mc.t2)+'"><em>%</em></div></div>'+
-        '<p class="snote">Les taux sont écrits dans votre convention collective (son nom figure sur votre fiche de paie) ou dans l\'accord de votre entreprise. Vous les trouvez aussi sur code.travail.gouv.fr, en cherchant votre convention puis « heures supplémentaires ». La loi impose au moins 10 %.</p></section>':'');}
+        '</section>':'');}
   else if(k==="meal"){t="Repas fournis";
     b=group("",[row({t:"Mon entreprise me fournit mes repas",sub:"iolite demande à chaque journée si un repas a été fourni",toggle:mealsOn(),attr:'data-mealson aria-pressed="'+mealsOn()+'"'})])+(!mealsOn()?'':'<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
       '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>');}
