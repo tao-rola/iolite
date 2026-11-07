@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.62">
+<meta name="description" content="iolite version 0.63">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1237,9 +1237,9 @@ function renderOnboarding(){
   if(st==="name"){skip=false;q="Bienvenue sur iolite";sub="Comment vous appelez-vous ?";
     body='<div class="field"><label for="ob-first">Prénom</label><input id="ob-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
       '<div class="field"><label for="ob-last">Nom</label><input id="ob-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div><p class="auth-msg" id="ob-msg"></p>';}
-  else if(st==="ctype"){q="Quel est votre contrat ?";sub="Pour vos rappels de fin de période d'essai et de fin de contrat.";
+  else if(st==="ctype"){q="Quel est votre contrat ?";sub="Pour vos rappels de fin de contrat.";
     body='<div class="maj-list">'+CTYPES.map(function(x){return '<button class="maj" data-obct="'+ctVal(x)+'" aria-pressed="'+ctSel(x)+'"><span class="radio"></span><span><b>'+x.n+'</b><small>'+x.sub+'</small></span></button>';}).join("")+'</div>';}
-  else if(st==="start"){q=fixedTerm()?"Quelles sont les dates de votre contrat ?":"Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés et votre période d'essai.";
+  else if(st==="start"){q=fixedTerm()?"Quelles sont les dates de votre contrat ?":"Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés.";
     body='<div class="field"><label for="ob-start">Début du contrat</label><input id="ob-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       (fixedTerm()?'<div class="field" style="margin-top:12px"><label for="ob-end">Fin du contrat</label><input id="ob-end" class="txt" type="date" data-cend value="'+esc(ct().end||"")+'"></div>':'');}
   else if(st==="hours"){q="Combien d'heures par semaine ?";sub="Les heures prévues à votre contrat.";
@@ -1883,8 +1883,8 @@ function endRights(){var t=ct().type;
   if(t==="cdd")return "Vous devriez toucher une indemnité de fin de contrat (prime de précarité) de 10 % de vos salaires bruts, sauf exceptions (job étudiant pendant les vacances scolaires, refus d'un CDI équivalent, rupture de votre fait…), et une indemnité pour les congés payés non pris.";
   if(t==="saison")return "Un CDD saisonnier ne donne pas de prime de précarité (sauf accord plus favorable), mais vos congés non pris sont payés (indemnité de 10 %).";
   if(t==="interim")return "Vous touchez une indemnité de fin de mission de 10 % de vos salaires bruts et une indemnité de congés payés de 10 %.";
-  if(t==="appr"&&altCdi())return "Votre contrat continue ensuite en CDI classique, sans nouvelle période d'essai. Votre salaire ne peut plus être inférieur au SMIC ni au minimum de votre convention.";
-  if(t==="pro"&&altCdi())return "Votre contrat continue ensuite en CDI classique, sans nouvelle période d'essai. Votre salaire ne peut plus être inférieur au SMIC ni au minimum de votre convention.";
+  if(t==="appr"&&altCdi())return "Votre contrat continue ensuite en CDI classique. Votre salaire ne peut plus être inférieur au SMIC ni au minimum de votre convention.";
+  if(t==="pro"&&altCdi())return "Votre contrat continue ensuite en CDI classique. Votre salaire ne peut plus être inférieur au SMIC ni au minimum de votre convention.";
   if(t==="appr")return "Un contrat d'apprentissage ne donne pas de prime de précarité, mais vos congés non pris sont payés. Si vous avez obtenu votre diplôme avant la fin, vous pouvez arrêter plus tôt en prévenant votre employeur par écrit au moins 2 mois avant.";
   if(t==="pro")return "Un contrat de professionnalisation en CDD ne donne pas de prime de précarité (art. L1243-10), mais vos congés non pris sont payés.";
   if(t==="stage")return "Demandez votre attestation de stage. Au-delà de 2 mois, la gratification est obligatoire.";
@@ -1898,7 +1898,7 @@ function brutSince(a,b){var t=0;if(!payReady())return 0;for(var m=new Date(a.get
 /* messages de la page Alertes liés au contrat */
 function contractMsgs(){var out=[],t=new Date(),tk=key(t),c=ct(),cs=contractStart();if(!cs)return out;
   function push(dt,kind,text,id){if(key(dt)>tk||dt<addDays(t,-45))return;out.push({dt:dt,kind:kind,text:text,id:id});}
-  var tr=trialInfo();
+  var tr=null; /* période d'essai retirée */
   if(tr){
     if(tr.unknown){}
     else if(tr.worked){var n=tr.n;
@@ -2052,7 +2052,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.62</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.63</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2092,26 +2092,8 @@ function renderSub(){
     var rb=function(attr,id,on,n,sub){return '<button class="maj" data-'+attr+'="'+id+'" aria-pressed="'+on+'"><span class="radio"></span><span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';};
     var useg=function(attr,cur,list){return '<div class="seg" role="group">'+list.map(function(u){return '<button data-'+attr+'="'+u[0]+'" aria-pressed="'+(cur===u[0])+'">'+u[1]+'</button>';}).join("")+'</div>';};
     b='<section class="sgrp"><h2>Type de contrat</h2><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",ctVal(x),ctSel(x),x.n,x.sub);}).join("")+'</div></section>';
-    if(c.type==="cdi"||(c.type==="pro"&&c.form==="cdi"))b+='<section class="sgrp"><h2>Catégorie</h2><div class="maj-list">'+CATS.map(function(x){return rb("ccat",x.id,(c.cat||"emp")===x.id,x.n,"Période d'essai : "+x.m+" mois, "+x.max+" mois avec renouvellement");}).join("")+'</div></section>';
     b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div></section>';
-    if(tl){b+='<section class="sgrp"><h2>Période d\'essai</h2>'+group("",[row({t:"Période d'essai",sub:"Elle n'existe que si elle est écrite dans votre contrat",toggle:c.essai!==false,attr:'data-essai aria-pressed="'+(c.essai!==false)+'"'})]);
-      if(c.essai!==false){var wk=tl.u==="t";
-        b+='<div class="set"><div class="field money"><label for="ct-en">Durée prévue au contrat</label><input id="ct-en" data-cen inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.en==null?"":c.en)+'"><em>'+(wk?"jours":"")+'</em></div>'+
-          (wk?'':useg("ceu",num(c.en)>0&&c.eu?c.eu:tl.u,[["j","Jours"],["s","Semaines"],["m","Mois"]]))+'</div>'+
-          '<p class="snote">Durée maximale : '+tl.txt+'. Laissez vide pour utiliser '+unitWord(tl.n,tl.u==="t"?"j":tl.u)+(wk?" travaillés":"")+'.'+(tl.need?" Indiquez la date de fin pour un calcul exact.":"")+'</p>';
-        if(tl.ren){b+=group("",[row({t:"Période d'essai renouvelée",sub:"Une seule fois, avec votre accord écrit",toggle:!!c.ren,attr:'data-cren aria-pressed="'+!!c.ren+'"'})]);
-          if(c.ren)b+='<div class="set"><div class="field money"><label for="ct-rn">Durée du renouvellement</label><input id="ct-rn" data-crn inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.rn==null?"":c.rn)+'"><em></em></div>'+useg("cru",c.ru||"m",[["j","Jours"],["s","Semaines"],["m","Mois"]])+'</div>'+
-            '<p class="snote">Le renouvellement doit être prévu par un accord de branche et par votre contrat. Durée totale au plus : '+tl.max+' mois.</p>';}
-        if(tr){var L=[];
-          if(tr.unknown)L.push(row({t:tr.likely?"Sans doute terminée":"Décompte impossible",sub:"Vos journées depuis le "+fdate(key(tr.start))+" ne sont pas toutes pointées",chev:false}));
-          else if(tr.worked)L.push(row({t:tr.end?"Terminée le "+fdate(key(tr.end)):"En cours",sub:tr.end?"":"Encore "+tr.left+" jour"+(tr.left>1?"s":"")+" "+(c.type==="appr"?"en entreprise":"travaillé"+(tr.left>1?"s":"")),v:Math.min(tr.done,tr.n)+" / "+tr.n,chev:false}));
-          else{var left=daysBetween(new Date(),tr.end);L.push(row({t:"Fin le "+fdate(key(tr.end)),sub:(tr.renewed?"Renouvellement compris · ":"")+(tr.ext?"Prolongée de "+tr.ext+" jour"+(tr.ext>1?"s":"")+" d'absence":"Sans absence pendant l'essai"),v:left>=0?"J−"+left:"terminée",chev:false}));}
-          b+=group("",L);
-          if(tr.tooLong)b+='<p class="snote warn">Cette durée dépasse le maximum légal : '+tl.txt+'. Vérifiez votre contrat.</p>';
-          if(!tr.worked&&daysBetween(new Date(),tr.end)>=0)b+='<p class="snote">'+prevenance(new Date())+' Un congé pris pendant l\'essai le prolonge d\'autant : iolite en tient compte avec vos journées pointées.</p>';}
-        else if(!S.conges.start)b+='<p class="snote">Indiquez le début du contrat pour calculer la fin de la période d\'essai.</p>';}
-      b+='</section>';}
     var ce=contractEnd();
     if(fx&&ce){var dl=daysBetween(new Date(),ce);b+='<section class="sgrp"><h2>'+endWord()+'</h2>'+group("",[row({t:fdate(c.end),sub:dl>=0?"Dans "+dl+" jour"+(dl>1?"s":""):altCdi()?"Terminée : votre contrat continue en CDI":"Contrat terminé",chev:false})])+'<p class="snote">'+endRights()+'</p></section>';}}
   else if(k==="fer"){t="Jours fériés";var X=extCfg(),eb=extBase(),o=S.pay.ov||{},yr=new Date().getFullYear(),up=[];
