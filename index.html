@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.63">
+<meta name="description" content="iolite version 0.64">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2052,7 +2052,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.63</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.64</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2094,8 +2094,7 @@ function renderSub(){
     b='<section class="sgrp"><h2>Type de contrat</h2><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",ctVal(x),ctSel(x),x.n,x.sub);}).join("")+'</div></section>';
     b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div></section>';
-    var ce=contractEnd();
-    if(fx&&ce){var dl=daysBetween(new Date(),ce);b+='<section class="sgrp"><h2>'+endWord()+'</h2>'+group("",[row({t:fdate(c.end),sub:dl>=0?"Dans "+dl+" jour"+(dl>1?"s":""):altCdi()?"Terminée : votre contrat continue en CDI":"Contrat terminé",chev:false})])+'<p class="snote">'+endRights()+'</p></section>';}}
+  }
   else if(k==="fer"){t="Jours fériés";var X=extCfg(),eb=extBase(),o=S.pay.ov||{},yr=new Date().getFullYear(),up=[];
     [yr,yr+1].forEach(function(y){var f=feries(y);Object.keys(f).sort().forEach(function(kk){if(kk>=key(new Date())&&up.length<6)up.push([kk,f[kk]]);});});
     b='<section class="sgrp"><h2>Votre région</h2><div class="maj-list">'+REGIONS.map(function(r){return '<button class="maj" data-reg="'+r[0]+'" aria-pressed="'+(ferReg()===r[0])+'"><span class="radio"></span><span><b>'+r[1]+'</b><small>'+(r[2]||"11 jours fériés")+'</small></span></button>';}).join("")+'</div></section>'+
