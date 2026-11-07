@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.59">
+<meta name="description" content="iolite version 0.60">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1238,7 +1238,7 @@ function renderOnboarding(){
     body='<div class="field"><label for="ob-first">Prénom</label><input id="ob-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
       '<div class="field"><label for="ob-last">Nom</label><input id="ob-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div><p class="auth-msg" id="ob-msg"></p>';}
   else if(st==="ctype"){q="Quel est votre contrat ?";sub="Pour vos rappels de fin de période d'essai et de fin de contrat.";
-    body='<div class="maj-list">'+CTYPES.map(function(x){return '<button class="maj" data-obct="'+x.id+'" aria-pressed="'+(ct().type===x.id)+'"><span class="radio"></span><span><b>'+x.n+'</b><small>'+x.sub+'</small></span></button>';}).join("")+'</div>';}
+    body='<div class="maj-list">'+CTYPES.map(function(x){return '<button class="maj" data-obct="'+ctVal(x)+'" aria-pressed="'+ctSel(x)+'"><span class="radio"></span><span><b>'+x.n+'</b><small>'+x.sub+'</small></span></button>';}).join("")+'</div>';}
   else if(st==="start"){q=fixedTerm()?"Quelles sont les dates de votre contrat ?":"Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés et votre période d'essai.";
     body='<div class="field"><label for="ob-start">Début du contrat</label><input id="ob-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
       (fixedTerm()?'<div class="field" style="margin-top:12px"><label for="ob-end">Fin du contrat</label><input id="ob-end" class="txt" type="date" data-cend value="'+esc(ct().end||"")+'"></div>':'');}
@@ -1277,7 +1277,7 @@ function obClick(ds){
   if(!OB)return false;
   if(ds.obsplit){S.pay.split=ds.obsplit==="1";saveSettings();renderOnboarding();return true;}
   if(ds.obmeal){S.pay.mealsOn=ds.obmeal==="1";saveSettings();renderOnboarding();return true;}
-  if(ds.obct){ct().type=ds.obct;if(ds.obct==="stage")ct().essai=false;saveSettings();renderOnboarding();return true;}
+  if(ds.obct){ctPick(ds.obct);saveSettings();renderOnboarding();return true;}
   if(ds.obmaj){S.pay.maj=ds.obmaj;updateEq();saveSettings();renderOnboarding();return true;}
   if(!ds.ob)return false;
   var st=OB_STEPS[OB.i];
@@ -1808,11 +1808,18 @@ var CTYPES=[
   {id:"cdi",n:"CDI",sub:"Contrat à durée indéterminée"},
   {id:"cdd",n:"CDD",sub:"Contrat à durée déterminée, job étudiant, remplacement"},
   {id:"saison",n:"CDD saisonnier",sub:"Saison d'été, d'hiver, vendanges…"},
-  {id:"appr",n:"Apprentissage",sub:"Alternance avec un CFA · CDD de 6 mois à 3 ans, ou CDI"},
-  {id:"pro",n:"Contrat de professionnalisation",sub:"Alternance · CDD de 6 à 24 mois, ou CDI"},
+  {id:"appr",form:"cdd",n:"CDD Apprentissage",sub:"Alternance avec un CFA · de 6 mois à 3 ans"},
+  {id:"appr",form:"cdi",n:"CDI Apprentissage",sub:"Commence par une période d'apprentissage"},
+  {id:"pro",form:"cdd",n:"CDD Contrat de professionnalisation",sub:"Alternance · de 6 à 24 mois"},
+  {id:"pro",form:"cdi",n:"CDI Contrat de professionnalisation",sub:"Commence par une action de professionnalisation"},
   {id:"interim",n:"Intérim",sub:"Mission de travail temporaire"},
   {id:"stage",n:"Stage",sub:"Convention de stage"}];
-var CTK={};CTYPES.forEach(function(c){CTK[c.id]=c;});
+var CTK={};CTYPES.forEach(function(c){if(!CTK[c.id])CTK[c.id]=c;});
+/* le type affiché dans la liste : pour l'alternance, il dépend aussi de la forme (CDD ou CDI) */
+function ctSel(x,c){c=c||ct();return c.type===x.id&&(!x.form||(c.form==="cdi"?"cdi":"cdd")===x.form);}
+function ctVal(x){return x.id+(x.form?":"+x.form:"");}
+function ctName(c){c=c||ct();var x=CTYPES.filter(function(y){return ctSel(y,c);})[0];return (x||CTYPES[0]).n;}
+function ctPick(v){var p=String(v).split(":"),c=ct();c.type=p[0];if(p[1])c.form=p[1];else delete c.form;c.essai=p[0]!=="stage";c.en=null;c.ren=false;}
 /* CDI : durée maximale selon la catégorie, renouvellement compris (art. L1221-19 et L1221-21) */
 var CATS=[{id:"emp",n:"Ouvrier ou employé",m:2,max:4},{id:"tech",n:"Agent de maîtrise ou technicien",m:3,max:6},{id:"cadre",n:"Cadre",m:4,max:8}];
 var CATK={};CATS.forEach(function(c){CATK[c.id]=c;});
@@ -1917,7 +1924,7 @@ function contractMsgs(){var out=[],t=new Date(),tk=key(t),c=ct(),cs=contractStar
   var ce=contractEnd();
   if(ce&&fixedTerm()&&altCdi()){var ew=c.type==="appr"?"période d'apprentissage":"action de professionnalisation",cd0=fdate(key(ce));
     [30,7].forEach(function(n){var d=addDays(ce,-n);if(d<cs)return;push(d,"cend","Votre "+ew+" se termine le <b>"+cd0+"</b>, dans "+n+" jours. "+endRights(),"cend:"+n+":"+key(ce));});}
-  else if(ce&&fixedTerm()){var cn=CTK[c.type].n,cd=fdate(key(ce)),b=brutSince(cs,ce),pr=(c.type==="cdd"||c.type==="interim")&&b>0?" D'après vos heures, cela ferait environ <b>"+eur(b*0.1)+"</b> brut.":"";
+  else if(ce&&fixedTerm()){var cn=c.type==="appr"?"contrat d'apprentissage":c.type==="pro"?"contrat de professionnalisation":ctName(),cd=fdate(key(ce)),b=brutSince(cs,ce),pr=(c.type==="cdd"||c.type==="interim")&&b>0?" D'après vos heures, cela ferait environ <b>"+eur(b*0.1)+"</b> brut.":"";
     [30,15,7].forEach(function(n){var d=addDays(ce,-n);if(d<cs)return;
       push(d,"cend","Votre "+(c.type==="stage"?"stage":c.type==="interim"?"mission d'intérim":cn)+" se termine le <b>"+cd+"</b>, dans "+n+" jours. "+endRights()+(n<=15?pr:"")+
         (c.type==="cdd"&&n===30?" Un CDD peut être renouvelé deux fois au plus, dans la limite de 18 mois en général : parlez-en à votre employeur si vous souhaitez continuer.":""),"cend:"+n+":"+key(ce));});
@@ -2041,7 +2048,7 @@ function renderParams(){
   h+='<button class="prof-card" data-sub="profil">'+avatarHtml()+'<span class="prof-t"><b>'+esc(name||"Votre profil")+'</b><small>'+esc(mail||"Prénom et nom")+'</small></span>'+CHEV+'</button>';
   var X=extCfg(),c=ct(),ce=contractEnd();
   h+=group(JOBS.length>1?"Travail · "+esc(jobName(JOB)):"Travail",[
-    row({icon:"doc",t:"Contrat",v:(CTK[c.type]||CTYPES[0]).n+(ce?" · fin "+fdate(c.end).replace(/ \d{4}$/,""):S.conges.start?" · depuis "+fdate(S.conges.start).replace(/ \d{4}$/,""):""),attr:'data-sub="contrat"'}),
+    row({icon:"doc",t:"Contrat",v:ctName()+(ce?" · fin "+fdate(c.end).replace(/ \d{4}$/,""):S.conges.start?" · depuis "+fdate(S.conges.start).replace(/ \d{4}$/,""):""),attr:'data-sub="contrat"'}),
     row({icon:"pay",t:"Salaire",v:payV,attr:'data-sub="pay"'}),
     row({icon:"sup",t:"Convention",v:MAJ_SHORT[P.maj]||MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
     row({icon:"flag",t:"Jours fériés",v:(REGIONS.filter(function(r){return r[0]===ferReg();})[0]||REGIONS[0])[1].replace("France métropolitaine","Métropole"),attr:'data-sub="fer"'}),
@@ -2060,7 +2067,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.59</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.60</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2099,14 +2106,10 @@ function renderSub(){
   else if(k==="conges"||k==="contrat"){t="Contrat";var c=ct(),tl=trialLegal(),tr=trialInfo(),fx=fixedTerm();
     var rb=function(attr,id,on,n,sub){return '<button class="maj" data-'+attr+'="'+id+'" aria-pressed="'+on+'"><span class="radio"></span><span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';};
     var useg=function(attr,cur,list){return '<div class="seg" role="group">'+list.map(function(u){return '<button data-'+attr+'="'+u[0]+'" aria-pressed="'+(cur===u[0])+'">'+u[1]+'</button>';}).join("")+'</div>';};
-    b='<section class="sgrp"><h2>Type de contrat</h2><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",x.id,c.type===x.id,x.n,x.sub);}).join("")+'</div></section>';
-    if(alt())b+='<section class="sgrp"><h2>Forme du contrat</h2>'+useg("cform",c.form==="cdi"?"cdi":"cdd",[["cdd","CDD"],["cdi","CDI"]])+
-      '<p class="snote">'+(c.type==="appr"?"Apprentissage : CDD de 6 mois à 3 ans (la durée de la formation), ou CDI qui commence par une période d'apprentissage. Période d'essai : 45 jours en entreprise dans les deux cas.":
-        "Contrat de professionnalisation : CDD de 6 à 12 mois (jusqu'à 24 mois selon la formation), ou CDI qui commence par une action de professionnalisation. Période d'essai : celle d'un CDD, ou celle d'un CDI.")+'</p></section>';
+    b='<section class="sgrp"><h2>Type de contrat</h2><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",ctVal(x),ctSel(x),x.n,x.sub);}).join("")+'</div></section>';
     if(c.type==="cdi"||(c.type==="pro"&&c.form==="cdi"))b+='<section class="sgrp"><h2>Catégorie</h2><div class="maj-list">'+CATS.map(function(x){return rb("ccat",x.id,(c.cat||"emp")===x.id,x.n,"Période d'essai : "+x.m+" mois, "+x.max+" mois avec renouvellement");}).join("")+'</div></section>';
     b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
-      (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div>'+
-      '<p class="snote">Le début sert aussi au calcul de vos congés payés : 2,5 jours acquis par mois (le premier au prorata).'+(fx?' La fin déclenche des rappels 30, 15 et 7 jours avant.':'')+'</p></section>';
+      (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div></section>';
     if(alt()){var am=altMin(new Date()),ap=apprSeuil();
       b+='<section class="sgrp"><h2>Salaire minimum</h2><div class="set"><div class="field"><label for="ct-birth">Date de naissance</label><input id="ct-birth" class="txt" type="date" data-cbirth value="'+esc(c.birth||"")+'"></div></div>'+
         (c.type==="pro"?group("",[row({t:"Bac pro ou plus",sub:"Bac pro, diplôme pro de même niveau, ou diplôme supérieur",toggle:!!c.bac,attr:'data-cbac aria-pressed="'+!!c.bac+'"'})]):'')+
@@ -2143,7 +2146,7 @@ function renderSub(){
       '<p class="snote">Votre employeur choisit la journée de solidarité (lundi de Pentecôte, RTT ou autre jour). Activez seulement si c\'est le lundi de Pentecôte chez vous.</p></section>'+
       '<section class="sgrp"><h2>Prochains jours fériés</h2>'+group("",up.map(function(x){var p=x[0].split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);return row({t:x[1],sub:cap(JOURS[d.getDay()])+" "+fdate(x[0]),v:isMay1(d)?"payé double":"",chev:false});}))+'</section>';}
   else if(k==="jobs"){t="Mes emplois";
-    b='<section class="sgrp"><h2>Emploi affiché</h2><div class="maj-list">'+JOBS.map(function(j){return '<button class="maj" data-job="'+esc(j.id)+'" aria-pressed="'+(j.id===JOB)+'"><span class="radio"></span><span><b>'+esc(jobName(j))+'</b><small>'+esc(withJob(j.id,function(){var c=ct();return (CTK[c.type]||CTYPES[0]).n+" · "+S.target+" h · "+(MAJ_NAMES[S.pay.maj]||"");}))+'</small></span></button>';}).join("")+'</div></section>'+
+    b='<section class="sgrp"><h2>Emploi affiché</h2><div class="maj-list">'+JOBS.map(function(j){return '<button class="maj" data-job="'+esc(j.id)+'" aria-pressed="'+(j.id===JOB)+'"><span class="radio"></span><span><b>'+esc(jobName(j))+'</b><small>'+esc(withJob(j.id,function(){var c=ct();return ctName(c)+" · "+S.target+" h · "+(MAJ_NAMES[S.pay.maj]||"");}))+'</small></span></button>';}).join("")+'</div></section>'+
       '<section class="sgrp"><h2>Noms</h2><div class="set">'+JOBS.map(function(j,i){return '<div class="field"><label for="jn-'+i+'">Emploi '+(i+1)+'</label><input id="jn-'+i+'" class="txt" data-jobname="'+esc(j.id)+'" placeholder="'+(i?"Ex. : Boulangerie":"Ex. : Restaurant")+'" value="'+esc(j.name||"")+'"></div>';}).join("")+'</div></section>'+
       (JOBS.length<5?'<div class="backup"><button data-jobadd>Ajouter un emploi</button></div>':'')+
       '<p class="snote">Chaque emploi a ses propres journées, salaire, convention, contrat et planning. Choisissez l\'emploi en haut des pages Shift, Statistiques et Réglages. Les durées maximales (10 h par jour, 48 h par semaine) valent pour le total de vos emplois : iolite vous prévient si vous les dépassez.</p>';
@@ -2237,7 +2240,7 @@ document.addEventListener("click",function(e){
   if("hardreload" in ds){hardReload(ds);return;}
   if(wizClick(ds))return;
   if(ds.job){JOBDEL=null;switchJob(ds.job);return;}
-  if(ds.ctype){ct().type=ds.ctype;if(ds.ctype==="stage")ct().essai=false;else if(ct().essai===false&&ds.ctype!=="stage")ct().essai=true;ct().en=null;saveSettings();renderParams();return;}
+  if(ds.ctype){ctPick(ds.ctype);saveSettings();renderParams();return;}
   if(ds.ccat){ct().cat=ds.ccat;saveSettings();renderParams();return;}
   if(ds.cform){ct().form=ds.cform;ct().en=null;ct().ren=false;saveSettings();renderParams();return;}
   if("cbac" in ds){ct().bac=!ct().bac;saveSettings();renderParams();return;}
