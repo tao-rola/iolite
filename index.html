@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.74">
+<meta name="description" content="iolite version 0.75">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2059,6 +2059,7 @@ var IC={
   trash:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/>',
   key:'<circle cx="8" cy="14" r="4"/><path d="M11 11l8-8M16 6l2 2"/>',
   mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/>',
+  phone:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
   doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
   moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
@@ -2112,7 +2113,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.74</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.75</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2122,12 +2123,12 @@ function renderSub(){
       (PROFILE.avatar?'<button class="av-btn del" data-avdel>Retirer</button>':'')+'</div><input type="file" id="av-file" accept="image/*" hidden><p class="snote" id="av-msg"></p></div>'+
       '<div class="set">'+
       '<div class="field"><label for="pf-first">Prénom</label><input id="pf-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
-      '<div class="field"><label for="pf-last">Nom</label><input id="pf-last" data-prof="last_name" autocomplete="family-name" autocapitalize="characters" value="'+esc(PROFILE.last_name)+'"></div>'+
-      '<div class="field"><label for="pf-tel">Téléphone</label><input id="pf-tel" type="tel" inputmode="tel" autocomplete="tel" data-phone value="'+esc(showPhone(PROFILE.phone))+'"></div></div><p class="snote" id="pf-msg"></p>';
-    if(mail){b+=group("Connexion",[
+      '<div class="field"><label for="pf-last">Nom</label><input id="pf-last" data-prof="last_name" autocomplete="family-name" autocapitalize="characters" value="'+esc(PROFILE.last_name)+'"></div></div>';
+    if(mail){b+=group("",[
         row({icon:"mail",t:"E-mail",v:esc(mail),cls:ACC==="mail"?"open":"",attr:'data-acc="'+(ACC==="mail"?"":"mail")+'"'}),
+        row({icon:"phone",t:"Téléphone",v:esc(showPhone(PROFILE.phone)||"À ajouter"),cls:ACC==="tel"?"open":"",attr:'data-acc="'+(ACC==="tel"?"":"tel")+'"'}),
         row({icon:"key",t:"Mot de passe",v:"••••••••",cls:ACC==="pw"?"open":"",attr:'data-acc="'+(ACC==="pw"?"":"pw")+'"'})]);
-      if(ACC==="pw"||ACC==="mail")b+='<div class="set">'+accForm(ACC)+'</div>';
+      if(ACC==="pw"||ACC==="mail"||ACC==="tel")b+='<div class="set">'+accForm(ACC)+'</div>';
       if(ACCMSG)b+='<p class="snote acc-ok">'+esc(ACCMSG)+'</p>';}}
   else if(k==="pay"){t="Heures et salaire";
     /* trois encadrés : salaire, heures par semaine, cotisations */
@@ -2202,6 +2203,7 @@ function accHtml(){return (ACC==="pw"||ACC==="mail"?accForm(ACC):"")+(ACCMSG&&AC
 function accForm(k){var cur='<div class="field"><label for="acc-cur">Mot de passe actuel</label><div class="pw-wrap"><input id="acc-cur" type="password" autocomplete="current-password">'+eyeBtn("acc-cur")+'</div></div>';
   var h='<div class="acc-form">';
   if(k==="pw")h+=cur+'<div class="field"><label for="acc-new">Nouveau mot de passe</label><div class="pw-wrap"><input id="acc-new" type="password" autocomplete="new-password" placeholder="6 caractères minimum">'+eyeBtn("acc-new")+'</div></div>';
+  else if(k==="tel")h+='<div class="field"><label for="acc-tel">Nouveau numéro de téléphone</label><input id="acc-tel" class="txt" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" value="'+esc(showPhone(PROFILE.phone))+'"></div>';
   else if(k==="mail")h+='<div class="field"><label for="acc-mail">Nouvelle adresse e-mail</label><input id="acc-mail" class="txt" type="email" inputmode="email" autocomplete="email" spellcheck="false"></div>'+cur;
   else h+='<p class="note">Votre compte et toutes vos données (journées pointées, réglages, planning) seront effacés définitivement. Pensez à exporter vos données avant si vous voulez les garder.</p>'+cur;
   h+='<p class="note acc-err" id="acc-msg"></p><div class="backup"><button class="'+(k==="del"?"danger-btn":"")+'" data-accgo="'+k+'">'+(k==="del"?"Supprimer définitivement":"Enregistrer")+'</button><button class="imp" '+(k==="del"?'data-sub=""':'data-acc=""')+'>Annuler</button></div></div>';
@@ -2209,6 +2211,9 @@ function accForm(k){var cur='<div class="field"><label for="acc-cur">Mot de pass
 function accGo(k){var msg=document.getElementById("acc-msg"),btn=view.querySelector("[data-accgo]"),cur=(document.getElementById("acc-cur")||{}).value||"";
   function say(t){msg.textContent=t;btn.disabled=false;}
   function done(t){ACC=null;ACCMSG=t;renderParams();}
+  if(k==="tel"){var tel=normPhone((document.getElementById("acc-tel")||{}).value);if(!tel)return say("Indiquez un numéro de téléphone valide.");
+    if(tel===PROFILE.phone)return done("");var old=PROFILE.phone;PROFILE.phone=tel;PHONE_TAKEN=false;btn.disabled=true;
+    Promise.resolve(cloudReady?pushProfile():saveProfileLocal()).then(function(){if(PHONE_TAKEN){PROFILE.phone=old;saveProfileLocal();return say("Ce numéro est déjà utilisé par un autre compte.");}done("Numéro de téléphone modifié.");});return;}
   if(!SB||!USER)return say("Connexion impossible pour le moment.");
   if(!cur)return say("Indiquez votre mot de passe actuel.");
   var nw=(document.getElementById("acc-new")||{}).value||"",nm=((document.getElementById("acc-mail")||{}).value||"").trim();
