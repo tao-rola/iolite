@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.72">
+<meta name="description" content="iolite version 0.73">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2074,7 +2074,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.72</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.73</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2120,7 +2120,7 @@ function renderSub(){
         '<div class="field money"><label for="mc-t2">Majoration au-delà</label><input id="mc-t2" data-majc="t2" inputmode="decimal" autocomplete="off" placeholder="50" value="'+esc(mc.t2==null?"":mc.t2)+'"><em>%</em></div></div>'+
         '</section>':'');}
   else if(k==="meal"){t="Repas fournis";
-    b=group("",[row({t:"Mon entreprise me fournit mes repas",sub:"iolite demande à chaque journée si un repas a été fourni",toggle:mealsOn(),attr:'data-mealson aria-pressed="'+mealsOn()+'"'})])+(!mealsOn()?'':'<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
+    b=group("",[row({t:"Mon entreprise me fournit mes repas",toggle:mealsOn(),attr:'data-mealson aria-pressed="'+mealsOn()+'"'})])+(!mealsOn()?'':'<div class="set"><div class="field money"><label for="pay-meal">Valeur d\'un repas fourni</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" placeholder="ex. 4,35" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div></div>'+
       '<p class="snote">Comme sur la fiche de paie : ajoutée au brut pour chaque repas pris au travail, puis retirée du net. En hôtellerie-restauration, elle vaut 4,35 € depuis le 1er juin 2026.</p>');}
   else if(k==="conges"||k==="contrat"){t="Contrat";var c=ct(),tl=trialLegal(),tr=trialInfo(),fx=fixedTerm();
     var rb=function(attr,id,on,n,sub){return '<button class="maj" data-'+attr+'="'+id+'" aria-pressed="'+on+'"><span class="radio"></span><span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';};
