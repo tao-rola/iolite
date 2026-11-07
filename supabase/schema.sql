@@ -7,6 +7,7 @@ create table if not exists public.profiles (
   id          uuid primary key references auth.users(id) on delete cascade,
   first_name  text not null default '',
   last_name   text not null default '',
+  phone       text,                                 -- téléphone (format international), sert aussi à se connecter
   settings    jsonb not null default '{}'::jsonb,   -- heures, salaire, cotisations, repas, majoration, rappels, congés
   seen        jsonb not null default '{}'::jsonb,   -- alertes déjà lues
   onboarded   boolean not null default false,       -- questionnaire de bienvenue terminé

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.73">
+<meta name="description" content="iolite version 0.74">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1135,7 +1135,12 @@ function savePlan(){savePlanLocal();pushPlan();}
 /* ---------- comptes et base en ligne (Supabase) ---------- */
 /* Sans configuration (config.js vide), iolite fonctionne seul sur le téléphone, comme avant. */
 var CFG=window.IOLITE_CONFIG||{},SB=null,USER=null,cloudSnap={},cloudReady=false,OB=null;
-var PROFILE={first_name:"",last_name:"",onboarded:false};
+var PROFILE={first_name:"",last_name:"",phone:"",onboarded:false};
+/* téléphone au format international : 06 12 34 56 78 → +33612345678 */
+function normPhone(v){var t=String(v||"").replace(/[\s.\-()]/g,"");if(/^00\d/.test(t))t="+"+t.slice(2);if(/^0\d{9}$/.test(t))t="+33"+t.slice(1);return /^\+\d{8,15}$/.test(t)?t:null;}
+function showPhone(v){var m=/^\+33(\d)(\d{2})(\d{2})(\d{2})(\d{2})$/.exec(v||"");return m?"0"+m[1]+" "+m[2]+" "+m[3]+" "+m[4]+" "+m[5]:(v||"");}
+function isPhoneLike(v){return /^[+\d][\d\s.\-()]{6,}$/.test(String(v||"").trim())&&!/@/.test(v);}
+var PHONE_COL=true; /* passe à false si la colonne « phone » n'existe pas encore dans Supabase */
 var DEFAULTS=null; /* réglages d'origine, pour un nouveau compte */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){}}
@@ -1155,7 +1160,12 @@ function pushDays(){if(!cloudReady)return;var up=[],del=[],now=new Date().toISOS
   if(jobs.length)Promise.all(jobs).then(function(){setStatus("");}).catch(cloudErr);}
 function pushProfile(extra){saveProfileLocal();if(!cloudReady)return Promise.resolve();
   var row=Object.assign({id:USER.id,first_name:PROFILE.first_name,last_name:PROFILE.last_name,settings:settingsObj(),seen:getSeen(),onboarded:!!PROFILE.onboarded,updated_at:new Date().toISOString()},extra||{});
-  return SB.from("profiles").upsert(row).then(function(r){if(r.error)throw r.error;}).catch(cloudErr);}
+  if(PHONE_COL)row.phone=PROFILE.phone||null;
+  return SB.from("profiles").upsert(row).then(function(r){if(r.error)throw r.error;}).catch(function(e){var m=String(e&&e.message||"");
+    if(/phone/i.test(m)&&/column|schema/i.test(m)&&PHONE_COL){PHONE_COL=false;return pushProfile(extra);}
+    if(/duplicate|unique|23505/i.test(m+(e&&e.code||""))){PHONE_TAKEN=true;var pm=document.getElementById("ob-msg")||document.getElementById("pf-msg");if(pm)pm.textContent="Ce numéro est déjà utilisé par un autre compte.";return;}
+    cloudErr(e);});}
+var PHONE_TAKEN=false;
 function pushProfileSoon(){clearTimeout(timers.p);timers.p=setTimeout(pushProfile,800);}
 function pushPlan(){if(!cloudReady)return;
   var mc=mainCombo();SB.from("plans").upsert({user_id:USER.id,data:allPlanData(),combo:comboPub(mc),updated_at:new Date().toISOString()})
@@ -1166,7 +1176,7 @@ function pullAll(){var u=USER.id;
 /* efface ce que le navigateur garde (changement de compte, déconnexion) */
 function resetLocal(){["pt-days","pt-settings","pt-plan","pt-combo","pt-seen","pt-profile","pt-notified"].forEach(function(k){lsSet(k,null);});
   lsSet("pt-job",null);JOBS=[{id:"main",name:""}];JOB="main";JCFG={};S.days={};JDAYS={main:S.days};S.plan={};S.combo=emptyCombo();JPLAN={main:{plan:S.plan,combo:S.combo}};
-  PROFILE={first_name:"",last_name:"",onboarded:false};
+  PROFILE={first_name:"",last_name:"",phone:"",onboarded:false};
   if(DEFAULTS){var d=JSON.parse(DEFAULTS);cfgSet(defCfg());S.reminder=d.reminder;}JCFG.main=cfgNow();}
 function cacheLocal(){lsSet("pt-days",JSON.stringify(allDaysMap()));lsSet("pt-settings",JSON.stringify(settingsObj()));savePlanLocal();saveProfileLocal();}
 
@@ -1195,13 +1205,14 @@ function startUser(user){
     if(r.days.length){var mp={};r.days.forEach(function(x){mp[x.day]=x.data;});setAllDays(mp);}
     /* premier passage : les saisies faites sur ce téléphone sans compte sont gardées et envoyées */
     cloudSnap={};r.days.forEach(function(x){cloudSnap[x.day]=JSON.stringify(x.data);});
-    if(r.profile){PROFILE={first_name:r.profile.first_name||"",last_name:r.profile.last_name||"",onboarded:!!r.profile.onboarded};
+    if(r.profile){PROFILE={first_name:r.profile.first_name||"",last_name:(r.profile.last_name||"").toUpperCase(),phone:r.profile.phone||"",onboarded:!!r.profile.onboarded};
       applySettings(r.profile.settings);if(r.profile.seen)lsSet("pt-seen",JSON.stringify(Object.assign(getSeen(),r.profile.seen)));}
     else if(owner!==user.id){PROFILE.onboarded=false;}
     if(r.plan)setAllPlan(r.plan.data,r.plan.combo);
     restoreJob();lsSet("pt-owner",user.id);cloudReady=true;cacheLocal();
     pushDays();if(!r.plan&&(S.combo.url||Object.keys(S.plan).length))pushPlan();
-    if(!PROFILE.onboarded)startOnboarding();else{enterApp();}
+    if(!PROFILE.phone&&user.user_metadata&&user.user_metadata.phone)PROFILE.phone=user.user_metadata.phone;
+    if(!PROFILE.onboarded)startOnboarding();else if(!PROFILE.phone||!PROFILE.first_name||!PROFILE.last_name)startOnboarding(true);else{enterApp();}
   }).catch(function(){
     if(lsGet("pt-owner")===user.id&&PROFILE.onboarded){enterApp();cloudErr();}
     else{view.innerHTML='<div class="gate-load">'+BOT+'<p>Impossible de joindre la base en ligne.</p><button class="btn-main" data-retry>Réessayer</button></div>';}
@@ -1229,7 +1240,9 @@ function showAuth(mode,msg){AUTHMODE=mode;gate(true);
     check:["Vérifiez vos e-mails","Ouvrez le lien reçu pour confirmer votre adresse, puis revenez ici."]}[mode];
   var h='<div class="auth"><div class="auth-logo">'+BOT+'</div><h1 class="wiz-q">'+t[0]+'</h1><p class="auth-sub">'+t[1]+'</p>';
   if(mode!=="check"){h+='<form class="auth-form" id="auth-form" novalidate>';
-    if(mode!=="reset")h+='<div class="field"><label for="au-mail">E-mail</label><input id="au-mail" type="email" autocomplete="email" inputmode="email" required></div>';
+    if(mode==="login")h+='<div class="field"><label for="au-mail">E-mail ou téléphone</label><input id="au-mail" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" required></div>';
+    else if(mode!=="reset")h+='<div class="field"><label for="au-mail">E-mail</label><input id="au-mail" type="email" autocomplete="email" inputmode="email" required></div>';
+    if(mode==="signup")h+='<div class="field"><label for="au-tel">Téléphone</label><input id="au-tel" type="tel" autocomplete="tel" inputmode="tel" placeholder="06 12 34 56 78" required></div>';
     if(mode!=="forgot")h+='<div class="field"><label for="au-pass">Mot de passe</label><div class="pw-wrap"><input id="au-pass" type="password" autocomplete="'+(mode==="login"?"current-password":"new-password")+'" minlength="6" required>'+eyeBtn("au-pass")+'</div></div>';
     h+='<p class="auth-msg" id="au-msg" role="alert">'+esc(msg||"")+'</p>';
     h+='<button class="btn-main" type="submit">'+{login:"Se connecter",signup:"Créer mon compte",forgot:"Envoyer le lien",reset:"Enregistrer"}[mode]+'</button></form>';}
@@ -1240,25 +1253,42 @@ function showAuth(mode,msg){AUTHMODE=mode;gate(true);
 function authSubmit(){
   var mail=(document.getElementById("au-mail")||{}).value,pass=(document.getElementById("au-pass")||{}).value,msg=document.getElementById("au-msg"),btn=view.querySelector(".auth-form .btn-main");
   function say(t){msg.textContent=t;btn.disabled=false;}
-  if(AUTHMODE!=="reset"&&!/^\S+@\S+\.\S+$/.test(mail||""))return say("Indiquez une adresse e-mail valide.");
+  mail=(mail||"").trim();var tel=null;
+  if(AUTHMODE==="login"&&isPhoneLike(mail)){tel=normPhone(mail);if(!tel)return say("Ce numéro de téléphone n'est pas valide.");}
+  else if(AUTHMODE!=="reset"&&!/^\S+@\S+\.\S+$/.test(mail||""))return say(AUTHMODE==="login"?"Indiquez votre e-mail ou votre numéro de téléphone.":"Indiquez une adresse e-mail valide.");
+  if(AUTHMODE==="signup"){tel=normPhone((document.getElementById("au-tel")||{}).value);if(!tel)return say("Indiquez un numéro de téléphone valide.");}
   if(AUTHMODE!=="forgot"&&(!pass||pass.length<6))return say("Le mot de passe doit faire au moins 6 caractères.");
   btn.disabled=true;msg.textContent="";var back=location.origin+location.pathname;
-  if(AUTHMODE==="login")SB.auth.signInWithPassword({email:mail,password:pass}).then(function(r){if(r.error)return say(authErr(r.error));startUser(r.data.user);});
-  else if(AUTHMODE==="signup")SB.auth.signUp({email:mail,password:pass,options:{emailRedirectTo:back}}).then(function(r){if(r.error)return say(authErr(r.error));
+  if(AUTHMODE==="login"&&tel){ /* connexion par téléphone : la base retrouve l'e-mail du compte, seulement si le mot de passe est le bon */
+    SB.rpc("login_email",{p_phone:tel,p_pass:pass}).then(function(r){if(r.error||!r.data)return say(r.error&&/function|login_email/i.test(r.error.message||"")?"La connexion par téléphone n'est pas encore activée. Utilisez votre e-mail.":"Téléphone ou mot de passe incorrect.");
+      SB.auth.signInWithPassword({email:r.data,password:pass}).then(function(x){if(x.error)return say(authErr(x.error));startUser(x.data.user);});});}
+  else if(AUTHMODE==="login")SB.auth.signInWithPassword({email:mail,password:pass}).then(function(r){if(r.error)return say(authErr(r.error));startUser(r.data.user);});
+  else if(AUTHMODE==="signup")SB.auth.signUp({email:mail,password:pass,options:{emailRedirectTo:back,data:{phone:tel}}}).then(function(r){if(r.error)return say(authErr(r.error));PROFILE.phone=tel;saveProfileLocal();
       if(r.data.session)startUser(r.data.user);else showAuth("check","Lien envoyé à "+mail+".");});
   else if(AUTHMODE==="forgot")SB.auth.resetPasswordForEmail(mail,{redirectTo:back}).then(function(r){if(r.error)return say(authErr(r.error));showAuth("check","Si un compte existe pour "+mail+", un lien vient d'être envoyé.");});
   else if(AUTHMODE==="reset")SB.auth.updateUser({password:pass}).then(function(r){if(r.error)return say(authErr(r.error));SB.auth.getSession().then(function(x){var s=x.data&&x.data.session;if(s){USER=null;startUser(s.user);}else showAuth("login","Mot de passe modifié. Connectez-vous.");});});
 }
 
 /* ---------- questionnaire de bienvenue (première connexion) ---------- */
-var OB_STEPS=["name","ctype","start","hours","pay","charges","meal","maj","rem","combo","done"];
-function startOnboarding(){OB={i:0};gate(true);renderOnboarding();}
+/* toutes les questions des Réglages ; seules l'identité (prénom, nom) et le téléphone sont obligatoires */
+var OB_ALL=["name","phone","photo","ctype","start","pay","hours","charges","maj","reg","meal","rem","combo","done"],OB_STEPS=OB_ALL;
+/* only : compte déjà configuré à qui il manque une information obligatoire (ex. le téléphone) */
+function startOnboarding(only){OB_STEPS=only?["name","phone","done"]:OB_ALL;OB={i:0,only:!!only};
+  if(only&&PROFILE.first_name&&PROFILE.last_name)OB.i=1;gate(true);renderOnboarding();}
 function renderOnboarding(){
   var st=OB_STEPS[OB.i],P=S.pay,n=OB_STEPS.length-1,pct=Math.round(Math.min(OB.i,n)/n*100),from=OB.last==null?0:OB.last;OB.last=pct;
   var q="",sub="",body="",skip=true,nextLabel="Suivant";
-  if(st==="name"){skip=false;q="Bienvenue sur iolite";sub="Comment vous appelez-vous ?";
+  if(st==="phone"){skip=false;q="Votre numéro de téléphone";sub="Il vous permet aussi de vous connecter, à la place de votre e-mail.";
+    body='<div class="field"><label for="ob-tel">Téléphone</label><input id="ob-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" value="'+esc(showPhone(PROFILE.phone))+'"></div><p class="auth-msg" id="ob-msg"></p>';}
+  else if(st==="photo"){q="Une photo de profil ?";sub="Elle s'affiche dans vos Réglages.";
+    body='<div class="av-edit">'+avatarHtml("big")+'<div class="av-acts"><label class="av-btn" for="av-file">'+(PROFILE.avatar?"Changer la photo":"Ajouter une photo")+'</label>'+
+      (PROFILE.avatar?'<button class="av-btn del" data-avdel>Retirer</button>':'')+'</div><input type="file" id="av-file" accept="image/*" hidden><p class="snote" id="av-msg"></p></div>';}
+  else if(st==="reg"){q="Où travaillez-vous ?";sub="Pour connaître vos jours fériés.";
+    var yr0=new Date().getFullYear();
+    body='<div class="maj-list">'+REGIONS.map(function(r){return '<button class="maj" data-reg="'+r[0]+'" aria-pressed="'+(ferReg()===r[0])+'"><span class="radio"></span><span><b>'+r[1]+'</b><small>'+Object.keys(feriesFor(yr0,r[0])).length+' jours fériés</small></span></button>';}).join("")+'</div>';}
+  else if(st==="name"){skip=false;q=OB.only?"Complétez votre profil":"Bienvenue sur iolite";sub="Comment vous appelez-vous ?";
     body='<div class="field"><label for="ob-first">Prénom</label><input id="ob-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
-      '<div class="field"><label for="ob-last">Nom</label><input id="ob-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div><p class="auth-msg" id="ob-msg"></p>';}
+      '<div class="field"><label for="ob-last">Nom</label><input id="ob-last" data-prof="last_name" autocomplete="family-name" autocapitalize="characters" value="'+esc(PROFILE.last_name)+'"></div><p class="auth-msg" id="ob-msg"></p>';}
   else if(st==="ctype"){q="Quel est votre contrat ?";sub="Pour vos rappels de fin de contrat.";
     body='<div class="maj-list">'+CTYPES.map(function(x){return '<button class="maj" data-obct="'+ctVal(x)+'" aria-pressed="'+ctSel(x)+'"><span class="radio"></span><span><b>'+x.n+'</b><small>'+x.sub+'</small></span></button>';}).join("")+'</div>';}
   else if(st==="start"){q=fixedTerm()?"Quelles sont les dates de votre contrat ?":"Quand a débuté votre contrat ?";sub="Sert à calculer vos congés payés.";
@@ -1266,14 +1296,14 @@ function renderOnboarding(){
       (fixedTerm()?'<div class="field" style="margin-top:12px"><label for="ob-end">Fin du contrat</label><input id="ob-end" class="txt" type="date" data-cend value="'+esc(ct().end||"")+'"></div>':'');}
   else if(st==="hours"){q="Combien d'heures par semaine ?";sub="Les heures prévues à votre contrat.";
     body='<div class="stepper big"><button data-target="-1" aria-label="Une heure de moins">−</button><output id="tgt">'+S.target+' h</output><button data-target="1" aria-label="Une heure de plus">+</button></div>';}
-  else if(st==="pay"){q="Quel est votre salaire brut ?";sub="Remplissez l'un des deux : l'autre se calcule tout seul.";
+  else if(st==="pay"){q="Quel est votre salaire brut ?";sub="";
     body='<div class="field-stack"><div class="field money"><label for="pay-monthly">Au mois (brut)</label><input id="pay-monthly" data-pay="monthly" inputmode="decimal" autocomplete="off" placeholder="1 900"><em>€</em></div>'+
       '<div class="field money"><label for="pay-rate">À l\'heure (brut)</label><input id="pay-rate" data-pay="rate" inputmode="decimal" autocomplete="off" placeholder="12,50"><em>€</em></div></div>';}
   else if(st==="charges"){q="Vos cotisations salariales ?";sub="La part retirée du brut pour obtenir le net. Environ 22 % en général.";
     body='<div class="field money"><label for="pay-charges">Cotisations</label><input id="pay-charges" data-pay="charges" inputmode="decimal" autocomplete="off" value="'+esc(P.charges==null?"":P.charges)+'"><em>%</em></div>';}
   else if(st==="split"){if(S.pay.split===undefined)S.pay.split=false;q="Vos journées sont-elles coupées en deux ?";sub="Par exemple un service le midi et un autre le soir, avec une longue pause entre les deux. Sinon, vous saisirez simplement votre heure d'arrivée et de départ.";
     body='<div class="choices two"><button class="choice'+(P.split?" on":"")+'" data-obsplit="1">Oui</button><button class="choice'+(P.split?"":" on")+'" data-obsplit="0">Non</button></div>';}
-  else if(st==="meal"){if(S.pay.mealsOn===undefined)S.pay.mealsOn=false;q="Votre entreprise vous fournit-elle vos repas ?";sub="Si oui, iolite vous demandera à chaque journée si un repas vous a été fourni.";
+  else if(st==="meal"){if(S.pay.mealsOn===undefined)S.pay.mealsOn=false;q="Votre entreprise vous fournit-elle vos repas ?";sub="";
     body='<div class="choices two"><button class="choice'+(P.mealsOn?" on":"")+'" data-obmeal="1">Oui</button><button class="choice'+(P.mealsOn?"":" on")+'" data-obmeal="0">Non</button></div>'+
       (P.mealsOn?'<div class="field money" style="margin-top:16px"><label for="pay-meal">Valeur d\'un repas</label><input id="pay-meal" data-pay="meal" inputmode="decimal" autocomplete="off" value="'+esc(P.meal==null?"":P.meal)+'"><em>€</em></div><p class="snote">Ajoutée au brut puis retirée du net pour chaque repas pris au travail. En hôtellerie-restauration : 4,35 € depuis le 1er juin 2026.</p>':'');}
   else if(st==="maj"){q="Comment sont majorées vos heures sup ?";sub="";
@@ -1283,10 +1313,11 @@ function renderOnboarding(){
   else if(st==="rem"){q="À quelle heure vous rappeler ?";sub="Si rien n'est pointé, iolite vous envoie une notification à ces horaires.";
     var times=S.reminder.times||[];
     body='<div class="rem-list">'+times.map(function(t,i){return '<div class="rem-row"><input type="time" id="rem-'+i+'" data-remidx="'+i+'" value="'+esc(t)+'" aria-label="Horaire de rappel '+(i+1)+'">'+(times.length>1?'<button class="rem-del" data-remdel="'+i+'" aria-label="Supprimer cet horaire">×</button>':'')+'</div>';}).join("")+'</div>'+
-      (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'');}
+      (times.length<5?'<button class="rem-add" data-remadd>Ajouter un horaire</button>':'')+
+      '<div style="margin-top:18px">'+group("",[row({icon:"recap",t:"Résumé de la semaine",toggle:S.reminder.recap!==false,attr:'data-recap aria-pressed="'+(S.reminder.recap!==false)+'"'})])+'</div>';}
   else if(st==="combo"){q="Votre planning";sub="Collez l'adresse d'abonnement calendrier (iCal / .ics) de votre planning : Combo, Skello, Planday, emploi du temps ADE, Google Agenda…";
     body='<div class="field"><label for="combo-url">Adresse de synchronisation</label><input id="combo-url" class="txt" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Collez l\'adresse de votre planning" value="'+esc(S.combo.url||"")+'"></div><p class="note" id="combo-msg">'+esc(comboStatus())+'</p>';}
-  else if(st==="done"){skip=false;q="Tout est prêt"+(firstName()?", "+esc(firstName()):"")+" !";sub="Vous pourrez tout modifier plus tard dans Réglages.";nextLabel="Commencer";
+  else if(st==="done"){skip=false;q=(OB.only?"Merci":"Tout est prêt")+(firstName()?", "+esc(firstName()):"")+" !";sub=OB.only?"Votre profil est complet.":"Vous pourrez tout modifier plus tard dans Réglages.";nextLabel=OB.only?"Continuer":"Commencer";
     body='<div class="ob-done">'+BOT+'</div>';}
   var h='<div class="wiz onb"><div class="wiz-bar"><div style="--from:'+from+'%;width:'+pct+'%"></div></div>'+
     '<h2 class="wiz-q">'+q+'</h2>'+(sub?'<p class="auth-sub">'+sub+'</p>':'')+body+
@@ -1301,13 +1332,20 @@ function obClick(ds){
   if(ds.obmeal){S.pay.mealsOn=ds.obmeal==="1";saveSettings();renderOnboarding();return true;}
   if(ds.obct){ctPick(ds.obct);saveSettings();renderOnboarding();return true;}
   if(ds.obmaj){S.pay.maj=ds.obmaj;updateEq();saveSettings();renderOnboarding();return true;}
+  if(ds.reg){S.pay.reg=ds.reg;FER_CACHE={};saveSettings();renderOnboarding();return true;}
+  if("recap" in ds){S.reminder.recap=S.reminder.recap===false;saveSettings();renderOnboarding();return true;}
+  if("avdel" in ds){PROFILE.avatar="";saveProfileLocal();saveSettings();renderOnboarding();return true;}
   if(!ds.ob)return false;
   var st=OB_STEPS[OB.i];
   if(ds.ob==="back"){OB.i=Math.max(0,OB.i-1);renderOnboarding();return true;}
   if(st==="name"&&ds.ob==="next"){var f=(PROFILE.first_name||"").trim(),l=(PROFILE.last_name||"").trim(),m=document.getElementById("ob-msg");
-    if(!f||!l){m.textContent="Indiquez votre prénom et votre nom pour continuer.";return true;}PROFILE.first_name=f;PROFILE.last_name=l;pushProfile();}
+    if(!f||!l){m.textContent="Indiquez votre prénom et votre nom pour continuer.";return true;}PROFILE.first_name=f;PROFILE.last_name=l.toUpperCase();pushProfile();}
+  if(st==="phone"&&ds.ob==="next"){var tel=normPhone((document.getElementById("ob-tel")||{}).value),pm=document.getElementById("ob-msg");
+    if(!tel){pm.textContent="Indiquez un numéro de téléphone valide pour continuer.";return true;}
+    PROFILE.phone=tel;PHONE_TAKEN=false;pm.textContent="Enregistrement…";
+    Promise.resolve(cloudReady?pushProfile():saveProfileLocal()).then(function(){if(PHONE_TAKEN){pm.textContent="Ce numéro est déjà utilisé par un autre compte.";return;}OB.i++;renderOnboarding();});return true;}
   if(st==="combo"&&ds.ob==="next"&&S.combo.url)syncCombo(false);
-  if(st==="done"){PROFILE.onboarded=true;pushProfile({onboarded:true});saveSettings();enterApp();return true;}
+  if(st==="done"){PROFILE.onboarded=true;pushProfile({onboarded:true});saveSettings();OB_STEPS=OB_ALL;enterApp();return true;}
   OB.i++;renderOnboarding();return true;
 }
 
@@ -2041,7 +2079,7 @@ function avMsg(t){var m=document.getElementById("av-msg");if(m)m.textContent=t;}
 function setAvatar(file){if(!file)return;if(!/^image\//.test(file.type||"image/"))return avMsg("Choisissez une image.");avMsg("Chargement…");
   var fr=new FileReader();fr.onload=function(){var img=new Image();
     img.onload=function(){var z=256,c=document.createElement("canvas");c.width=c.height=z;var x=c.getContext("2d"),m=Math.min(img.width,img.height);
-      x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,z,z);PROFILE.avatar=c.toDataURL("image/jpeg",0.82);saveProfileLocal();saveSettings();renderParams();};
+      x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,z,z);PROFILE.avatar=c.toDataURL("image/jpeg",0.82);saveProfileLocal();saveSettings();if(OB)renderOnboarding();else renderParams();};
     img.onerror=function(){avMsg("Cette image ne peut pas être lue. Essayez une photo au format JPEG ou PNG.");};img.src=fr.result;};
   fr.readAsDataURL(file);}
 function openSub(k){SUB=k;ACC=null;ACCMSG="";renderParams();window.scrollTo(0,0);}
@@ -2063,7 +2101,7 @@ function renderParams(){
   h+=group("Emplois",[row({icon:"bag",t:JOBS.length>1?"Mes emplois":"Plusieurs emplois",sub:JOBS.length>1?"":"Deux employeurs, job étudiant et alternance…",v:JOBS.length>1?JOBS.length+" emplois":"",attr:'data-sub="jobs"'})]);
   h+=group("Notifications",[
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
-    row({icon:"recap",t:"Résumé de la semaine",sub:"Le dimanche à 20 h",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
+    row({icon:"recap",t:"Résumé de la semaine",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
     permNote()?'<p class="snote">'+permNote()+'</p>':'');
   h+=group("Planning",[row({icon:"cal",t:"Planning",v:S.combo.url?(provSel().id==="autre"?"Relié":provSel().n):"Non relié",attr:'data-sub="combo"'})]);
   h+=group("Données",[
@@ -2074,7 +2112,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.73</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.74</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2084,7 +2122,8 @@ function renderSub(){
       (PROFILE.avatar?'<button class="av-btn del" data-avdel>Retirer</button>':'')+'</div><input type="file" id="av-file" accept="image/*" hidden><p class="snote" id="av-msg"></p></div>'+
       '<div class="set">'+
       '<div class="field"><label for="pf-first">Prénom</label><input id="pf-first" data-prof="first_name" autocomplete="given-name" value="'+esc(PROFILE.first_name)+'"></div>'+
-      '<div class="field"><label for="pf-last">Nom</label><input id="pf-last" data-prof="last_name" autocomplete="family-name" value="'+esc(PROFILE.last_name)+'"></div></div>';
+      '<div class="field"><label for="pf-last">Nom</label><input id="pf-last" data-prof="last_name" autocomplete="family-name" autocapitalize="characters" value="'+esc(PROFILE.last_name)+'"></div>'+
+      '<div class="field"><label for="pf-tel">Téléphone</label><input id="pf-tel" type="tel" inputmode="tel" autocomplete="tel" data-phone value="'+esc(showPhone(PROFILE.phone))+'"></div></div><p class="snote" id="pf-msg"></p>';
     if(mail){b+=group("Connexion",[
         row({icon:"mail",t:"E-mail",v:esc(mail),cls:ACC==="mail"?"open":"",attr:'data-acc="'+(ACC==="mail"?"":"mail")+'"'}),
         row({icon:"key",t:"Mot de passe",v:"••••••••",cls:ACC==="pw"?"open":"",attr:'data-acc="'+(ACC==="pw"?"":"pw")+'"'})]);
@@ -2276,6 +2315,8 @@ function exportData(){
 view.addEventListener("submit",function(e){if(e.target.id==="auth-form"){e.preventDefault();authSubmit();}});
 view.addEventListener("keydown",function(e){if(e.key==="Enter"&&OB&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-ob="next"]');if(b)b.click();return;}if(e.key==="Enter"&&W&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-wiz="next"]');if(b)b.click();}});
 view.addEventListener("change",function(e){var i=e.target;
+  if("phone" in i.dataset){var tel=normPhone(i.value),pm=document.getElementById("pf-msg");if(!tel){if(pm)pm.textContent="Ce numéro n'est pas valide : il reste "+(PROFILE.phone?showPhone(PROFILE.phone):"vide")+".";return;}
+    PROFILE.phone=tel;i.value=showPhone(tel);PHONE_TAKEN=false;if(pm)pm.textContent="";pushProfile();return;}
   if(!OB&&SUB==="jobs"&&i.dataset.jobname!=null){renderParams();return;}
   if(!OB&&SUB==="contrat"&&("cpstart" in i.dataset||"cend" in i.dataset||"cen" in i.dataset||"crn" in i.dataset)){var y=window.scrollY;renderParams();window.scrollTo(0,y);return;}
   if(i.id==="av-file"){setAvatar(i.files&&i.files[0]);i.value="";return;}
@@ -2303,7 +2344,8 @@ view.addEventListener("input",function(e){var i=e.target;
   if("cp" in i.dataset){S.conges.report=i.value.trim()===""?null:i.value.trim();saveSettings();return;}
   if(i.id==="wiz-time"&&i.value){svcObj(i.dataset.wizs)[i.dataset.wizf]=i.value;tidy(key(S.cur));return;}
   if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;savePlan();return;}
-  if(i.dataset.prof){PROFILE[i.dataset.prof]=i.value;if(!OB)pushProfileSoon();else saveProfileLocal();return;}
+  if(i.dataset.prof){if(i.dataset.prof==="last_name"){var cp=i.selectionStart,up=i.value.toUpperCase();if(up!==i.value){i.value=up;try{i.setSelectionRange(cp,cp);}catch(e){}}}
+    PROFILE[i.dataset.prof]=i.value;if(!OB)pushProfileSoon();else saveProfileLocal();return;}
 });
 /* revient au premier plan : rafraîchit la date du jour et vérifie le rappel */
 document.addEventListener("visibilitychange",function(){if(!document.hidden){checkReminder();autoSync();}});
