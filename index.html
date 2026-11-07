@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.58">
+<meta name="description" content="iolite version 0.59">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -875,7 +875,8 @@ function payCalc(md){
   var xm=(md.majH||0)*r;brut+=xm;
   var ch=num(P.charges);if(ch==null)ch=22;
   /* repas fourni = avantage en nature : ajouté au brut (soumis aux cotisations), puis retiré du net, comme sur la fiche de paie */
-  var mp=mealsOn()?(num(P.meal)||0):0,an=mp*(md.repas||0),base=brut;brut+=an;var net0=brut*(1-ch/100);
+  var mp=mealsOn()?(num(P.meal)||0):0,an=mp*(md.repas||0),base=brut;brut+=an;var net0=brut*(1-ch/100),ap=apprSeuil();
+  if(ap){var seuil=ap.pct/100*SMIC_M*(md.days||30.44)*12/365,chA=ap.old?Math.max(0,ch-9.7):ch;net0=brut-chA/100*Math.max(0,brut-seuil);}
   return {brut:brut,base:base,an:an,net0:net0,net:net0-an,mealDed:an,meals:md.repas||0,mealPrice:mp,r:r,normH:normH,supH:supH,maj:maj,sup:sup,ch:ch,cp:cp,
     fer:fer,ferH:md.ferInWeeks?0:(md.ferPaidH||0),absP:absP,absH:md.absPaidH||0,xm:xm,night:md.night||0,sun:md.sun||0,ferW:md.fer||0,solid:md.solid||0};
 }
@@ -986,6 +987,7 @@ function cpDay(dt,d){return modeOf(d)==="conge"&&dt.getDay()!==0&&!ferName(dt);}
 function rangeData(dates){
   var o={total:0,midi:0,soir:0,cont:0,worked:0,repas:0,best:0,congeDays:0,congeH:0,weeks:[],ferPaidH:0,ferChome:0,ferInWeeks:S.pay.ferHS===true,absPaidH:0,
     majH:0,night:0,sun:0,fer:0,may1:0,solid:0,ecole:0,formation:0,abs:{}},w={};
+  o.days=dates.length;
   dates.forEach(function(dt){var d=dayOf(dt),r=dayCalc(d),wk=key(monday(dt)),hs=r.total;
     o.total+=r.total;o.midi+=r.midi;o.soir+=r.soir;o.cont+=r.cont;o.repas+=r.repas;
     if(r.worked){o.worked++;o.best=Math.max(o.best,r.total);}
@@ -1806,8 +1808,8 @@ var CTYPES=[
   {id:"cdi",n:"CDI",sub:"Contrat à durée indéterminée"},
   {id:"cdd",n:"CDD",sub:"Contrat à durée déterminée, job étudiant, remplacement"},
   {id:"saison",n:"CDD saisonnier",sub:"Saison d'été, d'hiver, vendanges…"},
-  {id:"appr",n:"Apprentissage",sub:"Alternance, contrat d'apprentissage"},
-  {id:"pro",n:"Contrat de professionnalisation",sub:"Alternance, en CDD"},
+  {id:"appr",n:"Apprentissage",sub:"Alternance avec un CFA · CDD de 6 mois à 3 ans, ou CDI"},
+  {id:"pro",n:"Contrat de professionnalisation",sub:"Alternance · CDD de 6 à 24 mois, ou CDI"},
   {id:"interim",n:"Intérim",sub:"Mission de travail temporaire"},
   {id:"stage",n:"Stage",sub:"Convention de stage"}];
 var CTK={};CTYPES.forEach(function(c){CTK[c.id]=c;});
@@ -1818,6 +1820,27 @@ function ct(){return S.contract||(S.contract={type:"cdi",cat:"emp",essai:true,eu
 function pdate(v){if(!v||!/^\d{4}-\d{2}-\d{2}$/.test(v))return null;var p=v.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
 function contractEnd(){return ct().type==="cdi"?null:pdate(ct().end);}
 function fixedTerm(){return ct().type!=="cdi";}
+/* ---------- alternance : apprentissage et contrat de professionnalisation ne suivent pas les mêmes règles ---------- */
+function alt(){var t=ct().type;return t==="appr"||t==="pro";}
+function altCdi(){return alt()&&ct().form==="cdi";}
+/* nom de la fin : en CDI, c'est seulement la fin de la période de formation, le contrat continue */
+function endWord(){var t=ct().type;if(altCdi())return t==="appr"?"Fin de la période d'apprentissage":"Fin de l'action de professionnalisation";return t==="stage"?"Fin du stage":t==="interim"?"Fin de la mission":"Fin du contrat";}
+var SMIC_H=12.31,SMIC_M=SMIC_H*151.67; /* SMIC brut au 1er juin 2026 */
+/* âge retenu à une date : il change le 1er jour du mois qui suit l'anniversaire */
+function ageAt(dt){var b=pdate(ct().birth);if(!b)return null;var a=dt.getFullYear()-b.getFullYear();
+  var bm=new Date(dt.getFullYear(),b.getMonth()+1,1);if(dt<bm)a--;return a;}
+/* salaire minimum légal de l'alternant (en % du SMIC), sauf minimum conventionnel plus favorable */
+function altMin(dt){if(!alt())return null;var a=ageAt(dt),cs=contractStart(),c=ct();if(a==null)return null;
+  if(c.type==="appr"){if(a>=26)return {pct:100,txt:"26 ans et plus : 100 % du SMIC (ou le minimum de votre convention s'il est plus élevé)"};
+    var y=cs?Math.min(3,Math.floor(Math.max(0,(dt.getFullYear()-cs.getFullYear())*12+dt.getMonth()-cs.getMonth()-(dt.getDate()<cs.getDate()?1:0))/12)+1):1;
+    var g=a<18?[27,39,55]:a<21?[43,51,67]:[53,61,78],pc=g[y-1];
+    return {pct:pc,txt:(a<18?"16-17 ans":a<21?"18-20 ans":"21-25 ans")+", "+y+(y===1?"ʳᵉ":"ᵉ")+" année : "+pc+" % du SMIC"+(a>=21?", ou ce pourcentage du minimum de votre convention s'il est plus élevé":"")};}
+  if(a>=26)return {pct:100,txt:"26 ans et plus : au moins le SMIC, et au moins 85 % du minimum de votre convention"};
+  var hi=!!c.bac,pc2=a<21?(hi?65:55):(hi?80:70);
+  return {pct:pc2,txt:(a<21?"Moins de 21 ans":"21-25 ans")+(hi?", avec un bac pro ou un diplôme pro de même niveau ou plus":", sans bac pro")+" : "+pc2+" % du SMIC"};}
+/* apprenti : cotisations salariales seulement au-delà de 50 % du SMIC (contrats signés depuis le 1er mars 2025), 79 % avant ;
+   le contrat de professionnalisation a les cotisations habituelles */
+function apprSeuil(){if(ct().type!=="appr")return null;var cs=contractStart(),old=cs&&cs<new Date(2025,2,1);return {pct:old?79:50,old:old};}
 /* fin d'une durée qui commence le jour a (inclus) */
 function addPeriod(a,n,u){if(u==="m"){var e=new Date(a.getFullYear(),a.getMonth()+n,a.getDate());return addDays(e,-1);}return addDays(a,(u==="s"?7*n:n)-1);}
 function unitWord(n,u){return u==="m"?n+" mois":u==="s"?n+" semaine"+(n>1?"s":""):n+" jour"+(n>1?"s":"");}
@@ -1828,6 +1851,7 @@ function companyDays(from,to){var n=0,list=[];for(var d=new Date(from);d<=to;d=a
 function trialLegal(){var c=ct(),cs=contractStart(),ce=contractEnd(),t=c.type;
   if(t==="stage")return null;
   if(t==="cdi"){var k=CATK[c.cat]||CATS[0];return {n:k.m,u:"m",max:k.max,ren:true,txt:k.m+" mois au maximum pour un "+k.n.toLowerCase()+", renouvelable une fois (durée totale "+k.max+" mois au plus)"};}
+  if(t==="pro"&&ct().form==="cdi"){var k2=CATK[c.cat]||CATS[0];return {n:k2.m,u:"m",max:k2.max,ren:true,txt:k2.m+" mois au maximum pour un "+k2.n.toLowerCase()+" (contrat de professionnalisation en CDI), renouvelable une fois (durée totale "+k2.max+" mois au plus)"};}
   if(t==="appr")return {n:45,u:"t",ren:false,txt:"les 45 premiers jours de formation pratique en entreprise, consécutifs ou non (les jours d'école ne comptent pas)"};
   if(t==="interim"){var L=cs&&ce?daysBetween(cs,ce)+1:0,n=!L||L<=31?2:L<=61?3:5;return {n:n,u:"t",ren:false,txt:"2 jours travaillés pour une mission d'un mois au plus, 3 jours jusqu'à 2 mois, 5 jours au-delà"};}
   /* CDD, saisonnier, professionnalisation : 1 jour par semaine, 2 semaines au plus (contrat de 6 mois au plus) ou 1 mois */
@@ -1841,6 +1865,9 @@ function trialInfo(){var c=ct(),cs=contractStart();if(!cs||c.essai===false)retur
   var o={start:cs,n:n,u:u,legal:L,renewed:false,ext:0};
   if(u==="t"){ /* compté en jours travaillés (apprentissage, intérim) */
     var today=new Date(),cd=companyDays(cs,addDays(today,0));o.done=cd.n;o.worked=true;
+    /* journées du début non pointées : on ne peut pas compter, on le dit plutôt que d'afficher un faux décompte */
+    var first=null;for(var q=new Date(cs);q<=today;q=addDays(q,1))if(entered(dayOf(q))){first=q;break;}
+    if(cd.n<n&&(!first||daysBetween(cs,first)>14)){o.unknown=true;o.first=first;o.end=null;o.left=null;o.likely=daysBetween(cs,today)>120;return o;}
     if(cd.n>=n){o.end=cd.list[n-1];}else{o.end=null;o.left=n-cd.n;}
     var ce=contractEnd();if(ce&&o.end&&o.end>ce)o.end=ce;return o;}
   var end=addPeriod(cs,n,u);
@@ -1861,29 +1888,43 @@ function endRights(){var t=ct().type;
   if(t==="cdd")return "Vous devriez toucher une indemnité de fin de contrat (prime de précarité) de 10 % de vos salaires bruts, sauf exceptions (job étudiant pendant les vacances scolaires, refus d'un CDI équivalent, rupture de votre fait…), et une indemnité pour les congés payés non pris.";
   if(t==="saison")return "Un CDD saisonnier ne donne pas de prime de précarité (sauf accord plus favorable), mais vos congés non pris sont payés (indemnité de 10 %).";
   if(t==="interim")return "Vous touchez une indemnité de fin de mission de 10 % de vos salaires bruts et une indemnité de congés payés de 10 %.";
-  if(t==="appr"||t==="pro")return "Pas de prime de précarité en fin d'alternance, mais vos congés non pris sont payés.";
+  if(t==="appr"&&altCdi())return "Votre contrat continue ensuite en CDI classique, sans nouvelle période d'essai. Votre salaire ne peut plus être inférieur au SMIC ni au minimum de votre convention.";
+  if(t==="pro"&&altCdi())return "Votre contrat continue ensuite en CDI classique, sans nouvelle période d'essai. Votre salaire ne peut plus être inférieur au SMIC ni au minimum de votre convention.";
+  if(t==="appr")return "Un contrat d'apprentissage ne donne pas de prime de précarité, mais vos congés non pris sont payés. Si vous avez obtenu votre diplôme avant la fin, vous pouvez arrêter plus tôt en prévenant votre employeur par écrit au moins 2 mois avant.";
+  if(t==="pro")return "Un contrat de professionnalisation en CDD ne donne pas de prime de précarité (art. L1243-10), mais vos congés non pris sont payés.";
   if(t==="stage")return "Demandez votre attestation de stage. Au-delà de 2 mois, la gratification est obligatoire.";
   return "";}
+/* ce qui reste possible une fois la période d'essai passée */
+function afterTrial(){var c=ct(),t=c.type;
+  if(t==="appr")return "Le contrat ne peut plus être rompu que d'un commun accord écrit, par votre démission après avoir saisi le médiateur de l'apprentissage, ou par un licenciement pour un motif précis (faute grave, inaptitude, force majeure, exclusion du CFA).";
+  if((t==="pro"&&c.form!=="cdi")||t==="cdd"||t==="saison")return "Comme tout CDD, il ne peut plus être rompu avant son terme que d'un commun accord, pour faute grave, force majeure, inaptitude, ou si vous êtes embauché en CDI ailleurs.";
+  return "Votre contrat ne peut plus être rompu sans motif ni procédure.";}
 function brutSince(a,b){var t=0;if(!payReady())return 0;for(var m=new Date(a.getFullYear(),a.getMonth(),1);m<=b;m=new Date(m.getFullYear(),m.getMonth()+1,1)){var md=monthData(m.getFullYear(),m.getMonth());if(md.total||md.congeDays||md.ferChome||md.absPaidH)t+=payCalc(md).base;}return t;}
 /* messages de la page Alertes liés au contrat */
 function contractMsgs(){var out=[],t=new Date(),tk=key(t),c=ct(),cs=contractStart();if(!cs)return out;
   function push(dt,kind,text,id){if(key(dt)>tk||dt<addDays(t,-45))return;out.push({dt:dt,kind:kind,text:text,id:id});}
   var tr=trialInfo();
   if(tr){
-    if(tr.worked){var n=tr.n;
-      if(tr.end){push(tr.end,"trial","Fin de votre période d'essai : vous avez atteint vos <b>"+n+" jours</b> "+(c.type==="appr"?"de formation en entreprise":"de travail")+". Le contrat ne peut plus être rompu librement.","trial:end:"+key(tr.end));}
+    if(tr.unknown){}
+    else if(tr.worked){var n=tr.n;
+      if(tr.end){push(tr.end,"trial","Fin de votre période d'essai : vous avez atteint vos <b>"+n+" jours</b> "+(c.type==="appr"?"de formation en entreprise":"de travail")+". "+afterTrial(),"trial:end:"+key(tr.end));}
       else if(tr.left<=10&&tr.done>0)push(t,"trial","Période d'essai : <b>"+tr.done+" jour"+(tr.done>1?"s":"")+" sur "+n+"</b> "+(c.type==="appr"?"en entreprise (les jours d'école ne comptent pas)":"travaillés")+". Jusqu'à la fin, vous ou votre employeur pouvez mettre fin au contrat sans motif"+(c.type==="appr"?", par écrit.":"."),"trial:left:"+tr.left+":"+key(cs));}
     else if(tr.end){var e=tr.end,ed=fdate(key(e));
       [15,7,2].forEach(function(n){var d=addDays(e,-n);if(d<cs)return;
         push(d,"trial","Votre période d'essai se termine le <b>"+ed+"</b>, dans "+n+" jours"+(tr.ext?" (prolongée de "+tr.ext+" jour"+(tr.ext>1?"s":"")+" d'absence)":"")+". Jusque-là, chacun peut rompre le contrat sans motif. "+prevenance(d)+
           (tr.legal.ren&&!tr.renewed?" Un renouvellement n'est possible qu'une fois, avec votre accord écrit, si votre convention et votre contrat le prévoient.":""),"trial:"+n+":"+key(e));});
-      push(addDays(e,1),"trial","Votre période d'essai est terminée depuis le <b>"+ed+"</b>. Votre contrat ne peut plus être rompu sans motif ni procédure.","trial:done:"+key(e));}}
+      push(addDays(e,1),"trial","Votre période d'essai est terminée depuis le <b>"+ed+"</b>. "+afterTrial(),"trial:done:"+key(e));}}
   var ce=contractEnd();
-  if(ce&&fixedTerm()){var cn=CTK[c.type].n,cd=fdate(key(ce)),b=brutSince(cs,ce),pr=(c.type==="cdd"||c.type==="interim")&&b>0?" D'après vos heures, cela ferait environ <b>"+eur(b*0.1)+"</b> brut.":"";
+  if(ce&&fixedTerm()&&altCdi()){var ew=c.type==="appr"?"période d'apprentissage":"action de professionnalisation",cd0=fdate(key(ce));
+    [30,7].forEach(function(n){var d=addDays(ce,-n);if(d<cs)return;push(d,"cend","Votre "+ew+" se termine le <b>"+cd0+"</b>, dans "+n+" jours. "+endRights(),"cend:"+n+":"+key(ce));});}
+  else if(ce&&fixedTerm()){var cn=CTK[c.type].n,cd=fdate(key(ce)),b=brutSince(cs,ce),pr=(c.type==="cdd"||c.type==="interim")&&b>0?" D'après vos heures, cela ferait environ <b>"+eur(b*0.1)+"</b> brut.":"";
     [30,15,7].forEach(function(n){var d=addDays(ce,-n);if(d<cs)return;
       push(d,"cend","Votre "+(c.type==="stage"?"stage":c.type==="interim"?"mission d'intérim":cn)+" se termine le <b>"+cd+"</b>, dans "+n+" jours. "+endRights()+(n<=15?pr:"")+
         (c.type==="cdd"&&n===30?" Un CDD peut être renouvelé deux fois au plus, dans la limite de 18 mois en général : parlez-en à votre employeur si vous souhaitez continuer.":""),"cend:"+n+":"+key(ce));});
     push(ce,"cend","Dernier jour de votre "+(c.type==="stage"?"stage":cn)+" aujourd'hui. Votre employeur doit vous remettre un certificat de travail, une attestation France Travail et un reçu pour solde de tout compte."+pr,"cend:0:"+key(ce));}
+  var am=altMin(t),hr=hourly();
+  if(am&&hr>0&&hr<am.pct/100*SMIC_H-0.005)out.push({dt:t,kind:"cend",id:"altmin:"+t.getFullYear()+"-"+t.getMonth()+":"+am.pct,
+    text:"Votre taux horaire (<b>"+eur2(hr)+"</b>) est inférieur au minimum légal de votre "+(c.type==="appr"?"apprentissage":"contrat de professionnalisation")+" : <b>"+eur2(am.pct/100*SMIC_H)+"</b> brut de l'heure. "+am.txt.charAt(0).toUpperCase()+am.txt.slice(1)+". Vérifiez votre fiche de paie ou le salaire saisi."});
   return out;}
 /* ---------- résumé de la semaine : le dimanche à partir de 20 h ---------- */
 var RECAP_H=20;
@@ -2019,7 +2060,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.58</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.59</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2059,10 +2100,19 @@ function renderSub(){
     var rb=function(attr,id,on,n,sub){return '<button class="maj" data-'+attr+'="'+id+'" aria-pressed="'+on+'"><span class="radio"></span><span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';};
     var useg=function(attr,cur,list){return '<div class="seg" role="group">'+list.map(function(u){return '<button data-'+attr+'="'+u[0]+'" aria-pressed="'+(cur===u[0])+'">'+u[1]+'</button>';}).join("")+'</div>';};
     b='<section class="sgrp"><h2>Type de contrat</h2><div class="maj-list">'+CTYPES.map(function(x){return rb("ctype",x.id,c.type===x.id,x.n,x.sub);}).join("")+'</div></section>';
-    if(c.type==="cdi")b+='<section class="sgrp"><h2>Catégorie</h2><div class="maj-list">'+CATS.map(function(x){return rb("ccat",x.id,(c.cat||"emp")===x.id,x.n,"Période d'essai : "+x.m+" mois, "+x.max+" mois avec renouvellement");}).join("")+'</div></section>';
+    if(alt())b+='<section class="sgrp"><h2>Forme du contrat</h2>'+useg("cform",c.form==="cdi"?"cdi":"cdd",[["cdd","CDD"],["cdi","CDI"]])+
+      '<p class="snote">'+(c.type==="appr"?"Apprentissage : CDD de 6 mois à 3 ans (la durée de la formation), ou CDI qui commence par une période d'apprentissage. Période d'essai : 45 jours en entreprise dans les deux cas.":
+        "Contrat de professionnalisation : CDD de 6 à 12 mois (jusqu'à 24 mois selon la formation), ou CDI qui commence par une action de professionnalisation. Période d'essai : celle d'un CDD, ou celle d'un CDI.")+'</p></section>';
+    if(c.type==="cdi"||(c.type==="pro"&&c.form==="cdi"))b+='<section class="sgrp"><h2>Catégorie</h2><div class="maj-list">'+CATS.map(function(x){return rb("ccat",x.id,(c.cat||"emp")===x.id,x.n,"Période d'essai : "+x.m+" mois, "+x.max+" mois avec renouvellement");}).join("")+'</div></section>';
     b+='<section class="sgrp"><h2>Dates</h2><div class="set"><div class="field"><label for="cp-start">Début du contrat</label><input id="cp-start" class="txt" type="date" data-cpstart value="'+esc(S.conges.start||"")+'"></div>'+
-      (fx?'<div class="field"><label for="ct-end">Fin du contrat</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div>'+
+      (fx?'<div class="field"><label for="ct-end">'+endWord()+'</label><input id="ct-end" class="txt" type="date" data-cend value="'+esc(c.end||"")+'"></div>':'')+'</div>'+
       '<p class="snote">Le début sert aussi au calcul de vos congés payés : 2,5 jours acquis par mois (le premier au prorata).'+(fx?' La fin déclenche des rappels 30, 15 et 7 jours avant.':'')+'</p></section>';
+    if(alt()){var am=altMin(new Date()),ap=apprSeuil();
+      b+='<section class="sgrp"><h2>Salaire minimum</h2><div class="set"><div class="field"><label for="ct-birth">Date de naissance</label><input id="ct-birth" class="txt" type="date" data-cbirth value="'+esc(c.birth||"")+'"></div></div>'+
+        (c.type==="pro"?group("",[row({t:"Bac pro ou plus",sub:"Bac pro, diplôme pro de même niveau, ou diplôme supérieur",toggle:!!c.bac,attr:'data-cbac aria-pressed="'+!!c.bac+'"'})]):'')+
+        (am?group("",[row({t:eur2(am.pct/100*SMIC_M)+" brut par mois",sub:am.txt,v:eur2(am.pct/100*SMIC_H)+"/h",chev:false})]):'<p class="snote">Indiquez votre date de naissance pour connaître votre salaire minimum légal : il dépend de votre âge'+(c.type==="appr"?" et de l\'année de votre contrat":" et de votre diplôme")+'.</p>')+
+        '<p class="snote">'+(c.type==="appr"?"Il augmente au début de chaque année de contrat, et le 1er du mois qui suit vos 18, 21 et 26 ans. ":"Il augmente le 1er du mois qui suit vos 21 et 26 ans. ")+
+        (ap?"Cotisations : un apprenti ne paie des cotisations que sur la part de son salaire au-delà de "+ap.pct+" % du SMIC"+(ap.old?" (contrat signé avant le 1er mars 2025)":" (contrat signé depuis le 1er mars 2025)")+" : iolite en tient compte dans le net estimé.":"Cotisations : un contrat de professionnalisation a les mêmes cotisations qu\'un salarié classique.")+'</p></section>';}
     if(tl){b+='<section class="sgrp"><h2>Période d\'essai</h2>'+group("",[row({t:"Période d'essai",sub:"Elle n'existe que si elle est écrite dans votre contrat",toggle:c.essai!==false,attr:'data-essai aria-pressed="'+(c.essai!==false)+'"'})]);
       if(c.essai!==false){var wk=tl.u==="t";
         b+='<div class="set"><div class="field money"><label for="ct-en">Durée prévue au contrat</label><input id="ct-en" data-cen inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.en==null?"":c.en)+'"><em>'+(wk?"jours":"")+'</em></div>'+
@@ -2072,7 +2122,8 @@ function renderSub(){
           if(c.ren)b+='<div class="set"><div class="field money"><label for="ct-rn">Durée du renouvellement</label><input id="ct-rn" data-crn inputmode="numeric" autocomplete="off" placeholder="'+tl.n+'" value="'+esc(c.rn==null?"":c.rn)+'"><em></em></div>'+useg("cru",c.ru||"m",[["j","Jours"],["s","Semaines"],["m","Mois"]])+'</div>'+
             '<p class="snote">Le renouvellement doit être prévu par un accord de branche et par votre contrat. Durée totale au plus : '+tl.max+' mois.</p>';}
         if(tr){var L=[];
-          if(tr.worked)L.push(row({t:tr.end?"Terminée le "+fdate(key(tr.end)):"En cours",sub:tr.end?"":"Encore "+tr.left+" jour"+(tr.left>1?"s":"")+" "+(c.type==="appr"?"en entreprise":"travaillé"+(tr.left>1?"s":"")),v:Math.min(tr.done,tr.n)+" / "+tr.n,chev:false}));
+          if(tr.unknown)L.push(row({t:tr.likely?"Sans doute terminée":"Décompte impossible",sub:"Vos journées depuis le "+fdate(key(tr.start))+" ne sont pas toutes pointées",chev:false}));
+          else if(tr.worked)L.push(row({t:tr.end?"Terminée le "+fdate(key(tr.end)):"En cours",sub:tr.end?"":"Encore "+tr.left+" jour"+(tr.left>1?"s":"")+" "+(c.type==="appr"?"en entreprise":"travaillé"+(tr.left>1?"s":"")),v:Math.min(tr.done,tr.n)+" / "+tr.n,chev:false}));
           else{var left=daysBetween(new Date(),tr.end);L.push(row({t:"Fin le "+fdate(key(tr.end)),sub:(tr.renewed?"Renouvellement compris · ":"")+(tr.ext?"Prolongée de "+tr.ext+" jour"+(tr.ext>1?"s":"")+" d'absence":"Sans absence pendant l'essai"),v:left>=0?"J−"+left:"terminée",chev:false}));}
           b+=group("",L);
           if(tr.tooLong)b+='<p class="snote warn">Cette durée dépasse le maximum légal : '+tl.txt+'. Vérifiez votre contrat.</p>';
@@ -2080,7 +2131,7 @@ function renderSub(){
         else if(!S.conges.start)b+='<p class="snote">Indiquez le début du contrat pour calculer la fin de la période d\'essai.</p>';}
       b+='</section>';}
     var ce=contractEnd();
-    if(fx&&ce){var dl=daysBetween(new Date(),ce);b+='<section class="sgrp"><h2>Fin du contrat</h2>'+group("",[row({t:fdate(c.end),sub:dl>=0?"Dans "+dl+" jour"+(dl>1?"s":""):"Contrat terminé",chev:false})])+'<p class="snote">'+endRights()+'</p></section>';}}
+    if(fx&&ce){var dl=daysBetween(new Date(),ce);b+='<section class="sgrp"><h2>'+endWord()+'</h2>'+group("",[row({t:fdate(c.end),sub:dl>=0?"Dans "+dl+" jour"+(dl>1?"s":""):altCdi()?"Terminée : votre contrat continue en CDI":"Contrat terminé",chev:false})])+'<p class="snote">'+endRights()+'</p></section>';}}
   else if(k==="fer"){t="Jours fériés";var X=extCfg(),eb=extBase(),o=S.pay.ov||{},yr=new Date().getFullYear(),up=[];
     [yr,yr+1].forEach(function(y){var f=feries(y);Object.keys(f).sort().forEach(function(kk){if(kk>=key(new Date())&&up.length<6)up.push([kk,f[kk]]);});});
     b='<section class="sgrp"><h2>Votre région</h2><div class="maj-list">'+REGIONS.map(function(r){return '<button class="maj" data-reg="'+r[0]+'" aria-pressed="'+(ferReg()===r[0])+'"><span class="radio"></span><span><b>'+r[1]+'</b><small>'+(r[2]||"11 jours fériés")+'</small></span></button>';}).join("")+'</div></section>'+
@@ -2188,6 +2239,8 @@ document.addEventListener("click",function(e){
   if(ds.job){JOBDEL=null;switchJob(ds.job);return;}
   if(ds.ctype){ct().type=ds.ctype;if(ds.ctype==="stage")ct().essai=false;else if(ct().essai===false&&ds.ctype!=="stage")ct().essai=true;ct().en=null;saveSettings();renderParams();return;}
   if(ds.ccat){ct().cat=ds.ccat;saveSettings();renderParams();return;}
+  if(ds.cform){ct().form=ds.cform;ct().en=null;ct().ren=false;saveSettings();renderParams();return;}
+  if("cbac" in ds){ct().bac=!ct().bac;saveSettings();renderParams();return;}
   if("essai" in ds){ct().essai=ct().essai===false;saveSettings();renderParams();return;}
   if(ds.ceu){ct().eu=ds.ceu;saveSettings();renderParams();return;}
   if("cren" in ds){ct().ren=!ct().ren;saveSettings();renderParams();return;}
@@ -2233,7 +2286,7 @@ view.addEventListener("submit",function(e){if(e.target.id==="auth-form"){e.preve
 view.addEventListener("keydown",function(e){if(e.key==="Enter"&&OB&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-ob="next"]');if(b)b.click();return;}if(e.key==="Enter"&&W&&e.target.tagName==="INPUT"){e.preventDefault();var b=view.querySelector('[data-wiz="next"]');if(b)b.click();}});
 view.addEventListener("change",function(e){var i=e.target;
   if(!OB&&SUB==="jobs"&&i.dataset.jobname!=null){renderParams();return;}
-  if(!OB&&SUB==="contrat"&&("cpstart" in i.dataset||"cend" in i.dataset||"cen" in i.dataset||"crn" in i.dataset)){var y=window.scrollY;renderParams();window.scrollTo(0,y);return;}
+  if(!OB&&SUB==="contrat"&&("cpstart" in i.dataset||"cend" in i.dataset||"cen" in i.dataset||"crn" in i.dataset||"cbirth" in i.dataset)){var y=window.scrollY;renderParams();window.scrollTo(0,y);return;}
   if(i.id==="av-file"){setAvatar(i.files&&i.files[0]);i.value="";return;}
   if(i.id==="combo-url"){S.combo.url=i.value.trim()||null;S.combo.last=null;S.combo.err=null;var pd=provOf(S.combo.url);if(pd)S.combo.prov=pd.id;savePlan();syncCombo(true);return;}
   if(i.id==="ics-file"&&i.files&&i.files[0]){var fr=new FileReader();fr.onload=function(){try{mergePlan(parseICS(fr.result));renderParams();}catch(x){comboMsg("Ce fichier n'est pas un calendrier .ics.");}};fr.readAsText(i.files[0]);i.value="";return;}
@@ -2252,6 +2305,7 @@ view.addEventListener("input",function(e){var i=e.target;
   if(i.dataset.majc){S.pay.majc=S.pay.majc||{};S.pay.majc[i.dataset.majc]=i.value.trim()||null;saveSettings();return;}
   if("cpstart" in i.dataset){S.conges.start=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
   if("cend" in i.dataset){ct().end=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
+  if("cbirth" in i.dataset){ct().birth=/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:null;saveSettings();return;}
   if("cen" in i.dataset){ct().en=i.value.trim()||null;saveSettings();return;}
   if("crn" in i.dataset){ct().rn=i.value.trim()||null;saveSettings();return;}
   if(i.dataset.ov){S.pay.ov=S.pay.ov||{};var ov=i.value.trim();if(ov==="")delete S.pay.ov[i.dataset.ov];else S.pay.ov[i.dataset.ov]=ov;saveSettings();return;}
