@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.76">
+<meta name="description" content="iolite version 0.77">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -427,6 +427,28 @@ p.note.acc-ok{color:var(--good)}
 .bubble b{color:var(--warn)}
 .bubbles .bubble:last-child{border-bottom-left-radius:8px}
 .new-sep{color:var(--warn)}
+/* conversation avec l'assistant */
+.me-row{display:flex;justify-content:flex-end;margin-top:2px}
+.bubble.me{max-width:82%;background:linear-gradient(135deg,#8E93F5,#B49CF5);color:#fff;border-bottom-right-radius:8px;white-space:pre-wrap;word-wrap:break-word}
+.bubble.ai b,.bubble.me b{color:#fff;font-weight:800}
+.bubble.ai ul{margin:6px 0 2px;padding-left:18px}.bubble.ai li{margin:2px 0}
+.bubble.err{color:var(--muted);font-style:italic}
+.bubble.typing{display:flex;gap:5px;align-items:center;padding:14px 16px}
+.bubble.typing i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.7);animation:tdot 1.1s infinite ease-in-out}
+.bubble.typing i:nth-child(2){animation-delay:.15s}.bubble.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.ask-sugg{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px 38px}
+.ask-sugg button{border:0;border-radius:999px;padding:9px 14px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2);text-align:left}
+.ask-note{margin:10px 0 0;text-align:center;font-size:11.5px;color:var(--muted)}
+.ask{position:fixed;left:0;right:0;margin:0 auto;max-width:430px;z-index:7;display:flex;align-items:flex-end;gap:8px;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));bottom:calc(max(10px,calc(env(safe-area-inset-bottom,0px) - 12px)) + 80px)}
+.ask[hidden]{display:none}
+.ask textarea{flex:1;min-width:0;resize:none;max-height:120px;border:0;border-radius:24px;padding:13px 18px;font:inherit;font-size:16px;line-height:1.35;color:var(--ink);
+  background:rgba(30,28,70,.62);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2);outline:none}
+.ask textarea::placeholder{color:rgba(255,255,255,.55)}
+.ask button{flex:none;width:46px;height:46px;border:0;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--accent-ink);box-shadow:0 0 18px rgba(255,255,255,.3)}
+.ask button:disabled{opacity:.45}
+body.asking #view{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 
 /* Réglages */
 .field input,.rem-row input{color:var(--ink);border-radius:16px}
@@ -753,6 +775,7 @@ body.fixtop #view::-webkit-scrollbar{display:none}
   <main id="view" class="wrap"></main>
   <div class="status" id="status" role="status"></div>
   <div id="dockhost"></div>
+  <form class="ask" id="ask" autocomplete="off" hidden><textarea id="ask-in" rows="1" maxlength="1200" placeholder="Posez une question à iolite…" aria-label="Question pour iolite"></textarea><button type="submit" id="ask-go" aria-label="Envoyer"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg></button></form>
 </div>
 
 <nav class="tabs" aria-label="Pages">
@@ -1174,7 +1197,7 @@ function pullAll(){var u=USER.id;
   return Promise.all([SB.from("profiles").select("*").eq("id",u).maybeSingle(),SB.from("days").select("day,data").eq("user_id",u),SB.from("plans").select("data,combo").eq("user_id",u).maybeSingle()])
     .then(function(rs){rs.forEach(function(r){if(r.error)throw r.error;});return {profile:rs[0].data,days:rs[1].data||[],plan:rs[2].data};});}
 /* efface ce que le navigateur garde (changement de compte, déconnexion) */
-function resetLocal(){["pt-days","pt-settings","pt-plan","pt-combo","pt-seen","pt-profile","pt-notified"].forEach(function(k){lsSet(k,null);});
+function resetLocal(){CHAT=[];["pt-days","pt-settings","pt-plan","pt-combo","pt-seen","pt-profile","pt-notified","pt-chat"].forEach(function(k){lsSet(k,null);});
   lsSet("pt-job",null);JOBS=[{id:"main",name:""}];JOB="main";JCFG={};S.days={};JDAYS={main:S.days};S.plan={};S.combo=emptyCombo();JPLAN={main:{plan:S.plan,combo:S.combo}};
   PROFILE={first_name:"",last_name:"",phone:"",onboarded:false};
   if(DEFAULTS){var d=JSON.parse(DEFAULTS);cfgSet(defCfg());S.reminder=d.reminder;}JCFG.main=cfgNow();}
@@ -1209,7 +1232,7 @@ function startUser(user){
       applySettings(r.profile.settings);if(r.profile.seen)lsSet("pt-seen",JSON.stringify(Object.assign(getSeen(),r.profile.seen)));}
     else if(owner!==user.id){PROFILE.onboarded=false;}
     if(r.plan)setAllPlan(r.plan.data,r.plan.combo);
-    restoreJob();lsSet("pt-owner",user.id);cloudReady=true;cacheLocal();
+    restoreJob();lsSet("pt-owner",user.id);cloudReady=true;cacheLocal();loadChat();
     pushDays();if(!r.plan&&(S.combo.url||Object.keys(S.plan).length))pushPlan();
     if(!PROFILE.phone&&user.user_metadata&&user.user_metadata.phone)PROFILE.phone=user.user_metadata.phone;
     if(!PROFILE.onboarded)startOnboarding();else if(!PROFILE.phone||!PROFILE.first_name||!PROFILE.last_name)startOnboarding(true);else{enterApp();}
@@ -1218,7 +1241,7 @@ function startUser(user){
     else{view.innerHTML='<div class="gate-load">'+BOT+'<p>Impossible de joindre la base en ligne.</p><button class="btn-main" data-retry>Réessayer</button></div>';}
   });
 }
-function gate(on){document.body.classList.toggle("gate",on);if(on){document.body.classList.remove("fixtop");document.getElementById("dayhead").innerHTML="";}}
+function gate(on){document.body.classList.toggle("gate",on);if(on)askShow(false);if(on){document.body.classList.remove("fixtop");document.getElementById("dayhead").innerHTML="";}}
 function enterApp(){OB=null;gate(false);render();mirror();autoSync();checkReminder();}
 function signOut(){var go=function(){SUB=null;resetLocal();lsSet("pt-owner",null);USER=null;cloudReady=false;W=null;showAuth("login","Vous êtes déconnecté.");};
   if(SB)SB.auth.signOut().then(go,go);else go();}
@@ -1511,6 +1534,7 @@ function render(){
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false");});
   var sh=S.tab==="shift";document.getElementById("top").classList.toggle("day",sh);document.getElementById("navcap").hidden=!sh;document.getElementById("toplogo").hidden=true;
   if(!sh)setHead({stats:"Statistiques",alerts:"Alertes",params:"Réglages"}[S.tab],{stats:"Vos heures et votre salaire",alerts:"Ce qu'iolite a remarqué",params:"Votre compte et vos préférences"}[S.tab]);
+  if(S.tab!=="alerts")askShow(false);
   if(S.tab==="shift")renderShift();else{fixTop();if(S.tab==="stats")renderStats();else if(S.tab==="alerts")renderAlerts();else renderParams();}
   updateBadge();
 }
@@ -2019,24 +2043,99 @@ function allMessages(){var msgs=[],multi=JOBS.length>1;
 function getSeen(){try{return JSON.parse(localStorage.getItem("pt-seen")||"{}")||{};}catch(e){return {};}}
 function markSeen(msgs){var seen=getSeen(),ch=false;msgs.forEach(function(a){if(!seen[a.id]){seen[a.id]=1;ch=true;}});try{localStorage.setItem("pt-seen",JSON.stringify(seen));}catch(e){}if(ch)pushProfileSoon();}
 var ALERT_JUMP=true; /* vrai quand on arrive sur la page Alertes */
+/* ===== Assistant : conversation dans la page Alertes ===== */
+var CHAT=[],CHAT_BUSY=false,CHAT_LOADED=false;
+try{CHAT=JSON.parse(lsGet("pt-chat")||"[]")||[];}catch(e){CHAT=[];}
+function saveChat(){lsSet("pt-chat",JSON.stringify(CHAT.filter(function(m){return !m.local;}).slice(-200)));}
+function loadChat(){if(!SB||!USER||!cloudReady)return;
+  SB.from("messages").select("role,content,created_at").order("created_at",{ascending:true}).limit(200).then(function(r){if(r.error)return;
+    var loc=CHAT.filter(function(m){return m.local;});CHAT=(r.data||[]).map(function(m){return {role:m.role,content:m.content,at:m.created_at};}).concat(loc);
+    CHAT_LOADED=true;saveChat();if(S.tab==="alerts"&&!CHAT_BUSY)renderAlerts();});}
+/* mise en forme simple des réponses : **gras**, listes à puces, retours à la ligne */
+function mdLite(t){var out=[],list=false;esc(t).split(/\n/).forEach(function(l){var m=/^\s*(?:[-•*]|\d+[.)])\s+(.*)$/.exec(l);
+    if(m){if(!list){out.push("<ul>");list=true;}out.push("<li>"+m[1]+"</li>");return;}
+    if(list){out.push("</ul>");list=false;}out.push(l?l+"<br>":"<br>");});
+  if(list)out.push("</ul>");return out.join("").replace(/(<br>)+$/,"").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");}
+function stripTags(h){var d=document.createElement("div");d.innerHTML=h;return d.textContent||"";}
+/* résumé des données envoyé avec chaque question */
+function aiContext(){var L=[],t=new Date(),multi=JOBS.length>1;
+  L.push("Aujourd'hui : "+cap(JOURS[t.getDay()])+" "+fdate(key(t))+".");
+  if(PROFILE.first_name)L.push("Prénom : "+PROFILE.first_name+".");
+  JOBS.forEach(function(j){withJob(j.id,function(){var P=S.pay,c=ct(),X=extCfg();
+    L.push("");L.push("=== "+(multi?"Emploi : "+jobName(j):"Emploi")+" ===");
+    L.push("Contrat : "+ctName()+(S.conges.start?", depuis le "+fdate(S.conges.start):"")+(contractEnd()?", fin le "+fdate(c.end):"")+".");
+    L.push("Heures prévues au contrat : "+S.target+" h par semaine.");
+    L.push("Salaire brut : "+(P.mode==="mensuel"?(num(P.monthly)?num(P.monthly)+" € par mois":"non renseigné"):(num(P.rate)?num(P.rate)+" € de l'heure":"non renseigné"))+". Cotisations salariales : "+(num(P.charges)==null?22:num(P.charges))+" %."+(apprSeuil()?" Apprenti : cotisations seulement au-delà de "+apprSeuil().pct+" % du SMIC.":""));
+    var tb=(P.maj==="custom"?majCustom():MAJ[P.maj]||MAJ.legal),hs=[],from=36;
+    tb.forEach(function(r){if(r[1]<=1)return;var to=r[0]<1e8?Math.floor(r[0]):null;hs.push((to?from+"e-"+to+"e h":"au-delà")+" +"+Math.round((r[1]-1)*100)+" %");if(to)from=to+1;});
+    L.push("Convention : "+(MAJ_SHORT[P.maj]||"Code du travail")+". Heures sup : "+(hs.join(", ")||"pas de majoration")+". Jour férié travaillé : "+(X.fer?"+"+X.fer+" %"+(X.ferSen?" après "+X.ferSen+" mois d'ancienneté":""):"pas de majoration")+", 1er mai payé double. Région : "+((REGIONS.filter(function(r){return r[0]===ferReg();})[0]||REGIONS[0])[1])+".");
+    L.push("Repas fournis par l'employeur : "+(mealsOn()?"oui ("+(num(P.meal)||0)+" € l'un, avantage en nature)":"non")+".");
+    var ci=congesInfo(t);L.push("Congés payés : "+jours(ci.acq)+" acquis, "+jours(ci.pris)+" pris, reste "+jours(ci.reste)+(ci.fromContract?" (depuis le début du contrat)":" (depuis le 1er juin)")+".");
+    [0,-1].forEach(function(dm){var md0=new Date(t.getFullYear(),t.getMonth()+dm,1),md=monthData(md0.getFullYear(),md0.getMonth());
+      var pp=payReady()?payCalc(md):null;L.push("Mois de "+MOIS[md0.getMonth()]+" "+md0.getFullYear()+(dm?"":" (en cours)")+" : "+fmt(md.total)+" travaillées sur "+md.worked+" jours, "+hh(supHours(md.weeks))+" d'heures sup"+(md.congeDays?", "+md.congeDays+" j de congé":"")+(pp?", salaire estimé "+Math.round(pp.brut)+" € brut / "+Math.round(pp.net)+" € net":"")+".");});
+    for(var w=0;w<(multi?4:6);w++){var m=addDays(monday(t),-7*w),wd=weekData(m),days=[];
+      for(var i=0;i<7;i++){var dt=addDays(m,i),d=dayOf(dt),r=dayCalc(d),fn=ferName(dt),lab=JOURS[dt.getDay()].slice(0,3)+" "+dt.getDate();
+        if(!entered(d)){if(fn)days.push(lab+" : férié ("+fn+"), rien pointé");continue;}
+        if(r.conge){days.push(lab+" : congé payé");continue;}
+        if(!r.worked){days.push(lab+" : repos"+(fn?" (férié "+fn+")":""));continue;}
+        days.push(lab+" : "+active(d).filter(function(s2){return d[s2]&&d[s2].start&&d[s2].end;}).map(function(s2){var v=d[s2];return v.start+"-"+v.end+(+v.pause?" (pause "+v.pause+" min)":"");}).join(" + ")+" = "+fmt(r.total)+(fn?" (férié "+fn+")":""));}
+      if(!days.length&&w>0)continue;
+      L.push("Semaine du "+fdate(key(m))+" : "+fmt(wd.total)+(supHours(wd.weeks)>0?", dont "+hh(supHours(wd.weeks))+" sup":"")+(days.length?". "+days.join(" ; "):". Rien pointé")+".");}
+    var pl=[];for(var k2=0;k2<8;k2++){var dd=addDays(t,k2),ps=planShifts(key(dd));if(ps.length)pl.push(JOURS[dd.getDay()].slice(0,3)+" "+dd.getDate()+" : "+ps.map(function(p){return p.start+"-"+p.end;}).join(" + "));}
+    if(pl.length)L.push("Planning prévu (8 prochains jours) : "+pl.join(" ; ")+".");
+  });});
+  var al=allMessages().filter(function(a){return a.kind!=="today";}).slice(-8);
+  if(al.length){L.push("");L.push("=== Dernières alertes envoyées par iolite ===");al.forEach(function(a){L.push("- "+fdate(key(a.dt))+" : "+stripTags((a.job?a.job+" · ":"")+message(a)));});}
+  return L.join("\n").slice(0,14000);}
+var ASK_SUGG=["Combien d'heures sup ce mois-ci ?","Combien de congés me reste-t-il ?","Quel repos minimum entre deux journées ?","Mon salaire estimé de ce mois ?"];
+function askSend(text){text=String(text||"").trim();if(!text||CHAT_BUSY)return;
+  var inp=document.getElementById("ask-in");if(inp){inp.value="";askSize();}
+  CHAT.push({role:"user",content:text,at:new Date().toISOString(),pending:true});
+  if(!SB||!USER||!cloudReady){CHAT.push({role:"assistant",content:"Connectez-vous à votre compte pour discuter avec l'assistant.",at:new Date().toISOString(),local:true,err:true});renderAlerts();return;}
+  CHAT_BUSY=true;renderAlerts();
+  function fail(t){var lu=CHAT[CHAT.length-1];if(lu&&lu.pending)lu.local=true;CHAT_BUSY=false;CHAT.forEach(function(m){delete m.pending;});CHAT.push({role:"assistant",content:t,at:new Date().toISOString(),local:true,err:true});renderAlerts();}
+  var ctx=aiContext();
+  SB.auth.getSession().then(function(r){var tok=r.data&&r.data.session&&r.data.session.access_token;if(!tok)return fail("Votre session a expiré : reconnectez-vous.");
+    return fetch("/api/assistant",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+tok},body:JSON.stringify({message:text,context:ctx})})
+      .then(function(x){return x.text().then(function(b){var j=null;try{j=JSON.parse(b);}catch(e){}
+        if(!j)return fail(x.status===404?"L'assistant fonctionne seulement sur le site en ligne.":"L'assistant ne répond pas pour le moment. Réessayez dans un instant.");
+        if(!x.ok||!j.reply){var lastU=CHAT[CHAT.length-1];if(lastU&&lastU.pending)lastU.local=true;return fail(j.error||"L'assistant ne répond pas pour le moment.");}
+        CHAT_BUSY=false;CHAT.forEach(function(m){delete m.pending;});CHAT.push({role:"assistant",content:j.reply,at:new Date().toISOString()});saveChat();renderAlerts();});});
+  }).catch(function(){fail("Pas de connexion internet. Réessayez quand vous serez en ligne.");});}
+function askSize(){var a=document.getElementById("ask-in");if(!a)return;a.style.height="auto";a.style.height=Math.min(120,a.scrollHeight)+"px";}
+function askShow(on){var f=document.getElementById("ask");f.hidden=!on;document.body.classList.toggle("asking",on);}
+document.getElementById("ask").addEventListener("submit",function(e){e.preventDefault();askSend(document.getElementById("ask-in").value);});
+document.getElementById("ask-in").addEventListener("input",askSize);
+document.getElementById("ask-in").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey&&!/iPhone|iPad|Android/i.test(navigator.userAgent)){e.preventDefault();askSend(this.value);}});
 function renderAlerts(){
   var msgs=allMessages(),seen=getSeen(),h='<div class="chat">',prevDay=null,open=false,newShown=false;
+  askShow(!document.body.classList.contains("gate"));
+  /* le rappel « rien pointé aujourd'hui » se place en début de journée, avant la conversation */
+  var items=msgs.map(function(a){var t0=new Date();t0.setHours(0,0,1,0);return {t:"alert",a:a,dt:a.kind==="today"?t0:a.dt};}).concat(CHAT.map(function(m){return {t:"chat",m:m,dt:new Date(m.at)};}));
+  items.sort(function(x,y){return x.dt-y.dt;});
   function close(){if(open){h+='</div></div>';open=false;}}
   function openGrp(){h+='<div class="grp">'+BOT_W+'<div class="bubbles">';open=true;}
-  if(!msgs.length)h+='<div class="grp">'+BOT_W+'<div class="bubbles"><p class="bubble">Aucune alerte pour le moment. Je vous écrirai ici si un repos est trop court ou si une journée dépasse les limites.</p></div></div>';
-  msgs.forEach(function(a){var k=key(a.dt),isNew=!seen[a.id];
+  if(!items.length)h+='<div class="grp">'+BOT_W+'<div class="bubbles"><p class="bubble">'+greet("Bonjour ! Je vous écrirai ici si un repos est trop court ou si une journée dépasse les limites. Vous pouvez aussi me poser vos questions sur vos heures, votre salaire, vos congés ou le droit du travail.")+'</p></div></div>';
+  var greeted=false;
+  items.forEach(function(it){var k=key(it.dt);
+    var isNew=it.t==="alert"&&!seen[it.a.id];
     if(isNew&&!newShown){close();h+='<div class="new-sep" id="new-sep"><span>Nouveaux messages</span></div>';newShown=true;}
     if(k!==prevDay){close();
-      var today=sameDay(a.dt,new Date()),yest=sameDay(a.dt,addDays(new Date(),-1));
-      h+='<div class="day-sep"><span>'+(today?"Aujourd'hui":yest?"Hier":cap(JOURS[a.dt.getDay()])+" "+a.dt.getDate()+" "+MOIS[a.dt.getMonth()])+'</span></div>';prevDay=k;}
+      var today=sameDay(it.dt,new Date()),yest=sameDay(it.dt,addDays(new Date(),-1));
+      h+='<div class="day-sep"><span>'+(today?"Aujourd'hui":yest?"Hier":cap(JOURS[it.dt.getDay()])+" "+it.dt.getDate()+" "+MOIS[it.dt.getMonth()])+'</span></div>';prevDay=k;}
+    if(it.t==="chat"&&it.m.role==="user"){close();h+='<div class="me-row"><p class="bubble me">'+esc(it.m.content)+'</p></div>';return;}
     var first=!open;if(!open)openGrp();
-    var tx=(a.job?'<b>'+esc(a.job)+'</b> · ':'')+message(a);
-    h+='<p class="bubble'+(isNew?" new":"")+'">'+(first&&!a.job?greet(tx):tx)+'</p>';});
-  close();h+='</div>';
+    if(it.t==="chat"){h+='<div class="bubble ai'+(it.m.err?" err":"")+'">'+mdLite(it.m.content)+'</div>';return;}
+    var a=it.a,tx=(a.job?'<b>'+esc(a.job)+'</b> · ':'')+message(a);
+    h+='<p class="bubble'+(isNew?" new":"")+'">'+(first&&!a.job&&!greeted?greet(tx):tx)+'</p>';greeted=true;});
+  if(CHAT_BUSY){if(!open)openGrp();h+='<p class="bubble typing" aria-label="iolite écrit"><i></i><i></i><i></i></p>';}
+  close();
+  if(!CHAT.length)h+='<div class="ask-sugg">'+ASK_SUGG.map(function(q){return '<button data-ask="'+esc(q)+'">'+esc(q)+'</button>';}).join("")+'</div>';
+  h+='<p class="ask-note">iolite peut se tromper : vérifiez les points importants avec votre convention ou un conseiller.</p></div>';
   view.innerHTML=h;
   var sep=document.getElementById("new-sep");
   /* à l'ouverture de la page : on arrive en bas, sur la dernière alerte (seulement si la page dépasse l'écran, sinon iOS décale l'affichage) */
-  if(ALERT_JUMP){ALERT_JUMP=false;requestAnimationFrame(function(){var room=document.documentElement.scrollHeight-window.innerHeight;window.scrollTo(0,room>4?room:0);});}
+  if(ALERT_JUMP||CHAT_BUSY||CHAT.length){ALERT_JUMP=false;requestAnimationFrame(function(){var room=document.documentElement.scrollHeight-window.innerHeight;window.scrollTo(0,room>4?room:0);});}
   markSeen(msgs);updateBadge();
 }
 
@@ -2113,7 +2212,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.76</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.77</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
@@ -2243,7 +2342,7 @@ function updateEq(skip){
 /* ---------- interactions ---------- */
 document.getElementById("prev").onclick=function(){S.cur=addDays(S.cur,-1);W=null;render();};
 document.getElementById("next").onclick=function(){S.cur=addDays(S.cur,1);W=null;render();};
-function goTab(t){SUB=null;if(t==="stats")ST_ANIM=true;if(t==="alerts")ALERT_JUMP=true;if(t!=="shift"||S.tab!=="shift")W=null;S.tab=t;try{localStorage.setItem("pt-tab",t);}catch(e){}render();if(t!=="alerts")window.scrollTo(0,0);}
+function goTab(t){SUB=null;if(t==="stats")ST_ANIM=true;if(t==="alerts"){ALERT_JUMP=true;loadChat();}if(t!=="shift"||S.tab!=="shift")W=null;S.tab=t;try{localStorage.setItem("pt-tab",t);}catch(e){}render();if(t!=="alerts")window.scrollTo(0,0);}
 document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){goTab(b.dataset.tab);};});
 function keepScroll(fn){var y=window.scrollY;fn();render();window.scrollTo(0,y);}
 
@@ -2272,6 +2371,7 @@ document.addEventListener("click",function(e){
   if(ds.accgo){accGo(ds.accgo);return;}
   if("hardreload" in ds){hardReload(ds);return;}
   if(wizClick(ds))return;
+  if(ds.ask){askSend(ds.ask);return;}
   if(ds.job){JOBDEL=null;switchJob(ds.job);return;}
   if(ds.ctype){ctPick(ds.ctype);saveSettings();renderParams();return;}
   if(ds.ccat){ct().cat=ds.ccat;saveSettings();renderParams();return;}
