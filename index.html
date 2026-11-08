@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.77">
+<meta name="description" content="iolite version 0.78">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -428,7 +428,9 @@ p.note.acc-ok{color:var(--good)}
 .bubbles .bubble:last-child{border-bottom-left-radius:8px}
 .new-sep{color:var(--warn)}
 /* conversation avec l'assistant */
-.me-row{display:flex;justify-content:flex-end;margin-top:2px}
+.me-row{display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-top:2px}
+.me-row .avatar.me-av{flex:none;width:30px;height:30px;font-size:12px;box-shadow:none}
+.me-av-sp{flex:none;width:30px}
 .bubble.me{max-width:82%;background:linear-gradient(135deg,#8E93F5,#B49CF5);color:#fff;border-bottom-right-radius:8px;white-space:pre-wrap;word-wrap:break-word}
 .bubble.ai b,.bubble.me b{color:#fff;font-weight:800}
 .bubble.ai ul{margin:6px 0 2px;padding-left:18px}.bubble.ai li{margin:2px 0}
@@ -2117,13 +2119,16 @@ function renderAlerts(){
   function openGrp(){h+='<div class="grp">'+BOT_W+'<div class="bubbles">';open=true;}
   if(!items.length)h+='<div class="grp">'+BOT_W+'<div class="bubbles"><p class="bubble">'+greet("Bonjour ! Je vous écrirai ici si un repos est trop court ou si une journée dépasse les limites. Vous pouvez aussi me poser vos questions sur vos heures, votre salaire, vos congés ou le droit du travail.")+'</p></div></div>';
   var greeted=false;
-  items.forEach(function(it){var k=key(it.dt);
+  items.forEach(function(it,ix){var k=key(it.dt);
     var isNew=it.t==="alert"&&!seen[it.a.id];
     if(isNew&&!newShown){close();h+='<div class="new-sep" id="new-sep"><span>Nouveaux messages</span></div>';newShown=true;}
     if(k!==prevDay){close();
       var today=sameDay(it.dt,new Date()),yest=sameDay(it.dt,addDays(new Date(),-1));
       h+='<div class="day-sep"><span>'+(today?"Aujourd'hui":yest?"Hier":cap(JOURS[it.dt.getDay()])+" "+it.dt.getDate()+" "+MOIS[it.dt.getMonth()])+'</span></div>';prevDay=k;}
-    if(it.t==="chat"&&it.m.role==="user"){close();h+='<div class="me-row"><p class="bubble me">'+esc(it.m.content)+'</p></div>';return;}
+    if(it.t==="chat"&&it.m.role==="user"){close();
+      /* photo de profil à droite, sur la dernière bulle d'une suite de messages de l'utilisateur */
+      var nx=items[ix+1],last=!(nx&&nx.t==="chat"&&nx.m.role==="user"&&key(nx.dt)===k);
+      h+='<div class="me-row"><p class="bubble me">'+esc(it.m.content)+'</p>'+(last?avatarHtml("me-av"):'<span class="me-av-sp"></span>')+'</div>';return;}
     var first=!open;if(!open)openGrp();
     if(it.t==="chat"){h+='<div class="bubble ai'+(it.m.err?" err":"")+'">'+mdLite(it.m.content)+'</div>';return;}
     var a=it.a,tx=(a.job?'<b>'+esc(a.job)+'</b> · ':'')+message(a);
@@ -2212,7 +2217,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.77</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.78</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
