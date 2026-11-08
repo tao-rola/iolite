@@ -1,4 +1,4 @@
-# Netlify : toujours servir la dernière version de l'app et du service de rappel
+# Netlify et Cloudflare Pages : toujours servir la dernière version de l'app et du service de rappel
 /
   Cache-Control: no-cache
 /index.html

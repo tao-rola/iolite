@@ -5,7 +5,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
   '.png': 'image/png', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 http.createServer((req, res) => {
   
-  if (req.url.startsWith('/.netlify/functions/combo')) {
+  if (req.url.startsWith('/api/combo') || req.url.startsWith('/.netlify/functions/combo')) {
     const raw = new URL(req.url, 'http://x').searchParams.get('url');
     import('./netlify/functions/combo.mjs').then((m) => m.fetchIcs(raw))
       .then((b) => { res.writeHead(200, { 'content-type': 'text/calendar; charset=utf-8' }); res.end(b); })

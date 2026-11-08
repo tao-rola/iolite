@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.75">
+<meta name="description" content="iolite version 0.76">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1430,7 +1430,7 @@ function syncCombo(manual){
   if(!/^(https?|webcal):\/\/[^\s]+\.[^\s]+/i.test(u)){S.combo.err="Cette adresse n'est pas valide. Collez l'adresse complète, qui commence par https:// ou webcal://.";savePlan();comboMsg(S.combo.err);return Promise.resolve();}
   syncing=true;if(manual)comboMsg("Synchronisation…");var jid=JOB;
   var https=u.replace(/^webcal:/i,"https:"),wide=widenIcs(https);
-  function get(x){return fetch("/.netlify/functions/combo?url="+encodeURIComponent(x),{cache:"no-store"})
+  function get(x){return fetch("/api/combo?url="+encodeURIComponent(x),{cache:"no-store"})
     .then(function(r){if(!r.ok)throw new Error("proxy "+r.status);return r.text();})
     .catch(function(){return fetch(x,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("http "+r.status);return r.text();});})
     .then(function(t){if(!/BEGIN:VCALENDAR/.test(t))throw new Error("ics");return t;});}
@@ -2113,7 +2113,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.75</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.76</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){

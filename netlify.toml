@@ -1,3 +1,9 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+
+# même adresse que sur Cloudflare Pages
+[[redirects]]
+  from = "/api/combo"
+  to = "/.netlify/functions/combo"
+  status = 200
