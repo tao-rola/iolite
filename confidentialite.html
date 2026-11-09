@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Confidentialité · iolite</title>
+<meta name="description" content="Politique de confidentialité de l'application iolite.">
+<meta name="theme-color" content="#4A4C95">
+<link rel="icon" href="favicon.png" type="image/png">
+<style>
+:root{--bg:#0D0B17;--ink:#F6F4FF;--muted:rgba(236,233,255,.62);--lav:#A9B0FF;--line:rgba(255,255,255,.12);--glass:rgba(255,255,255,.06)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(120% 60% at 50% 0,#2A2550 0,transparent 60%),linear-gradient(#1A1630,#0D0B17 55%,#120E1C);min-height:100vh}
+main{max-width:720px;margin:0 auto;padding:calc(36px + env(safe-area-inset-top,0px)) 20px 64px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+header img{width:52px;height:52px;border-radius:14px}
+h1{font-size:34px;line-height:1.1;letter-spacing:-.025em;margin:0}
+.sub{color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-top:6px}
+section{background:var(--glass);border:1px solid rgba(255,255,255,.05);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);border-radius:24px;padding:20px 22px;margin:14px 0}
+h2{font-size:18px;margin:0 0 8px;letter-spacing:-.01em}
+p,li{color:rgba(246,244,255,.86);margin:6px 0}
+ul{padding-left:20px;margin:6px 0}
+strong{color:var(--ink)}
+a{color:var(--lav)}
+.lead{font-size:17px;color:var(--ink)}
+footer{color:var(--muted);font-size:13px;text-align:center;margin-top:28px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <img src="icon-192.png" alt="">
+  <div><h1>Confidentialité</h1><div class="sub">Mise à jour le 9 novembre 2026</div></div>
+</header>
+
+<section>
+  <p class="lead">iolite vous aide à suivre vos heures, votre salaire et votre planning. Vos données servent uniquement à faire fonctionner l'application : <strong>pas de publicité, pas de pistage, aucune revente.</strong></p>
+</section>
+
+<section>
+  <h2>Ce qui est enregistré</h2>
+  <ul>
+    <li><strong>Votre compte</strong> : adresse e-mail, numéro de téléphone (pour se connecter), prénom, nom et, si vous en ajoutez une, une photo de profil.</li>
+    <li><strong>Votre travail</strong> : les heures pointées, vos réglages (contrat, salaire, convention, repas, région, rappels) et vos emplois.</li>
+    <li><strong>Votre planning</strong>, si vous le reliez : l'adresse du calendrier et les créneaux qu'il contient.</li>
+    <li><strong>Vos échanges avec l'assistant</strong> de l'onglet Iolite.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Où sont vos données</h2>
+  <ul>
+    <li>Elles sont stockées chez <strong>Supabase</strong>, dans un centre de données situé en Irlande (Union européenne). Chaque compte ne peut lire que ses propres données.</li>
+    <li>Le site et l'assistant sont hébergés par <strong>Cloudflare</strong>. Quand vous posez une question à l'assistant, votre question et un résumé de vos heures et de votre salaire sont envoyés à un modèle d'intelligence artificielle exécuté chez Cloudflare, uniquement pour vous répondre.</li>
+    <li>Pour lire votre planning, l'adresse de votre calendrier peut transiter par le serveur d'iolite, qui le récupère pour vous et ne le conserve pas.</li>
+    <li>Sur iPhone, une copie est gardée sur votre appareil pour fonctionner hors connexion, ainsi qu'un petit résumé pour les widgets.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Ce qui reste sur votre téléphone</h2>
+  <ul>
+    <li><strong>Face ID</strong> est géré par iOS : iolite ne voit jamais votre visage ni votre code, l'iPhone répond seulement « oui » ou « non ».</li>
+    <li>Les <strong>rappels</strong> sont des notifications programmées sur l'iPhone ; aucun service de notification extérieur n'est utilisé.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Vos droits</h2>
+  <p>Conformément au RGPD, vous pouvez à tout moment :</p>
+  <ul>
+    <li><strong>consulter et récupérer</strong> vos données : Réglages › Exporter mes données ;</li>
+    <li><strong>les corriger</strong> directement dans l'application ;</li>
+    <li><strong>tout supprimer</strong> : Réglages › Supprimer mon compte. Votre compte et toutes vos données sont alors effacés définitivement.</li>
+  </ul>
+  <p>Vous pouvez aussi adresser une réclamation à la <a href="https://www.cnil.fr">CNIL</a>.</p>
+</section>
+
+<section>
+  <h2>Durée de conservation</h2>
+  <p>Vos données sont gardées tant que votre compte existe, et supprimées dès que vous le supprimez.</p>
+</section>
+
+<footer>iolite</footer>
+</main>
+</body>
+</html>

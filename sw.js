@@ -1,5 +1,5 @@
 /* iolite : fonctionnement hors ligne et rappel du soir */
-const CACHE = 'iolite-v82';
+const CACHE = 'iolite-v83';
 const ASSETS = ['./', './index.html', './config.js', './manifest.webmanifest', './favicon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './logo-iolite-mark.png'];
 
 self.addEventListener('install', e => {
@@ -12,6 +12,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const r = e.request;
   if (r.method !== 'GET') return;
+  if (r.mode === 'navigate' && !/^\/(index\.html)?$/.test(new URL(r.url).pathname)) return; /* autres pages (confidentialité…) : réseau seulement */
   if (r.mode === 'navigate') {
     e.respondWith(fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return res; })
       .catch(() => caches.match('./index.html')));
