@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.78">
+<meta name="description" content="iolite version 0.79">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -429,7 +429,10 @@ p.note.acc-ok{color:var(--good)}
 .new-sep{color:var(--warn)}
 /* conversation avec l'assistant */
 .me-row{display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-top:2px}
-.me-row .avatar.me-av{flex:none;width:30px;height:30px;font-size:12px;box-shadow:none}
+/* même format des deux côtés : un rond de 30 px, aligné sur le bas de la dernière bulle */
+.chat .grp .bot,.me-row .avatar.me-av{flex:none;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22);box-sizing:border-box}
+.chat .grp .bot{object-fit:contain;padding:6px;background:rgba(255,255,255,.12)}
+.me-row .avatar.me-av{font-size:11.5px;overflow:hidden}
 .me-av-sp{flex:none;width:30px}
 .bubble.me{max-width:82%;background:linear-gradient(135deg,#8E93F5,#B49CF5);color:#fff;border-bottom-right-radius:8px;white-space:pre-wrap;word-wrap:break-word}
 .bubble.ai b,.bubble.me b{color:#fff;font-weight:800}
@@ -2217,7 +2220,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.78</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.79</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){

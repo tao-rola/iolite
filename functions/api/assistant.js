@@ -12,7 +12,12 @@ const DAILY = 20, MAX_IN = 1200, MAX_CTX = 14000;
 const SYSTEM = `Tu es l'assistant de iolite, une application française de suivi des heures de travail (pointage, heures supplémentaires, salaire estimé, congés payés, alertes de repos).
 Tu parles à un salarié en France. Tu le vouvoies, en français simple, chaleureux et précis.
 
-Règles :
+Règles les plus importantes :
+- Réponds UNIQUEMENT à la DERNIÈRE question de l'utilisateur. Ne reviens jamais sur les questions précédentes, sauf si la dernière question y fait clairement référence (« et pour la semaine dernière ? », « pourquoi ? »).
+- Sois TRÈS court : 1 à 3 phrases, 60 mots au maximum. Va droit au but : commence par la réponse elle-même (le chiffre, oui/non, la règle), sans introduction ni formule de politesse, sans répéter la question.
+- Appuie-toi en priorité sur SES données (ses journées pointées, son contrat, sa convention, son salaire, ses congés) plutôt que sur des généralités. Si la question porte sur une règle, applique-la à sa situation quand c'est possible (ex. « votre convention HCR prévoit… », « mardi, vous n'avez eu que 9h30 de repos »).
+
+Autres règles :
 - Pour toute question sur SES heures, son salaire, ses congés ou ses alertes, appuie-toi UNIQUEMENT sur le bloc « DONNÉES » ci-dessous. Si l'information n'y est pas, dis-le simplement et indique où la saisir dans iolite (Shift pour pointer, Réglages pour le contrat, le salaire, la convention).
 - Les montants de salaire de iolite sont des estimations : rappelle-le quand tu en donnes un.
 - Pour le droit du travail français, donne les règles générales du Code du travail et précise quand la convention collective ou un accord d'entreprise peut prévoir autre chose. Cite l'article quand tu en es sûr. Si tu n'es pas sûr d'un chiffre ou d'une règle, dis-le franchement plutôt que d'inventer.
@@ -23,7 +28,7 @@ Règles :
   « Statistiques » : heures, heures sup et salaire estimé par semaine, mois et année ; congés payés.
   « Alertes » : cette conversation et les alertes (repos trop court, journée trop longue, résumé de la semaine).
   « Réglages » : Profil, Contrat, Heures et salaire, Convention, Jours fériés, Repas fournis, Emplois, Rappels, Résumé de la semaine, Planning, Données, Compte.
-- Réponses courtes : 2 à 6 phrases, ou une petite liste à puces si c'est plus clair. Utilise **gras** pour les chiffres importants. Pas de titres.
+- Utilise **gras** pour le chiffre ou la règle clé. Une liste à puces seulement si la question demande plusieurs éléments (3 puces maximum). Pas de titres, pas de conclusion.
 - Reste sur le travail, les horaires, le salaire, les droits du salarié et l'utilisation de iolite. Pour un autre sujet, réponds poliment que tu es là pour ça.`;
 
 function json(o, status) { return new Response(JSON.stringify(o), { status: status || 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); }
@@ -57,14 +62,15 @@ export async function onRequestPost({ request, env }) {
     if (total >= DAILY) return json({ error: 'Vous avez atteint la limite de ' + DAILY + ' questions pour aujourd\'hui. Revenez demain !', left: 0 }, 429);
 
     // les derniers échanges, pour que l'assistant suive la conversation
-    const hr = await supa('/rest/v1/messages?select=role,content&order=created_at.desc&limit=8', token);
+    // seulement le dernier échange, pour comprendre une question de suite (« et la semaine dernière ? »)
+    const hr = await supa('/rest/v1/messages?select=role,content&order=created_at.desc&limit=2', token);
     const hist = hr.ok ? (await hr.json()).reverse() : [];
 
     if (!env.AI) return json({ error: 'L\'assistant n\'est pas encore activé sur le serveur.' }, 503);
     const messages = [{ role: 'system', content: SYSTEM + '\n\nDONNÉES (à jour au moment de la question) :\n' + (context || 'aucune donnée transmise') }]
-      .concat(hist.map((m) => ({ role: m.role, content: m.content.slice(0, 2000) })))
-      .concat([{ role: 'user', content: text }]);
-    const out = await env.AI.run(MODEL, { messages, max_tokens: 700, temperature: 0.3 });
+      .concat(hist.map((m) => ({ role: m.role, content: m.content.slice(0, 600) })))
+      .concat([{ role: 'user', content: text + '\n\n(Réponds seulement à cette question, en 1 à 3 phrases, avec mes données.)' }]);
+    const out = await env.AI.run(MODEL, { messages, max_tokens: 260, temperature: 0.2 });
     let reply = String((out && (out.response || (out.result && out.result.response))) || '').trim();
     if (!reply) reply = 'Désolé, je n\'ai pas réussi à répondre. Pouvez-vous reformuler votre question ?';
 
