@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.80">
+<meta name="description" content="iolite version 0.81">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1261,6 +1261,7 @@ function authErr(e){var m=(e&&e.message)||"";
   if(/at least 6|password should/i.test(m))return "Le mot de passe doit faire au moins 6 caractères.";
   if(/not confirmed/i.test(m))return "Confirmez d'abord votre adresse avec le lien reçu par e-mail.";
   if(/invalid.*email|email.*invalid/i.test(m))return "Cette adresse e-mail n'est pas valide.";
+  if(/email.?rate|email_send_rate|rate.*mail/i.test(m))return "Trop d'e-mails envoyés en peu de temps. Réessayez dans une heure.";
   if(/rate|too many/i.test(m))return "Trop d'essais. Patientez une minute avant de recommencer.";
   if(/fetch|network/i.test(m))return "Pas de connexion internet.";
   return "Une erreur est survenue. Réessayez.";}
@@ -2222,7 +2223,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.80</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.81</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
