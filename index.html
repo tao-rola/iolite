@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.79">
+<meta name="description" content="iolite version 0.80">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -253,6 +253,8 @@ input.txt{font-size:15px!important;font-weight:500!important}
 .new-sep{display:flex;align-items:center;gap:10px;margin:14px 0 2px;color:var(--warn);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;scroll-margin-top:16px}
 .new-sep::before,.new-sep::after{content:"";flex:1;height:1px;background:var(--warn);opacity:.35}
 .tab-ic{position:relative;display:inline-flex}
+/* logo d'iolite dans la barre d'onglets : prend la couleur de l'onglet (gris, ou blanc quand il est actif) */
+.tab-logo{display:block;width:22px;height:22px;background:currentColor;-webkit-mask:url(logo-iolite-mark.png) center/contain no-repeat;mask:url(logo-iolite-mark.png) center/contain no-repeat}
 .badge{position:absolute;top:-4px;right:-9px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--warn);color:var(--surface);font:700 10px/16px var(--f-body);font-style:normal;text-align:center}
 .li .t.warn{color:var(--warn)}
 .cmp{font-size:13.5px;font-weight:600}
@@ -430,9 +432,9 @@ p.note.acc-ok{color:var(--good)}
 /* conversation avec l'assistant */
 .me-row{display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;margin-top:2px}
 /* même format des deux côtés : un rond de 30 px, aligné sur le bas de la dernière bulle */
-.chat .grp .bot,.me-row .avatar.me-av{flex:none;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22);box-sizing:border-box}
-.chat .grp .bot{object-fit:contain;padding:6px;background:rgba(255,255,255,.12)}
-.me-row .avatar.me-av{font-size:11.5px;overflow:hidden}
+.chat .grp .bot,.me-row .avatar.me-av{flex:none;width:30px;height:30px;box-shadow:none;border:0;outline:0}
+.chat .grp .bot{border-radius:0;object-fit:contain;padding:0;background:none}
+.me-row .avatar.me-av{border-radius:50%;font-size:11.5px;overflow:hidden;background-size:cover;background-position:center}
 .me-av-sp{flex:none;width:30px}
 .bubble.me{max-width:82%;background:linear-gradient(135deg,#8E93F5,#B49CF5);color:#fff;border-bottom-right-radius:8px;white-space:pre-wrap;word-wrap:break-word}
 .bubble.ai b,.bubble.me b{color:#fff;font-weight:800}
@@ -787,7 +789,7 @@ body.fixtop #view::-webkit-scrollbar{display:none}
   <div class="tabs-in">
     <button class="tab" data-tab="shift"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Shift</button>
     <button class="tab" data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19V11M9.7 19V7M14.3 19v-9M19 19V5"/></svg>Statistiques</button>
-    <button class="tab" data-tab="alerts"><span class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><i class="badge" id="al-badge" hidden></i></span>Alertes</button>
+    <button class="tab" data-tab="alerts"><span class="tab-ic"><i class="tab-logo" aria-hidden="true"></i><i class="badge" id="al-badge" hidden></i></span>Iolite</button>
     <button class="tab" data-tab="params"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Réglages</button>
   </div>
 </nav>
@@ -1538,7 +1540,7 @@ var view=document.getElementById("view");
 function render(){
   document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false");});
   var sh=S.tab==="shift";document.getElementById("top").classList.toggle("day",sh);document.getElementById("navcap").hidden=!sh;document.getElementById("toplogo").hidden=true;
-  if(!sh)setHead({stats:"Statistiques",alerts:"Alertes",params:"Réglages"}[S.tab],{stats:"Vos heures et votre salaire",alerts:"Ce qu'iolite a remarqué",params:"Votre compte et vos préférences"}[S.tab]);
+  if(!sh)setHead({stats:"Statistiques",alerts:"Iolite",params:"Réglages"}[S.tab],{stats:"Vos heures et votre salaire",alerts:"Ce qu'iolite a remarqué",params:"Votre compte et vos préférences"}[S.tab]);
   if(S.tab!=="alerts")askShow(false);
   if(S.tab==="shift")renderShift();else{fixTop();if(S.tab==="stats")renderStats();else if(S.tab==="alerts")renderAlerts();else renderParams();}
   updateBadge();
@@ -2220,7 +2222,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.79</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.80</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
