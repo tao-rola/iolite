@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iolite</title>
 <meta name="theme-color" content="#4A4C95">
-<meta name="description" content="iolite version 0.81">
+<meta name="description" content="iolite version 0.82">
 <meta name="application-name" content="iolite">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2209,7 +2209,7 @@ function renderParams(){
     row({icon:"sup",t:"Convention",v:MAJ_SHORT[P.maj]||MAJ_NAMES[P.maj]||"",attr:'data-sub="maj"'}),
     row({icon:"flag",t:"Jours fériés",v:(REGIONS.filter(function(r){return r[0]===ferReg();})[0]||REGIONS[0])[1].replace("France métropolitaine","Métropole"),attr:'data-sub="fer"'}),
     row({icon:"meal",t:"Repas fournis",v:mealsOn()?(P.meal?String(P.meal).replace(".",",")+" €":"Oui"):"Non",attr:'data-sub="meal"'})]);
-  h+=group("Emplois",[row({icon:"bag",t:JOBS.length>1?"Mes emplois":"Plusieurs emplois",sub:JOBS.length>1?"":"Deux employeurs, job étudiant et alternance…",v:JOBS.length>1?JOBS.length+" emplois":"",attr:'data-sub="jobs"'})]);
+  h+=group("Emplois",[row({icon:"bag",t:JOBS.length>1?"Mes emplois":"Plusieurs emplois",v:JOBS.length+(JOBS.length>1?" emplois":" emploi"),attr:'data-sub="jobs"'})]);
   h+=group("Notifications",[
     row({icon:"bell",t:"Rappels",v:remTimes().join(", ")||"—",attr:'data-sub="rem"'}),
     row({icon:"recap",t:"Résumé de la semaine",toggle:R.recap!==false,attr:'data-recap aria-pressed="'+(R.recap!==false)+'"'})],
@@ -2223,7 +2223,7 @@ function renderParams(){
   if(mail)h+=group("Compte",[
     row({icon:"out",t:"Se déconnecter",chev:false,cls:"accent",attr:'data-logout'}),
     row({icon:"trash",t:"Supprimer mon compte",cls:"danger",attr:'data-sub="del"'})]);
-  h+='<p class="snote ver">IOLITE · VERSION 0.81</p></div>';
+  h+='<p class="snote ver">IOLITE · VERSION 0.82</p></div>';
   view.innerHTML=h;
 }
 function renderSub(){
