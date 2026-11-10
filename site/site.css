@@ -226,6 +226,7 @@ p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
 .story-dots{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px}
 .story-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .4s var(--ease)}
 .story-dots i.on{height:28px;border-radius:4px;background:var(--lav)}
+.step-ph{display:none}
 
 /* ================= chiffres ================= */
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
@@ -428,16 +429,14 @@ p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
   .hero-stage{height:600px;margin-top:10px}
   .split.rev>:first-child{order:0}
   .jobs,.bento{grid-template-columns:repeat(2,1fr)}
-  .story-in{display:flex;flex-direction:column-reverse}
-  .story-stage{top:64px;height:auto;padding:20px 0;z-index:1}
-  .story-phone .phone.big{--w:min(220px,52vw)}
-  .story-dots{right:auto;left:50%;top:auto;bottom:0;transform:translateX(-50%);flex-direction:row}
-  .story-dots i.on{width:28px;height:8px}
-  .step{min-height:70vh;justify-content:flex-start;padding-top:30vh;position:relative;z-index:2;text-align:center;align-items:center}
+  .story-stage{display:none}
+  .story{padding:0 0 40px}
+  .step{min-height:auto;opacity:1;padding:56px 0;text-align:center;align-items:center}
   .step .eyebrow::before{display:none}
   .step .lead{margin-inline:auto}
-  .step{padding:22px;border-radius:28px;min-height:auto;margin:0 0 55vh;background:rgba(20,16,38,.72);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:var(--hi);opacity:1}
-  .step:last-child{margin-bottom:20vh}
+  .step-ph{display:flex;justify-content:center;margin-top:36px;perspective:1600px}
+  .step-ph .phone{--w:min(250px,64vw);transform:rotateY(-12deg) rotateX(6deg)}
+  .step:nth-child(even) .step-ph .phone{transform:rotateY(12deg) rotateX(6deg)}
   .final{text-align:center}
   .final .ctas{justify-content:center}
   .final .lead{margin-inline:auto}
