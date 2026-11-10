@@ -1,9 +1,9 @@
 # iolite
 
-> iolite est une application iPhone et web, en français, qui compte les heures de travail, estime le salaire net et suit le planning des salariés aux horaires variables (restauration, hôtellerie, commerce, santé, étudiants). Site officiel : https://iolite.team
+> iolite est une application iPhone et web, en français, qui compte les heures de travail, estime le salaire net et suit le planning des salariés aux horaires variables, quel que soit le métier (commerce, logistique, industrie, santé, sécurité, propreté, événementiel, restauration, hôtellerie, étudiants, intérim). Site officiel : https://iolite.team
 
 ## L'essentiel
-- Pointage des heures en un geste, journées continues ou coupées en deux services, pauses, repos, congés, absences.
+- Pointage des heures en un geste, journées continues ou coupées, fins de journée après minuit, pauses, repos, congés, absences.
 - Estimation du salaire brut et net : heures supplémentaires majorées (Code du travail : +25 % jusqu'à 43 h puis +50 % ; ou convention hôtels-cafés-restaurants), repas fournis, jours fériés, congés payés, taux horaire ou salaire mensuel.
 - Planning synchronisé par lien iCal (Combo, Skello, Google Agenda, ADE…) ou fichier .ics ; notification si le planning du lendemain change ; écart entre prévu et réalisé.
 - Statistiques par semaine, mois et année ; calendrier coloré ; compteur de congés payés.
@@ -19,7 +19,7 @@
 - [iolite](https://iolite.team/) : iolite compte vos heures de travail, estime votre salaire net (heures sup, repas, fériés, congés) et suit votre planning Combo ou Skello. Sur iPhone et sur le web.
 - [Fonctionnalités : pointage, salaire net, planning et statistiques](https://iolite.team/fonctionnalites) : Pointage en un geste, calcul du salaire net avec heures supplémentaires, planning iCal synchronisé, statistiques et assistant : tout ce que fait iolite.
 - [Application iPhone de pointage des heures](https://iolite.team/iphone) : Activité en direct, Dynamic Island, widgets, Face ID et notifications : l'app iPhone iolite pour suivre vos heures et votre salaire.
-- [Suivi des heures en restauration, hôtellerie, commerce et santé](https://iolite.team/pour-qui) : Journées coupées, repas fournis, temps de repos, plusieurs employeurs : iolite s'adapte aux horaires variables de la restauration, l'hôtellerie, le commerce, la santé et aux étudiants.
+- [Suivi des heures pour tous les métiers aux horaires variables](https://iolite.team/pour-qui) : Commerce, logistique, industrie, santé, sécurité, propreté, événementiel, restauration, étudiants, intérim : iolite compte les heures de tous les métiers aux horaires variables, même après minuit.
 - [Aide et questions fréquentes](https://iolite.team/aide) : Réponses aux questions sur iolite : disponibilité, calcul du salaire, heures supplémentaires, planning Combo, données personnelles et contact.
 - [Politique de confidentialité](https://iolite.team/confidentialite) : Quelles données iolite enregistre, où elles sont hébergées (Union européenne) et comment les exporter ou les supprimer.
 

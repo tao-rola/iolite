@@ -18,8 +18,8 @@ PAGES = {
                        "Pointage en un geste, calcul du salaire net avec heures supplémentaires, planning iCal synchronisé, statistiques et assistant : tout ce que fait iolite.", 'Fonctionnalités'),
     'iphone':         ('/iphone', "Application iPhone de pointage des heures · iolite",
                        "Activité en direct, Dynamic Island, widgets, Face ID et notifications : l'app iPhone iolite pour suivre vos heures et votre salaire.", "L'app iPhone"),
-    'pour-qui':       ('/pour-qui', 'Suivi des heures en restauration, hôtellerie, commerce et santé · iolite',
-                       "Journées coupées, repas fournis, temps de repos, plusieurs employeurs : iolite s'adapte aux horaires variables de la restauration, l'hôtellerie, le commerce, la santé et aux étudiants.", 'Pour qui'),
+    'pour-qui':       ('/pour-qui', 'Suivi des heures pour tous les métiers aux horaires variables · iolite',
+                       "Commerce, logistique, industrie, santé, sécurité, propreté, événementiel, restauration, étudiants, intérim : iolite compte les heures de tous les métiers aux horaires variables, même après minuit.", 'Pour qui'),
     'aide':           ('/aide', 'Aide et questions fréquentes · iolite',
                        "Réponses aux questions sur iolite : disponibilité, calcul du salaire, heures supplémentaires, planning Combo, données personnelles et contact.", 'Aide'),
     'confidentialite':('/confidentialite', 'Politique de confidentialité · iolite',
@@ -60,6 +60,9 @@ ICONS = {
  'chart':'M5 19V11M9.7 19V7M14.3 19v-9M19 19V5',
  'moon':'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
  'mail':'M3 5h18v14H3zM3 6l9 7 9-7',
+ 'box':'M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9zM3 7.5l9 4.5 9-4.5M12 12v9',
+ 'shield':'M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6l8-3zM9 12l2 2 4-4',
+ 'star':'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.5 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z',
 }
 
 def icon(name):
@@ -127,10 +130,10 @@ def write_extras(texts):
     open(os.path.join(OUT, 'robots.txt'), 'w').write(robots)
     llms = f"""# iolite
 
-> iolite est une application iPhone et web, en français, qui compte les heures de travail, estime le salaire net et suit le planning des salariés aux horaires variables (restauration, hôtellerie, commerce, santé, étudiants). Site officiel : {SITE}
+> iolite est une application iPhone et web, en français, qui compte les heures de travail, estime le salaire net et suit le planning des salariés aux horaires variables, quel que soit le métier (commerce, logistique, industrie, santé, sécurité, propreté, événementiel, restauration, hôtellerie, étudiants, intérim). Site officiel : {SITE}
 
 ## L'essentiel
-- Pointage des heures en un geste, journées continues ou coupées en deux services, pauses, repos, congés, absences.
+- Pointage des heures en un geste, journées continues ou coupées, fins de journée après minuit, pauses, repos, congés, absences.
 - Estimation du salaire brut et net : heures supplémentaires majorées (Code du travail : +25 % jusqu'à 43 h puis +50 % ; ou convention hôtels-cafés-restaurants), repas fournis, jours fériés, congés payés, taux horaire ou salaire mensuel.
 - Planning synchronisé par lien iCal (Combo, Skello, Google Agenda, ADE…) ou fichier .ics ; notification si le planning du lendemain change ; écart entre prévu et réalisé.
 - Statistiques par semaine, mois et année ; calendrier coloré ; compteur de congés payés.

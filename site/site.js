@@ -25,8 +25,6 @@
   function onScroll() {
     var y = scrollY;
     nav.classList.toggle('solid', y > 10);
-    nav.classList.toggle('hide', y > 400 && y > lastY + 4 && !body.classList.contains('menu-open'));
-    if (y < lastY - 4 || y < 400) nav.classList.remove('hide');
     lastY = y;
   }
   onScroll(); addEventListener('scroll', onScroll, { passive: true });

@@ -67,7 +67,6 @@ p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
 
 /* ================= navigation ================= */
 .nav{position:fixed;top:0;left:0;right:0;z-index:60;padding:calc(12px + env(safe-area-inset-top,0px)) var(--g) 0;transition:transform .45s var(--ease)}
-.nav.hide{transform:translateY(-120%)}
 .nav-in{max-width:var(--maxw);margin:0 auto;height:64px;display:flex;align-items:center;gap:18px;padding:0 10px 0 16px;border-radius:22px;transition:background .35s,box-shadow .35s,backdrop-filter .35s}
 .nav.solid .nav-in{background:rgba(18,15,34,.62);box-shadow:var(--hi),0 20px 50px -20px rgba(0,0,0,.6);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5)}
 .brand{display:inline-flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:800;font-size:23px;letter-spacing:-.04em}
@@ -272,7 +271,7 @@ p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
 .la .tmr{margin-left:auto;font-family:var(--fd);font-size:32px;font-weight:800}
 
 /* ================= pour qui (teaser) ================= */
-.jobs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.jobs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .job{position:relative;transition:transform .4s var(--ease),background .4s;padding:28px;border-radius:30px;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));box-shadow:var(--hi);display:flex;flex-direction:column;gap:6px;overflow:hidden;transition:background .4s}
 .job::before{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(169,176,255,.35),transparent 70%);transition:transform .6s var(--ease)}
 .job:hover::before{transform:scale(1.6)}
@@ -662,7 +661,7 @@ p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
 .mv-day span{font-size:12px;font-weight:700;color:#15122A;white-space:nowrap}
 .mv-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .mv-pills span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.08)}
-.lg{width:10px;height:10px;border-radius:3px}.lg.p{background:rgba(255,255,255,.3)}.lg.f{background:var(--lav)}
+.lgd{width:10px;height:10px;border-radius:3px}.lgd.p{background:rgba(255,255,255,.3)}.lgd.f{background:var(--lav)}.lgd.m{background:#FFE3A3}.lgd.a{background:var(--lav)}.lgd.n{background:#6b6fd6}
 .gauge{position:relative;width:240px;margin:6px auto 0}
 .gauge svg{width:100%;display:block}
 .g-bg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:10;stroke-linecap:round}
@@ -751,3 +750,23 @@ p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
   .fa-chip{font-size:13px;padding:8px 12px}
   .edt{height:170px}
 }
+
+/* postes tournants */
+.rot{display:flex;flex-direction:column;gap:8px}
+.rot-r{display:grid;grid-template-columns:34px repeat(5,1fr);gap:6px;align-items:center}
+.rot-r small{font-size:11px;font-weight:700;color:var(--faint)}
+.rot-r i{font-style:normal;font-size:10px;font-weight:700;text-align:center;padding:9px 2px;border-radius:9px;color:#15122A;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s var(--ease);overflow:hidden;white-space:nowrap;text-overflow:clip}
+.rot-r i.m{background:#FFE3A3}.rot-r i.a{background:var(--lav)}.rot-r i.n{background:#6b6fd6;color:#fff}
+.in .rot-r i{opacity:1;transform:none}
+.rot-r:nth-child(2) i{transition-delay:.15s}.rot-r:nth-child(3) i{transition-delay:.3s}
+/* journée après minuit */
+.night{position:relative;height:56px;border-radius:14px;background:rgba(255,255,255,.05)}
+.nb{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,var(--lav2),var(--lav) 60%,#6b6fd6);transform-origin:left;transform:scaleX(0);transition:transform 1.4s var(--ease)}
+.nb span{font-size:13px;font-weight:800;color:#15122A}
+.in .nb{transform:none}
+.mid{position:absolute;top:-8px;bottom:-8px;left:calc(var(--x)*100%);width:2px;background:var(--coral)}
+.mid small{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:800;color:var(--coral);white-space:nowrap}
+.night-axis{display:grid;grid-template-columns:4fr 4fr 2fr auto;margin-top:8px;font-size:10.5px;color:var(--faint);font-weight:600}
+
+@media (max-width:1180px){.jobs{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.jobs{grid-template-columns:1fr}}

@@ -2,9 +2,9 @@
   <div class="wrap center">
     <span class="eyebrow" data-hero>Pour qui</span>
     <h1 class="display sm" data-hero><span class="ln"><span>Vos horaires bougent&nbsp;?</span></span><span class="ln"><span class="grad">iolite suit le rythme.</span></span></h1>
-    <p class="lead mx" data-hero>Salarié, saisonnier, étudiant ou multi-employeurs&nbsp;: iolite s'adapte à votre façon de travailler.</p>
+    <p class="lead mx" data-hero>Tous les corps de métier, toutes les façons de travailler&nbsp;: journées coupées, postes tournants, nuits, week-ends, fins après minuit, plusieurs employeurs.</p>
     <nav class="chips" data-hero aria-label="Métiers">
-      <a href="#restauration">Restauration</a><a href="#hotellerie">Hôtellerie</a><a href="#commerce">Commerce</a><a href="#sante">Santé</a><a href="#etudiants">Étudiants</a><a href="#multi">Plusieurs emplois</a>
+      <a href="#commerce">Commerce</a><a href="#logistique">Logistique</a><a href="#sante">Santé</a><a href="#securite">Sécurité</a><a href="#evenementiel">Événementiel</a><a href="#restauration">Restauration</a><a href="#etudiants">Étudiants</a><a href="#multi">Intérim</a>
     </nav>
   </div>
 </section>
@@ -12,40 +12,9 @@
 <section class="sec tight">
   <div class="wrap">
     <div class="personas">
-      <article class="persona" id="restauration" data-reveal>
-        <div class="p-txt">
-          <div class="p-head"><span class="job-i">{{icon utensils}}</span><h2>Restauration</h2></div>
-          <p class="lead">Service du midi, coupure, service du soir&nbsp;: iolite gère les journées coupées et les repas fournis, et applique les majorations de la convention hôtels-cafés-restaurants.</p>
-          <ul class="ticks"><li><b>Deux services par jour</b>, pointés séparément.</li><li><b>Repas fournis</b> pris en compte dans le net.</li><li><b>Planning Combo ou Skello</b> relié en un lien.</li></ul>
-        </div>
-        <div class="p-vis">
-          <div class="ui mini">
-            <div class="ui-h"><b>Mardi</b><span class="tag">9h30</span></div>
-            <div class="mv-day"><i class="s1" style="--a:10;--b:14.5"><span>Midi 4h30</span></i><i class="s2" style="--a:18;--b:23"><span>Soir 5h00</span></i></div>
-            <div class="pl-axis"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
-            <div class="mv-pills"><span>2 repas notés</span><span>Coupure 3h30</span></div>
-          </div>
-        </div>
-      </article>
-
-      <article class="persona" id="hotellerie" data-reveal>
-        <div class="p-txt">
-          <div class="p-head"><span class="job-i">{{icon concierge}}</span><h2>Hôtellerie</h2></div>
-          <p class="lead">Réception, étages, nuits, week-ends&nbsp;: vos horaires changent sans arrêt. iolite garde le compte et vous prévient quand le repos entre deux journées est trop court.</p>
-          <ul class="ticks"><li><b>Alerte sur les temps de repos</b> et l'amplitude.</li><li><b>Jours fériés</b> de votre région.</li><li><b>Résumé chaque dimanche.</b></li></ul>
-        </div>
-        <div class="p-vis">
-          <div class="ui mini">
-            <div class="ui-h"><b>Repos entre deux journées</b></div>
-            <div class="gauge"><svg viewBox="0 0 120 70"><path class="g-bg" d="M10 62a50 50 0 0 1 100 0"/><path class="g-fg" d="M10 62a50 50 0 0 1 100 0" style="--v:.62"/></svg><div class="g-num"><b class="c">10h15</b><small>minimum légal 11 h</small></div></div>
-            <div class="mv-alert">{{icon alarm}}<span>Repos trop court avant votre journée de mardi.</span></div>
-          </div>
-        </div>
-      </article>
-
       <article class="persona" id="commerce" data-reveal>
         <div class="p-txt">
-          <div class="p-head"><span class="job-i">{{icon bag}}</span><h2>Commerce</h2></div>
+          <div class="p-head"><span class="job-i">{{icon bag}}</span><h2>Commerce et grande distribution</h2></div>
           <p class="lead">Un planning qui change chaque semaine, des heures en plus le samedi&nbsp;: iolite compare ce qui était prévu avec ce que vous avez fait, et compte vos heures sup.</p>
           <ul class="ticks"><li><b>Écart avec le planning</b> semaine par semaine.</li><li><b>Heures sup majorées</b> au-delà de votre contrat.</li><li><b>Notification</b> si demain change.</li></ul>
         </div>
@@ -58,7 +27,26 @@
               <div class="cmp-c"><i class="p" style="--h:.8"></i><i class="f" style="--h:.92"></i><small>S45</small></div>
               <div class="cmp-c"><i class="p" style="--h:.7"></i><i class="f" style="--h:.66"></i><small>S46</small></div>
             </div>
-            <div class="mv-pills"><span><i class="lg p"></i>Prévu</span><span><i class="lg f"></i>Fait</span></div>
+            <div class="mv-pills"><span><i class="lgd p"></i>Prévu</span><span><i class="lgd f"></i>Fait</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="persona" id="logistique" data-reveal>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon box}}</span><h2>Logistique et industrie</h2></div>
+          <p class="lead">Entrepôt, production, transport&nbsp;: matin, après-midi ou nuit selon la semaine. iolite suit vos postes tournants et compte vos heures sup, même quand le poste se termine après minuit.</p>
+          <ul class="ticks"><li><b>Postes en 2×8 ou 3×8</b>, semaine après semaine.</li><li><b>Postes de nuit</b> comptés sur le jour de début.</li><li><b>Heures sup majorées</b> au-delà de 35&nbsp;h.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Postes tournants</b><span class="tag">3×8</span></div>
+            <div class="rot">
+              <div class="rot-r"><small>S45</small><i class="m">Matin</i><i class="m">Matin</i><i class="m">Matin</i><i class="m">Matin</i><i class="m">Matin</i></div>
+              <div class="rot-r"><small>S46</small><i class="a">Aprèm</i><i class="a">Aprèm</i><i class="a">Aprèm</i><i class="a">Aprèm</i><i class="a">Aprèm</i></div>
+              <div class="rot-r"><small>S47</small><i class="n">Nuit</i><i class="n">Nuit</i><i class="n">Nuit</i><i class="n">Nuit</i><i class="n">Nuit</i></div>
+            </div>
+            <div class="mv-pills"><span><i class="lgd m"></i>5h–13h</span><span><i class="lgd a"></i>13h–21h</span><span><i class="lgd n"></i>21h–5h</span></div>
           </div>
         </div>
       </article>
@@ -73,6 +61,53 @@
           <div class="ui mini center">
             <div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="r-bg"/><circle cx="60" cy="60" r="50" class="r-fg" style="--v:1"/><circle cx="60" cy="60" r="50" class="r-over" style="--v:.075"/></svg><div class="g-num"><b>10h45</b><small>aujourd'hui</small></div></div>
             <div class="mv-alert">{{icon bell}}<span>Plus que les 10 h par jour autorisées.</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="persona" id="securite" data-reveal>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon shield}}</span><h2>Sécurité et propreté</h2></div>
+          <p class="lead">Nuits, week-ends, jours fériés, sites qui changent&nbsp;: iolite garde le compte de chaque vacation et vous prévient quand le repos entre deux journées est trop court.</p>
+          <ul class="ticks"><li><b>Vacations de nuit</b> comptées sur le bon jour.</li><li><b>Alerte sur les temps de repos</b> et l'amplitude.</li><li><b>Jours fériés</b> de votre région.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Repos entre deux journées</b></div>
+            <div class="gauge"><svg viewBox="0 0 120 70"><path class="g-bg" d="M10 62a50 50 0 0 1 100 0"/><path class="g-fg" d="M10 62a50 50 0 0 1 100 0" style="--v:.62"/></svg><div class="g-num"><b class="c">10h15</b><small>minimum légal 11 h</small></div></div>
+            <div class="mv-alert">{{icon alarm}}<span>Repos trop court avant votre journée de mardi.</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="persona" id="evenementiel" data-reveal>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon star}}</span><h2>Événementiel et spectacle</h2></div>
+          <p class="lead">Montage, soirée, démontage&nbsp;: les journées finissent souvent bien après minuit. iolite compte tout sur la bonne journée et vous alerte au-delà de 10&nbsp;h.</p>
+          <ul class="ticks"><li><b>Fins après minuit</b> gérées sans rien faire.</li><li><b>Journées longues</b> signalées.</li><li><b>Plusieurs employeurs</b> si vous enchaînez les missions.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Samedi</b><span class="tag">10h00</span></div>
+            <div class="night"><i class="nb" style="--a:0;--b:1"><span>16:00 → 02:00</span></i><span class="mid" style="--x:.8"><small>minuit</small></span></div>
+            <div class="night-axis"><span>16h</span><span>20h</span><span>0h</span><span>2h</span></div>
+            <div class="mv-pills"><span>Compté le samedi</span><span>Pause 30 min</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="persona" id="restauration" data-reveal>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon utensils}}</span><h2>Restauration et hôtellerie</h2></div>
+          <p class="lead">Service du midi, coupure, service du soir, réception de nuit&nbsp;: iolite gère les journées coupées et les repas fournis, et peut appliquer la convention hôtels-cafés-restaurants.</p>
+          <ul class="ticks"><li><b>Deux services par jour</b>, pointés séparément.</li><li><b>Repas fournis</b> pris en compte dans le net.</li><li><b>Planning Combo ou Skello</b> relié en un lien.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Mardi</b><span class="tag">9h30</span></div>
+            <div class="mv-day"><i class="s1" style="--a:10;--b:14.5"><span>Midi 4h30</span></i><i class="s2" style="--a:18;--b:23"><span>Soir 5h00</span></i></div>
+            <div class="pl-axis"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
+            <div class="mv-pills"><span>2 repas notés</span><span>Coupure 3h30</span></div>
           </div>
         </div>
       </article>
@@ -99,14 +134,14 @@
 
       <article class="persona" id="multi" data-reveal>
         <div class="p-txt">
-          <div class="p-head"><span class="job-i">{{icon layers}}</span><h2>Plusieurs emplois</h2></div>
-          <p class="lead">Deux employeurs, deux contrats, deux plannings&nbsp;: chaque emploi a ses horaires, son salaire et ses réglages. Les totaux se cumulent automatiquement.</p>
+          <div class="p-head"><span class="job-i">{{icon layers}}</span><h2>Intérim et plusieurs emplois</h2></div>
+          <p class="lead">Missions d'intérim, deux employeurs, un job en plus le week-end&nbsp;: chaque emploi a ses horaires, son salaire et ses réglages. Les totaux se cumulent automatiquement.</p>
           <ul class="ticks"><li><b>Un emploi par employeur</b>, avec son contrat.</li><li><b>Un planning</b> pour chacun.</li><li><b>Totaux cumulés</b> dans les statistiques.</li></ul>
         </div>
         <div class="p-vis">
           <div class="ui mini">
-            <div class="jobrow"><span class="jr-dot a"></span><span>Le Comptoir</span><b>24h00</b></div>
-            <div class="jobrow"><span class="jr-dot b"></span><span>Hôtel du Parc</span><b>12h30</b></div>
+            <div class="jobrow"><span class="jr-dot a"></span><span>Mission intérim</span><b>24h00</b></div>
+            <div class="jobrow"><span class="jr-dot b"></span><span>Emploi du week-end</span><b>12h30</b></div>
             <div class="jr-bar"><i class="a" style="--w:.66"></i><i class="b" style="--w:.34"></i></div>
             <div class="jobrow tot"><span></span><span>Total de la semaine</span><b>36h30</b></div>
           </div>
