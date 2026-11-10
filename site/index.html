@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>iolite · Vos heures et votre salaire, enfin clairs</title>
+<meta name="description" content="iolite compte vos heures, estime votre salaire net et suit votre planning, service après service. L'app des horaires variables, sur iPhone et sur le web.">
+<meta name="theme-color" content="#0D0B17">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:title" content="iolite · Vos heures et votre salaire, enfin clairs">
+<meta property="og:description" content="Pointez en un geste, voyez votre salaire net en direct et gardez votre planning à jour.">
+<meta property="og:image" content="https://iolite.team/icon-512.png">
+<meta property="og:url" content="https://iolite.team/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/site.css">
+</head>
+<body>
+
+<!-- fond animé, comme dans l'app -->
+<div class="aura" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="iolite, accueil"><img src="/logo-iolite-blanc.png" alt="iolite" width="79" height="32"></a>
+    <nav class="links" aria-label="Sections">
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#salaire">Salaire</a>
+      <a href="#planning">Planning</a>
+      <a href="#iphone">iPhone</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn ghost sm hide-s" href="https://iolite-app.pages.dev" data-webapp>Se connecter</a>
+      <a class="btn white sm" href="#telecharger">Télécharger</a>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mnav"><span></span><span></span></button>
+    </div>
+  </div>
+  <nav class="mnav" id="mnav" aria-label="Menu" hidden>
+    <a href="#fonctionnalites">Fonctionnalités</a>
+    <a href="#salaire">Salaire</a>
+    <a href="#planning">Planning</a>
+    <a href="#iphone">iPhone</a>
+    <a href="#faq">Questions</a>
+    <a href="https://iolite-app.pages.dev" data-webapp>Se connecter</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-txt">
+      <span class="pill rise"><i class="glow"></i> Bientôt sur l'App Store</span>
+      <h1 class="rise" style="--i:1">Vos heures.<br>Votre salaire.<br><em>Enfin clairs.</em></h1>
+      <p class="lead rise" style="--i:2">iolite compte vos heures, estime votre salaire net et suit votre planning, service après service. Fini le carnet, les calculs de tête et les heures sup oubliées.</p>
+      <div class="ctas rise" style="--i:3">
+        <a class="store" href="#telecharger" data-store>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span><small data-store-small>Bientôt sur</small><b>l'App Store</b></span>
+        </a>
+        <a class="btn ghost" href="https://iolite-app.pages.dev" data-webapp>Essayer sur le web <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <ul class="trust rise" style="--i:4">
+        <li><svg viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Sans publicité</li>
+        <li><svg viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Données en Europe</li>
+        <li><svg viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>iPhone et web</li>
+      </ul>
+    </div>
+
+    <div class="hero-vis rise" style="--i:2">
+      <!-- téléphone : écran Shift -->
+      <div class="phone float">
+        <div class="screen">
+          <div class="sbar"><b>9:41</b><span class="island"></span><i class="sicons"></i></div>
+          <div class="s-head">
+            <span class="cbtn">‹</span>
+            <div class="s-title"><b>Mardi 10 novembre</b><small>Semaine 46</small></div>
+            <span class="cbtn">›</span>
+          </div>
+          <div class="week">
+            <span><small>L</small>9</span><span class="on"><small>M</small>10</span><span><small>M</small>11</span><span><small>J</small>12</span><span><small>V</small>13</span><span class="off"><small>S</small>14</span><span class="off"><small>D</small>15</span>
+          </div>
+          <div class="s-hero">
+            <div><span class="lbl">Aujourd'hui</span><b class="big" data-count="7.5" data-fmt="h">7h30</b></div>
+            <div class="side"><span class="lbl">Net estimé</span><b data-count="83" data-fmt="eur">83 €</b></div>
+          </div>
+          <div class="svc">
+            <div class="svc-h"><i class="d"></i><b>Midi</b><span>4h30</span></div>
+            <div class="times"><div><small>Début</small>10:00</div><div><small>Fin</small>14:30</div></div>
+          </div>
+          <div class="svc">
+            <div class="svc-h"><i class="d"></i><b>Soir</b><span class="live">en cours</span></div>
+            <div class="times"><div><small>Début</small>18:00</div><div class="dim"><small>Fin</small>—</div></div>
+          </div>
+          <div class="punch"><i class="rec"></i>J'ai fini <span class="tmr" data-timer="7920">2:12:00</span></div>
+          <div class="tabbar"><span class="on"><i class="t1"></i>Shift</span><span><i class="t2"></i>Stats</span><span><i class="t3"></i>Iolite</span><span><i class="t4"></i>Réglages</span></div>
+        </div>
+      </div>
+      <!-- cartes flottantes -->
+      <div class="chip-card notif glass" style="--d:.6s">
+        <img src="/icon-192.png" alt="" width="34" height="34">
+        <div><b>Planning <small>maintenant</small></b><p>Demain 10h/14h30 et 18h/23h</p></div>
+      </div>
+      <div class="chip-card livea glass" style="--d:.9s">
+        <img src="/logo-iolite-mark.png" alt="" width="26" height="26">
+        <div><small>EN SERVICE</small><b>Soir</b></div>
+        <span class="tmr big2" data-timer="7920">2:12:00</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- bandeau défilant -->
+<div class="marquee" aria-hidden="true">
+  <div class="mq">
+    <span>Heures sup</span><i></i><span>Salaire net</span><i></i><span>Journées coupées</span><i></i><span>Repas fournis</span><i></i><span>Jours fériés</span><i></i><span>Congés payés</span><i></i><span>Temps de repos</span><i></i><span>Planning iCal</span><i></i><span>Widgets</span><i></i><span>Face ID</span><i></i>
+    <span>Heures sup</span><i></i><span>Salaire net</span><i></i><span>Journées coupées</span><i></i><span>Repas fournis</span><i></i><span>Jours fériés</span><i></i><span>Congés payés</span><i></i><span>Temps de repos</span><i></i><span>Planning iCal</span><i></i><span>Widgets</span><i></i><span>Face ID</span><i></i>
+  </div>
+</div>
+
+<!-- ============ DOULEURS ============ -->
+<section class="sec" id="pourquoi">
+  <div class="wrap">
+    <div class="sec-h center reveal">
+      <span class="eyebrow">Ça vous dit quelque chose&nbsp;?</span>
+      <h2>Travailler en horaires variables, c'est déjà assez fatigant.</h2>
+    </div>
+    <div class="pains">
+      <article class="card reveal" style="--i:0"><span class="emo">📝</span><h3>«&nbsp;J'ai noté mes heures… quelque part.&nbsp;»</h3><p>Un carnet, des notes dans le téléphone, des captures d'écran. À la fin du mois, impossible de tout retrouver.</p></article>
+      <article class="card reveal" style="--i:1"><span class="emo">🧾</span><h3>«&nbsp;Ma fiche de paie, je la crois sur parole.&nbsp;»</h3><p>Heures sup majorées, repas, jours fériés&nbsp;: sans calcul de votre côté, difficile de savoir si le compte est bon.</p></article>
+      <article class="card reveal" style="--i:2"><span class="emo">📅</span><h3>«&nbsp;Mon planning a encore changé hier soir.&nbsp;»</h3><p>Un créneau déplacé, un service ajouté. On le découvre trop tard, ou pas du tout.</p></article>
+      <article class="card reveal" style="--i:3"><span class="emo">😮‍💨</span><h3>«&nbsp;J'ai enchaîné sans m'en rendre compte.&nbsp;»</h3><p>Plus de 10&nbsp;h dans la journée, un repos trop court entre deux services&nbsp;: personne ne vous prévient.</p></article>
+    </div>
+    <p class="after reveal">iolite s'occupe de tout ça. <b>Vous, vous travaillez.</b></p>
+  </div>
+</section>
+
+<!-- ============ FONCTIONNALITÉ 1 : POINTER ============ -->
+<section class="sec feat" id="fonctionnalites">
+  <div class="wrap feat-grid">
+    <div class="feat-txt reveal">
+      <span class="eyebrow">Pointer</span>
+      <h2>Un geste pour commencer.<br>Un geste pour finir.</h2>
+      <p class="lead">Appuyez sur <b>Je commence</b> en arrivant, <b>J'ai fini</b> en partant. iolite enregistre l'heure exacte, devine s'il s'agit du service du midi ou du soir, et met tout à jour.</p>
+      <ul class="ticks">
+        <li><b>Journées continues ou coupées</b>, avec pauses.</li>
+        <li><b>Chronomètre sur l'écran verrouillé</b> et dans la Dynamic Island.</li>
+        <li><b>Oubli de pointer&nbsp;?</b> Un questionnaire rapide vous propose les horaires de votre planning.</li>
+      </ul>
+    </div>
+    <div class="feat-vis reveal" style="--i:1">
+      <div class="stage">
+        <div class="lock glass-deep">
+          <div class="lock-time">9:41</div>
+          <div class="lock-date">mardi 10 novembre</div>
+          <div class="la">
+            <img src="/logo-iolite-mark.png" alt="" width="34" height="34">
+            <div><small>EN SERVICE</small><b>Soir</b></div>
+            <span class="tmr" data-timer="5400">1:30:00</span>
+          </div>
+          <div class="di"><img src="/logo-iolite-mark.png" alt="" width="16" height="16"><span class="tmr" data-timer="5400">1:30:00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FONCTIONNALITÉ 2 : SALAIRE ============ -->
+<section class="sec feat alt" id="salaire">
+  <div class="wrap feat-grid">
+    <div class="feat-txt reveal">
+      <span class="eyebrow">Salaire</span>
+      <h2>Votre salaire net,<br>calculé au fil des heures.</h2>
+      <p class="lead">Indiquez votre contrat une fois. iolite estime votre brut et votre net chaque jour, avec les règles qui s'appliquent vraiment.</p>
+      <ul class="ticks">
+        <li><b>Heures sup majorées</b>, selon votre contrat ou la convention hôtels-cafés-restaurants.</li>
+        <li><b>Repas fournis</b>, jours fériés et congés payés pris en compte.</li>
+        <li><b>Taux horaire ou salaire mensuel</b>, plusieurs emplois cumulés.</li>
+      </ul>
+      <p class="note">Une estimation pour vérifier votre fiche de paie, pas un bulletin officiel.</p>
+    </div>
+    <div class="feat-vis reveal" style="--i:1">
+      <div class="phone sm">
+        <div class="screen">
+          <div class="sbar"><b>9:41</b><span class="island"></span><i class="sicons"></i></div>
+          <div class="st-nav"><span class="cbtn">‹</span><b>Novembre</b><span class="cbtn">›</span></div>
+          <div class="pay">
+            <span class="lbl">Net estimé</span>
+            <b class="pay-num" data-count="1842" data-fmt="eur">1 842 €</b>
+            <span class="pay-sub">Brut 2 361 € · 151h45</span>
+            <svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="r-bg"/><circle cx="60" cy="60" r="52" class="r-fg"/></svg>
+          </div>
+          <div class="bento">
+            <div class="tile"><span class="lbl">Heures sup</span><b>+8h15</b><small>majorées 25&nbsp;%</small></div>
+            <div class="tile"><span class="lbl">Repas</span><b>18</b><small>fournis</small></div>
+            <div class="tile"><span class="lbl">Fériés</span><b>1</b><small>11 novembre</small></div>
+            <div class="tile"><span class="lbl">Écart planning</span><b class="coral">−2h30</b><small>vs prévu</small></div>
+          </div>
+          <div class="weeks"><span class="lbl">Semaines</span><div class="wk"><i style="--h:70%"></i><i style="--h:86%"></i><i class="hi" style="--h:100%"></i><i style="--h:58%"></i></div></div>
+          <div class="tabbar"><span><i class="t1"></i>Shift</span><span class="on"><i class="t2"></i>Stats</span><span><i class="t3"></i>Iolite</span><span><i class="t4"></i>Réglages</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FONCTIONNALITÉ 3 : PLANNING ============ -->
+<section class="sec feat" id="planning">
+  <div class="wrap feat-grid">
+    <div class="feat-txt reveal">
+      <span class="eyebrow">Planning</span>
+      <h2>Votre planning,<br>toujours à jour.</h2>
+      <p class="lead">Collez le lien de votre planning en ligne&nbsp;: iolite le lit tout seul et compare ce qui était prévu avec ce que vous avez vraiment fait.</p>
+      <ul class="ticks">
+        <li><b>Compatible avec tout lien iCal</b>&nbsp;: Combo, Skello, Google Agenda, ADE…</li>
+        <li><b>Une notification si demain change</b>&nbsp;: «&nbsp;Demain 10h/14h30 et 18h/23h&nbsp;».</li>
+        <li><b>Les horaires prévus vous sont proposés</b> quand vous pointez.</li>
+      </ul>
+    </div>
+    <div class="feat-vis reveal" style="--i:1">
+      <div class="plan glass">
+        <div class="plan-h"><b>Cette semaine</b><span class="chipx">35h prévues</span></div>
+        <div class="pl-row"><span class="pd"><small>LUN</small>9</span><div class="pl-bars"><i style="--a:10;--b:14.5"></i><i style="--a:18;--b:23"></i></div><b>9h30</b></div>
+        <div class="pl-row on"><span class="pd"><small>MAR</small>10</span><div class="pl-bars"><i style="--a:10;--b:14.5"></i><i style="--a:18;--b:23"></i></div><b>9h30</b></div>
+        <div class="pl-row"><span class="pd"><small>MER</small>11</span><div class="pl-bars"><em>Férié</em></div><b>—</b></div>
+        <div class="pl-row"><span class="pd"><small>JEU</small>12</span><div class="pl-bars"><i style="--a:11;--b:15"></i><i style="--a:19;--b:23.5"></i></div><b>8h30</b></div>
+        <div class="pl-row"><span class="pd"><small>VEN</small>13</span><div class="pl-bars"><i class="cont" style="--a:9;--b:16.5"></i></div><b>7h30</b></div>
+        <div class="pl-axis"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
+      </div>
+      <div class="chip-card notif glass mini" style="--d:.3s">
+        <img src="/icon-192.png" alt="" width="30" height="30">
+        <div><b>Planning <small>21:04</small></b><p>Demain 11h/15h et 19h/23h30</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FONCTIONNALITÉ 4 : STATS ============ -->
+<section class="sec feat alt" id="stats">
+  <div class="wrap feat-grid">
+    <div class="feat-txt reveal">
+      <span class="eyebrow">Statistiques</span>
+      <h2>Votre mois,<br>d'un seul coup d'œil.</h2>
+      <p class="lead">Semaine, mois, année&nbsp;: vos heures, vos jours travaillés et votre net s'affichent en graphiques clairs. Touchez un jour du calendrier pour retrouver le détail.</p>
+      <ul class="ticks">
+        <li><b>Résumé chaque dimanche</b>&nbsp;: heures, jours, net, écart avec le planning.</li>
+        <li><b>Alerte au-delà de 10&nbsp;h par jour</b> et sur les temps de repos.</li>
+        <li><b>Rappel avant la fin de votre contrat.</b></li>
+      </ul>
+    </div>
+    <div class="feat-vis reveal" style="--i:1">
+      <div class="bars glass">
+        <div class="bars-h"><div><span class="lbl">Novembre</span><b class="big3">151h45</b></div><span class="chipx good">+4h15 vs octobre</span></div>
+        <div class="pb">
+          <div class="col"><i style="--h:.72"></i><small>S44</small></div>
+          <div class="col"><i style="--h:.86"></i><small>S45</small></div>
+          <div class="col hi"><i style="--h:1"></i><small>S46</small><span class="bub">38h15</span></div>
+          <div class="col"><i style="--h:.64"></i><small>S47</small></div>
+          <div class="col"><i style="--h:.8"></i><small>S48</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TOUT LE RESTE ============ -->
+<section class="sec" id="iphone">
+  <div class="wrap">
+    <div class="sec-h center reveal">
+      <span class="eyebrow">Et aussi</span>
+      <h2>Pensé pour l'iPhone, jusqu'au moindre détail.</h2>
+      <p class="lead">Une vraie app native, rapide et fluide, qui s'intègre à votre téléphone.</p>
+    </div>
+    <div class="grid8">
+      <div class="mini-card reveal" style="--i:0"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2.5"/><rect x="13" y="3" width="8" height="8" rx="2.5"/><rect x="3" y="13" width="18" height="8" rx="2.5"/></svg></span><h3>Widgets</h3><p>Service du jour et heures de la semaine sur l'écran d'accueil et l'écran verrouillé.</p></div>
+      <div class="mini-card reveal" style="--i:1"><span class="ic"><svg viewBox="0 0 24 24"><path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2M9 9.5v1M15 9.5v1M12 9v4h-1M9.5 16a4 4 0 0 0 5 0"/></svg></span><h3>Face ID</h3><p>Verrouillez l'app&nbsp;: vos heures et votre salaire restent privés.</p></div>
+      <div class="mini-card reveal" style="--i:2"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><h3>Rappels</h3><p>À l'heure que vous choisissez, pour ne jamais oublier de pointer.</p></div>
+      <div class="mini-card reveal" style="--i:3"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span><h3>Plusieurs emplois</h3><p>Deux employeurs&nbsp;? Chacun ses horaires, son contrat et son salaire.</p></div>
+      <div class="mini-card reveal" style="--i:4"><span class="ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><h3>Assistant Iolite</h3><p>Posez vos questions&nbsp;: «&nbsp;Combien d'heures sup ce mois-ci&nbsp;?&nbsp;»</p></div>
+      <div class="mini-card reveal" style="--i:5"><span class="ic"><svg viewBox="0 0 24 24"><path d="M2 12h3l3-8 4 16 3-8h7"/></svg></span><h3>Hors connexion</h3><p>Pointez même sans réseau, tout se synchronise ensuite.</p></div>
+      <div class="mini-card reveal" style="--i:6"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><h3>Export</h3><p>Récupérez toutes vos données en un clic, quand vous voulez.</p></div>
+      <div class="mini-card reveal" style="--i:7"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span><h3>Fin de contrat</h3><p>Un rappel une semaine avant, pour anticiper la suite.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÉTAPES ============ -->
+<section class="sec" id="etapes">
+  <div class="wrap">
+    <div class="sec-h center reveal">
+      <span class="eyebrow">Comment ça marche</span>
+      <h2>Prêt en deux minutes.</h2>
+    </div>
+    <ol class="steps">
+      <li class="card reveal" style="--i:0"><span class="num">1</span><h3>Créez votre compte</h3><p>Avec votre e-mail. Vos données sont synchronisées entre l'iPhone et le web.</p></li>
+      <li class="card reveal" style="--i:1"><span class="num">2</span><h3>Décrivez votre contrat</h3><p>Heures par semaine, taux horaire, repas, convention. Et le lien de votre planning, si vous en avez un.</p></li>
+      <li class="card reveal" style="--i:2"><span class="num">3</span><h3>Pointez, c'est tout</h3><p>Un geste par service. iolite calcule le reste, chaque jour.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ CONFIANCE ============ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="privacy glass reveal">
+      <div class="pv-txt">
+        <span class="eyebrow">Vos données</span>
+        <h2>Vos heures vous appartiennent.</h2>
+        <p class="lead">Pas de publicité, pas de pistage, aucune revente. Vos données sont stockées en Europe et vous pouvez tout supprimer en un geste.</p>
+        <a class="link" href="/confidentialite">Lire la politique de confidentialité <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <ul class="pv-list">
+        <li><b>🇪🇺</b><span>Hébergées en Irlande, dans l'Union européenne</span></li>
+        <li><b>🚫</b><span>Aucune publicité, aucun pistage</span></li>
+        <li><b>🔒</b><span>Chaque compte ne voit que ses propres données</span></li>
+        <li><b>🗑️</b><span>Export et suppression du compte depuis les Réglages</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec" id="faq">
+  <div class="wrap narrow">
+    <div class="sec-h center reveal">
+      <span class="eyebrow">Questions fréquentes</span>
+      <h2>Tout ce que vous voulez savoir.</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>Quand iolite sera-t-il disponible sur l'App Store&nbsp;?<i></i></summary><p>Très bientôt&nbsp;: l'app iPhone est en préparation pour sa publication. En attendant, la version web fonctionne déjà avec le même compte, depuis n'importe quel navigateur. Tout ce que vous y enregistrez se retrouvera dans l'app.</p></details>
+      <details class="reveal"><summary>Pour quels métiers&nbsp;?<i></i></summary><p>Pour tous ceux qui ont des horaires qui changent&nbsp;: restauration, hôtellerie, commerce, santé, étudiants salariés, alternants… iolite gère les journées continues comme les journées coupées en deux services.</p></details>
+      <details class="reveal"><summary>J'ai un téléphone Android, je peux l'utiliser&nbsp;?<i></i></summary><p>Oui, avec la version web. Ouvrez-la dans Chrome, puis «&nbsp;Ajouter à l'écran d'accueil&nbsp;»&nbsp;: elle s'utilise comme une application.</p></details>
+      <details class="reveal"><summary>Le salaire calculé est-il exact&nbsp;?<i></i></summary><p>C'est une estimation fiable, basée sur votre contrat, vos heures sup majorées, les repas, les jours fériés et les congés payés. Elle sert à vérifier votre fiche de paie, mais seul votre bulletin officiel fait foi.</p></details>
+      <details class="reveal"><summary>Faut-il que mon employeur utilise un logiciel de planning&nbsp;?<i></i></summary><p>Non. Si votre planning est en ligne (Combo, Skello, Google Agenda…), iolite le récupère automatiquement grâce à son lien iCal. Sinon, vous pointez simplement vos heures.</p></details>
+      <details class="reveal"><summary>Mon employeur voit-il mes données&nbsp;?<i></i></summary><p>Non. iolite est votre outil personnel&nbsp;: personne d'autre que vous n'a accès à vos heures ni à votre salaire.</p></details>
+      <details class="reveal"><summary>Comment vous contacter&nbsp;?<i></i></summary><p>Écrivez-nous à <a href="mailto:contact@iolite.team">contact@iolite.team</a>, nous répondons rapidement.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="sec" id="telecharger">
+  <div class="wrap">
+    <div class="final reveal">
+      <img class="final-icon" src="/icon-512.png" alt="" width="96" height="96">
+      <h2>Reprenez la main<br>sur vos heures.</h2>
+      <p class="lead">iolite arrive sur l'App Store. Commencez dès maintenant sur le web&nbsp;: votre compte vous suivra sur iPhone.</p>
+      <div class="ctas center">
+        <a class="store" href="#telecharger" data-store>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span><small data-store-small>Bientôt sur</small><b>l'App Store</b></span>
+        </a>
+        <a class="btn white" href="https://iolite-app.pages.dev" data-webapp>Commencer sur le web</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <img src="/logo-iolite-blanc.png" alt="iolite" width="79" height="32">
+      <p>Vos heures et votre salaire, enfin clairs.</p>
+    </div>
+    <div class="foot-col"><b>Produit</b><a href="#fonctionnalites">Pointer</a><a href="#salaire">Salaire</a><a href="#planning">Planning</a><a href="#iphone">iPhone</a></div>
+    <div class="foot-col"><b>Aide</b><a href="#faq">Questions fréquentes</a><a href="mailto:contact@iolite.team">contact@iolite.team</a><a href="https://iolite-app.pages.dev" data-webapp>Version web</a></div>
+    <div class="foot-col"><b>Légal</b><a href="/confidentialite">Confidentialité</a></div>
+  </div>
+  <div class="wrap foot-bot"><span>© 2026 iolite</span><span>Conçu pour les horaires variables</span></div>
+</footer>
+
+<script src="/site/site.js" defer></script>
+</body>
+</html>
