@@ -2,7 +2,7 @@
   <div class="wrap center">
     <span class="eyebrow" data-hero>Fonctionnalités</span>
     <h1 class="display sm" data-hero><span class="ln"><span>Tout ce qu'il faut.</span></span><span class="ln"><span class="grad">Rien de compliqué.</span></span></h1>
-    <p class="lead mx" data-hero>De votre premier pointage à votre fiche de paie, iolite s'occupe des calculs. Voici tout ce que l'app fait pour vous.</p>
+    <p class="lead mx" data-hero>Pointage, salaire net, planning, statistiques et assistant&nbsp;: de votre premier service à votre fiche de paie, iolite s'occupe des calculs.</p>
     <nav class="chips" data-hero aria-label="Aller à">
       <a href="#pointer">Pointer</a><a href="#planning">Planning</a><a href="#salaire">Salaire</a><a href="#stats">Statistiques</a><a href="#assistant">Assistant</a><a href="#reglages">Réglages</a>
     </nav>
@@ -22,9 +22,9 @@
         <li><b>Repas pris au travail</b> notés à chaque service.</li>
       </ul>
     </div>
-    <div class="duo" data-reveal>
-      {{phone shift "d1 tilt-l" 'Journée pointée'}}
-      {{phone wizard "d2 tilt-r" 'Questionnaire'}}
+    <div class="solo" data-reveal>
+      {{phone shift "tilt-r" 'Journée pointée dans iolite'}}
+      <div class="chip c-live in-scene" data-float="2"><img src="/logo-iolite-mark.png" alt="" width="24" height="24"><div><small>EN SERVICE</small><b>Soir</b></div><span class="tmr" data-timer="7920">2:12:00</span></div>
     </div>
   </div>
 </section>
@@ -42,8 +42,16 @@
         <li><b>Import d'un fichier .ics</b> si vous n'avez pas de lien.</li>
       </ul>
     </div>
-    <div class="solo" data-reveal>
-      {{phone tomorrow "tilt-r" 'Planning du jour'}}
+    <div class="ui-scene" data-reveal>
+      <div class="ui plan">
+        <div class="ui-h"><b>Semaine 46</b><span class="tag">35h prévues</span></div>
+        <div class="pl-row"><span class="pd"><small>LUN</small>9</span><div class="pl-bars"><i style="--a:10;--b:14.5"></i><i style="--a:18;--b:23"></i></div><b>9h30</b></div>
+        <div class="pl-row on"><span class="pd"><small>MAR</small>10</span><div class="pl-bars"><i style="--a:10;--b:14.5"></i><i style="--a:18;--b:23"></i></div><b>9h30</b></div>
+        <div class="pl-row"><span class="pd"><small>MER</small>11</span><div class="pl-bars"><em>Férié</em></div><b>—</b></div>
+        <div class="pl-row"><span class="pd"><small>JEU</small>12</span><div class="pl-bars"><i style="--a:11;--b:15"></i><i style="--a:19;--b:23.5"></i></div><b>8h30</b></div>
+        <div class="pl-row"><span class="pd"><small>VEN</small>13</span><div class="pl-bars"><i class="cont" style="--a:11;--b:18.5"></i></div><b>7h30</b></div>
+        <div class="pl-axis"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
+      </div>
       <div class="chip c-notif in-scene" data-float="1"><img src="/icon-192.png" alt="" width="32" height="32"><div><b>Planning <small>21:04</small></b><p>Demain 11h/15h et 19h/23h30</p></div></div>
     </div>
   </div>
@@ -62,9 +70,15 @@
       </ul>
       <p class="note">Une estimation pour vérifier votre fiche de paie&nbsp;: seul votre bulletin officiel fait foi.</p>
     </div>
-    <div class="duo" data-reveal>
-      {{phone stats "d1 tilt-l" 'Salaire de la semaine'}}
-      {{phone year "d2 tilt-r" 'Salaire de l’année'}}
+    <div class="ui-scene" data-reveal>
+      <div class="ui paybd">
+        <div class="ui-h"><b>Novembre</b><span class="tag good">+10h30 sup</span></div>
+        <div class="pb-net"><small>Net estimé</small><b data-count="1607" data-fmt="eur">1 607 €</b></div>
+        <div class="pb-row"><span>Heures du contrat · 151h40</span><i style="--w:.92"></i><b>1 896 €</b></div>
+        <div class="pb-row"><span>Heures sup · 10h30 à +25&nbsp;%</span><i class="sup" style="--w:.08"></i><b>+ 164 €</b></div>
+        <div class="pb-row tot"><span>Brut estimé</span><i style="--w:1"></i><b>2 060 €</b></div>
+        <div class="pb-row neg"><span>Cotisations ≈ 22&nbsp;%</span><i style="--w:.22"></i><b>− 453 €</b></div>
+      </div>
     </div>
   </div>
 </section>
@@ -78,12 +92,11 @@
       <ul class="ticks">
         <li><b>Jours travaillés, heures sup, repas</b> et écart avec le planning.</li>
         <li><b>Compteur de congés payés</b> acquis et pris.</li>
-        <li><b>Jours fériés</b> de votre région.</li>
+        <li><b>Semaine, mois, année</b>, avec votre net à chaque fois.</li>
       </ul>
     </div>
-    <div class="duo" data-reveal>
-      {{phone month "d1 tilt-l" 'Calendrier du mois'}}
-      {{phone month2 "d2 tilt-r" 'Congés payés'}}
+    <div class="solo" data-reveal>
+      {{phone month "tilt-l" 'Calendrier du mois dans iolite'}}
     </div>
   </div>
 </section>
@@ -100,9 +113,15 @@
         <li><b>Posez vos questions</b>&nbsp;: «&nbsp;Combien de congés me reste-t-il&nbsp;?&nbsp;»</li>
       </ul>
     </div>
-    <div class="duo" data-reveal>
-      {{phone alerts-top "d1 tilt-l" 'Messages iolite'}}
-      {{phone alerts "d2 tilt-r" 'Questions à iolite'}}
+    <div class="ui-scene" data-reveal>
+      <div class="ui chat" data-chat>
+        <div class="ui-h"><b><img src="/logo-iolite-mark.png" alt="" width="18" height="18"> iolite</b><span class="tag">en ligne</span></div>
+        <div class="msg bot"><img src="/logo-iolite-mark.png" alt="" width="22" height="22"><p>Résumé de la semaine 45&nbsp;: <b>45h30</b> sur 5 jours, dont <b>10h30</b> d'heures sup. Environ <b>467&nbsp;€</b> net.</p></div>
+        <div class="msg bot"><img src="/logo-iolite-mark.png" alt="" width="22" height="22"><p>Seulement <b class="c">10h15</b> de repos avant cette journée. Le minimum légal est de 11&nbsp;h.</p></div>
+        <div class="msg me"><p>Combien de congés me reste-t-il&nbsp;?</p></div>
+        <div class="msg bot typing"><img src="/logo-iolite-mark.png" alt="" width="22" height="22"><p><i></i><i></i><i></i></p></div>
+        <div class="msg bot late"><img src="/logo-iolite-mark.png" alt="" width="22" height="22"><p>Il vous reste <b>2,5 jours</b> de congés payés, acquis depuis le 1<sup>er</sup> juin.</p></div>
+      </div>
     </div>
   </div>
 </section>
@@ -119,8 +138,16 @@
         <li><b>Export de vos données</b> et suppression du compte.</li>
       </ul>
     </div>
-    <div class="solo" data-reveal>
-      {{phone params "tilt-r" 'Réglages'}}
+    <div class="ui-scene" data-reveal>
+      <div class="ui set">
+        <div class="ui-h"><b>Travail</b><span class="tag">Le Comptoir</span></div>
+        <div class="st-row"><span class="st-i">{{icon calendar}}</span><span>Contrat</span><b>CDI</b></div>
+        <div class="st-row"><span class="st-i">{{icon euro}}</span><span>Salaire</span><b>35 h · 12,50 €/h</b></div>
+        <div class="st-row"><span class="st-i">{{icon chart}}</span><span>Convention</span><b>Hôtels-cafés-restaurants</b></div>
+        <div class="st-row"><span class="st-i">{{icon utensils}}</span><span>Repas fournis</span><b>4,35 €</b></div>
+        <div class="st-row"><span class="st-i">{{icon bell}}</span><span>Rappel</span><b>22:00</b></div>
+        <div class="st-row"><span class="st-i">{{icon faceid}}</span><span>Face ID</span><span class="tg on"><i></i></span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -132,12 +159,12 @@
       <h2 class="huge">Les petits détails<br><span class="grad">qui changent tout.</span></h2>
     </div>
     <div class="bento">
-      <div class="bx" data-reveal data-tilt><span class="bx-ic">📴</span><h3>Hors connexion</h3><p>Pointez sans réseau, tout se synchronise ensuite.</p></div>
-      <div class="bx" data-reveal data-tilt><span class="bx-ic">🔄</span><h3>iPhone et web</h3><p>Le même compte partout, mis à jour en temps réel.</p></div>
-      <div class="bx" data-reveal data-tilt><span class="bx-ic">⏰</span><h3>Alerte 10&nbsp;h</h3><p>Une notification si votre journée dépasse 10&nbsp;h.</p></div>
-      <div class="bx" data-reveal data-tilt><span class="bx-ic">📅</span><h3>Fin de contrat</h3><p>Un rappel une semaine avant, pour anticiper.</p></div>
-      <div class="bx" data-reveal data-tilt><span class="bx-ic">🏖️</span><h3>Congés payés</h3><p>Le compteur se met à jour tout seul.</p></div>
-      <div class="bx" data-reveal data-tilt><span class="bx-ic">📤</span><h3>Export</h3><p>Toutes vos données en un clic.</p></div>
+      <div class="bx" data-reveal><span class="bx-i">{{icon wifioff}}</span><h3>Hors connexion</h3><p>Pointez sans réseau, tout se synchronise ensuite.</p></div>
+      <div class="bx" data-reveal><span class="bx-i">{{icon sync}}</span><h3>iPhone et web</h3><p>Le même compte partout, mis à jour en temps réel.</p></div>
+      <div class="bx" data-reveal><span class="bx-i">{{icon alarm}}</span><h3>Alerte 10&nbsp;h</h3><p>Une notification si votre journée dépasse 10&nbsp;h.</p></div>
+      <div class="bx" data-reveal><span class="bx-i">{{icon calx}}</span><h3>Fin de contrat</h3><p>Un rappel une semaine avant, pour anticiper.</p></div>
+      <div class="bx" data-reveal><span class="bx-i">{{icon sun}}</span><h3>Congés payés</h3><p>Le compteur se met à jour tout seul.</p></div>
+      <div class="bx" data-reveal><span class="bx-i">{{icon export}}</span><h3>Export</h3><p>Toutes vos données en un clic.</p></div>
     </div>
   </div>
 </section>

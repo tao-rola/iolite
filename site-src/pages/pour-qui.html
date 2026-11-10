@@ -3,6 +3,9 @@
     <span class="eyebrow" data-hero>Pour qui</span>
     <h1 class="display sm" data-hero><span class="ln"><span>Vos horaires bougent&nbsp;?</span></span><span class="ln"><span class="grad">iolite suit le rythme.</span></span></h1>
     <p class="lead mx" data-hero>Salarié, saisonnier, étudiant ou multi-employeurs&nbsp;: iolite s'adapte à votre façon de travailler.</p>
+    <nav class="chips" data-hero aria-label="Métiers">
+      <a href="#restauration">Restauration</a><a href="#hotellerie">Hôtellerie</a><a href="#commerce">Commerce</a><a href="#sante">Santé</a><a href="#etudiants">Étudiants</a><a href="#multi">Plusieurs emplois</a>
+    </nav>
   </div>
 </section>
 
@@ -10,40 +13,104 @@
   <div class="wrap">
     <div class="personas">
       <article class="persona" id="restauration" data-reveal>
-        <div class="p-head"><span class="job-e">🍽️</span><h2>Restauration</h2></div>
-        <p class="lead">Service du midi, coupure, service du soir&nbsp;: iolite gère les journées coupées et les repas fournis, et applique les majorations de la convention hôtels-cafés-restaurants.</p>
-        <ul class="ticks"><li><b>Deux services par jour</b>, pointés séparément.</li><li><b>Repas fournis</b> déduits du net, comme sur la fiche de paie.</li><li><b>Planning Combo ou Skello</b> relié en un lien.</li></ul>
-        <div class="p-vis">{{phone shift "tilt-r" 'Journée coupée'}}</div>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon utensils}}</span><h2>Restauration</h2></div>
+          <p class="lead">Service du midi, coupure, service du soir&nbsp;: iolite gère les journées coupées et les repas fournis, et applique les majorations de la convention hôtels-cafés-restaurants.</p>
+          <ul class="ticks"><li><b>Deux services par jour</b>, pointés séparément.</li><li><b>Repas fournis</b> pris en compte dans le net.</li><li><b>Planning Combo ou Skello</b> relié en un lien.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Mardi</b><span class="tag">9h30</span></div>
+            <div class="mv-day"><i class="s1" style="--a:10;--b:14.5"><span>Midi 4h30</span></i><i class="s2" style="--a:18;--b:23"><span>Soir 5h00</span></i></div>
+            <div class="pl-axis"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>24h</span></div>
+            <div class="mv-pills"><span>2 repas notés</span><span>Coupure 3h30</span></div>
+          </div>
+        </div>
       </article>
+
       <article class="persona" id="hotellerie" data-reveal>
-        <div class="p-head"><span class="job-e">🛎️</span><h2>Hôtellerie</h2></div>
-        <p class="lead">Réception, étages, nuits, week-ends&nbsp;: vos horaires changent sans arrêt. iolite garde le compte et vous prévient quand le repos entre deux journées est trop court.</p>
-        <ul class="ticks"><li><b>Alerte sur les temps de repos</b> et l'amplitude.</li><li><b>Jours fériés</b> de votre région.</li><li><b>Résumé chaque dimanche.</b></li></ul>
-        <div class="p-vis">{{phone alerts-top "tilt-l" 'Alertes de repos'}}</div>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon concierge}}</span><h2>Hôtellerie</h2></div>
+          <p class="lead">Réception, étages, nuits, week-ends&nbsp;: vos horaires changent sans arrêt. iolite garde le compte et vous prévient quand le repos entre deux journées est trop court.</p>
+          <ul class="ticks"><li><b>Alerte sur les temps de repos</b> et l'amplitude.</li><li><b>Jours fériés</b> de votre région.</li><li><b>Résumé chaque dimanche.</b></li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Repos entre deux journées</b></div>
+            <div class="gauge"><svg viewBox="0 0 120 70"><path class="g-bg" d="M10 62a50 50 0 0 1 100 0"/><path class="g-fg" d="M10 62a50 50 0 0 1 100 0" style="--v:.62"/></svg><div class="g-num"><b class="c">10h15</b><small>minimum légal 11 h</small></div></div>
+            <div class="mv-alert">{{icon alarm}}<span>Repos trop court avant votre journée de mardi.</span></div>
+          </div>
+        </div>
       </article>
+
       <article class="persona" id="commerce" data-reveal>
-        <div class="p-head"><span class="job-e">🛍️</span><h2>Commerce</h2></div>
-        <p class="lead">Un planning qui change chaque semaine, des heures en plus le samedi&nbsp;: iolite compare ce qui était prévu avec ce que vous avez fait, et compte vos heures sup.</p>
-        <ul class="ticks"><li><b>Écart avec le planning</b> semaine par semaine.</li><li><b>Heures sup majorées</b> au-delà de votre contrat.</li><li><b>Notification</b> si demain change.</li></ul>
-        <div class="p-vis">{{phone stats "tilt-r" 'Semaine'}}</div>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon bag}}</span><h2>Commerce</h2></div>
+          <p class="lead">Un planning qui change chaque semaine, des heures en plus le samedi&nbsp;: iolite compare ce qui était prévu avec ce que vous avez fait, et compte vos heures sup.</p>
+          <ul class="ticks"><li><b>Écart avec le planning</b> semaine par semaine.</li><li><b>Heures sup majorées</b> au-delà de votre contrat.</li><li><b>Notification</b> si demain change.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Prévu ou fait&nbsp;?</b><span class="tag good">+3h15</span></div>
+            <div class="cmp">
+              <div class="cmp-c"><i class="p" style="--h:.7"></i><i class="f" style="--h:.78"></i><small>S43</small></div>
+              <div class="cmp-c"><i class="p" style="--h:.7"></i><i class="f" style="--h:.7"></i><small>S44</small></div>
+              <div class="cmp-c"><i class="p" style="--h:.8"></i><i class="f" style="--h:.92"></i><small>S45</small></div>
+              <div class="cmp-c"><i class="p" style="--h:.7"></i><i class="f" style="--h:.66"></i><small>S46</small></div>
+            </div>
+            <div class="mv-pills"><span><i class="lg p"></i>Prévu</span><span><i class="lg f"></i>Fait</span></div>
+          </div>
+        </div>
       </article>
+
       <article class="persona" id="sante" data-reveal>
-        <div class="p-head"><span class="job-e">🩺</span><h2>Santé et aide à domicile</h2></div>
-        <p class="lead">Gardes, longues journées, enchaînements&nbsp;: iolite vous alerte au-delà de 10&nbsp;h par jour et garde une trace précise de chaque intervention.</p>
-        <ul class="ticks"><li><b>Alerte au-delà de 10&nbsp;h</b> dans la journée.</li><li><b>Pauses</b> comptées à part.</li><li><b>Export</b> de vos heures quand vous voulez.</li></ul>
-        <div class="p-vis">{{phone month "tilt-l" 'Mois'}}</div>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon pulse}}</span><h2>Santé et aide à domicile</h2></div>
+          <p class="lead">Gardes, longues journées, enchaînements&nbsp;: iolite vous alerte au-delà de 10&nbsp;h par jour et garde une trace précise de chaque intervention.</p>
+          <ul class="ticks"><li><b>Alerte au-delà de 10&nbsp;h</b> dans la journée.</li><li><b>Pauses</b> comptées à part.</li><li><b>Export</b> de vos heures quand vous voulez.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini center">
+            <div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="r-bg"/><circle cx="60" cy="60" r="50" class="r-fg" style="--v:1"/><circle cx="60" cy="60" r="50" class="r-over" style="--v:.075"/></svg><div class="g-num"><b>10h45</b><small>aujourd'hui</small></div></div>
+            <div class="mv-alert">{{icon bell}}<span>Plus que les 10 h par jour autorisées.</span></div>
+          </div>
+        </div>
       </article>
+
       <article class="persona" id="etudiants" data-reveal>
-        <div class="p-head"><span class="job-e">🎓</span><h2>Étudiants et alternants</h2></div>
-        <p class="lead">Un job à côté des cours, ou une alternance&nbsp;: reliez aussi votre emploi du temps (ADE et autres calendriers en ligne) pour tout voir au même endroit.</p>
-        <ul class="ticks"><li><b>Emploi du temps iCal</b> lu automatiquement.</li><li><b>Salaire estimé</b> pour gérer votre budget.</li><li><b>Aucune donnée revendue</b>, jamais.</li></ul>
-        <div class="p-vis">{{phone tomorrow "tilt-r" 'Planning'}}</div>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon cap}}</span><h2>Étudiants et alternants</h2></div>
+          <p class="lead">Un job à côté des cours, ou une alternance&nbsp;: reliez aussi votre emploi du temps (ADE et autres calendriers en ligne) pour tout voir au même endroit.</p>
+          <ul class="ticks"><li><b>Emploi du temps iCal</b> lu automatiquement.</li><li><b>Salaire estimé</b> pour gérer votre budget.</li><li><b>Aucune donnée revendue</b>, jamais.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="ui-h"><b>Votre semaine</b></div>
+            <div class="edt">
+              <div class="edt-c"><small>L</small><i class="cours" style="--a:0;--b:.45">Cours</i><i class="job" style="--a:.6;--b:.95">Job</i></div>
+              <div class="edt-c"><small>M</small><i class="cours" style="--a:.1;--b:.6">Cours</i></div>
+              <div class="edt-c"><small>M</small><i class="job" style="--a:.15;--b:.55">Job</i></div>
+              <div class="edt-c"><small>J</small><i class="cours" style="--a:0;--b:.35">Cours</i><i class="job" style="--a:.55;--b:.9">Job</i></div>
+              <div class="edt-c"><small>V</small><i class="cours" style="--a:.05;--b:.4">Cours</i></div>
+            </div>
+          </div>
+        </div>
       </article>
+
       <article class="persona" id="multi" data-reveal>
-        <div class="p-head"><span class="job-e">🔀</span><h2>Plusieurs emplois</h2></div>
-        <p class="lead">Deux employeurs, deux contrats, deux plannings&nbsp;: chaque emploi a ses horaires, son salaire et ses réglages. Les totaux se cumulent automatiquement.</p>
-        <ul class="ticks"><li><b>Un emploi par employeur</b>, avec son contrat.</li><li><b>Un planning</b> pour chacun.</li><li><b>Totaux cumulés</b> dans les statistiques.</li></ul>
-        <div class="p-vis">{{phone params "tilt-l" 'Réglages'}}</div>
+        <div class="p-txt">
+          <div class="p-head"><span class="job-i">{{icon layers}}</span><h2>Plusieurs emplois</h2></div>
+          <p class="lead">Deux employeurs, deux contrats, deux plannings&nbsp;: chaque emploi a ses horaires, son salaire et ses réglages. Les totaux se cumulent automatiquement.</p>
+          <ul class="ticks"><li><b>Un emploi par employeur</b>, avec son contrat.</li><li><b>Un planning</b> pour chacun.</li><li><b>Totaux cumulés</b> dans les statistiques.</li></ul>
+        </div>
+        <div class="p-vis">
+          <div class="ui mini">
+            <div class="jobrow"><span class="jr-dot a"></span><span>Le Comptoir</span><b>24h00</b></div>
+            <div class="jobrow"><span class="jr-dot b"></span><span>Hôtel du Parc</span><b>12h30</b></div>
+            <div class="jr-bar"><i class="a" style="--w:.66"></i><i class="b" style="--w:.34"></i></div>
+            <div class="jobrow tot"><span></span><span>Total de la semaine</span><b>36h30</b></div>
+          </div>
+        </div>
       </article>
     </div>
   </div>

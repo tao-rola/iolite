@@ -21,31 +21,46 @@
     </div>
 
     <div class="hero-stage" id="heroStage">
-      <div class="fan" data-tilt-group>
-        {{phone stats "f-l" 'Écran Statistiques'}}
-        {{phone shift "f-c" 'Écran Shift'}}
-        {{phone alerts-top "f-r" 'Écran iolite'}}
+      <div class="orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="fan">
+        {{phone stats "f-l" 'Statistiques de la semaine dans iolite'}}
+        {{phone shift "f-c" 'Écran Shift de l’app iolite : journée de 4h30 pointée'}}
+        {{phone alerts-top "f-r" 'Messages de l’assistant iolite'}}
       </div>
       <div class="chip c-notif" data-float="1"><img src="/icon-192.png" alt="" width="34" height="34"><div><b>Planning <small>maintenant</small></b><p>Demain 10h/14h30 et 18h/23h</p></div></div>
       <div class="chip c-live" data-float="2"><img src="/logo-iolite-mark.png" alt="" width="24" height="24"><div><small>EN SERVICE</small><b>Soir</b></div><span class="tmr" data-timer="7920">2:12:00</span></div>
-      <div class="chip c-pay" data-float="3"><small>Net estimé · novembre</small><b data-count="691" data-fmt="eur">691 €</b><span class="spark"><i style="--h:.5"></i><i style="--h:.72"></i><i style="--h:.6"></i><i style="--h:.9"></i><i style="--h:1"></i></span></div>
-      <div class="chip c-sup" data-float="4"><span class="c-badge">+10h30</span><small>heures sup ce mois</small></div>
+      <div class="chip c-pay" data-float="3"><small>NET ESTIMÉ · NOVEMBRE</small><b data-count="691" data-fmt="eur">691 €</b><span class="spark"><i style="--h:.5"></i><i style="--h:.72"></i><i style="--h:.6"></i><i style="--h:.9"></i><i style="--h:1"></i></span></div>
+      <div class="chip c-sup" data-float="4"><span class="c-badge">+10h30</span><small>HEURES SUP CE MOIS</small></div>
     </div>
   </div>
-  <a class="scroll-hint" href="#douleurs" aria-label="Défiler"><span></span></a>
+  <a class="scroll-hint" href="#en-bref" aria-label="Défiler"><span></span></a>
 </section>
 
 <!-- bandeau -->
 <div class="band" aria-hidden="true">
   <div class="band-row r1"><div class="band-track">
-    <span>Heures sup</span><i>✦</i><span class="o">Salaire net</span><i>✦</i><span>Journées coupées</span><i>✦</i><span class="o">Repas fournis</span><i>✦</i><span>Jours fériés</span><i>✦</i><span class="o">Congés payés</span><i>✦</i>
-    <span>Heures sup</span><i>✦</i><span class="o">Salaire net</span><i>✦</i><span>Journées coupées</span><i>✦</i><span class="o">Repas fournis</span><i>✦</i><span>Jours fériés</span><i>✦</i><span class="o">Congés payés</span><i>✦</i>
+    <span>Heures sup</span><i></i><span class="o">Salaire net</span><i></i><span>Journées coupées</span><i></i><span class="o">Repas fournis</span><i></i><span>Jours fériés</span><i></i><span class="o">Congés payés</span><i></i>
+    <span>Heures sup</span><i></i><span class="o">Salaire net</span><i></i><span>Journées coupées</span><i></i><span class="o">Repas fournis</span><i></i><span>Jours fériés</span><i></i><span class="o">Congés payés</span><i></i>
   </div></div>
   <div class="band-row r2"><div class="band-track">
-    <span class="o">Temps de repos</span><i>✦</i><span>Planning Combo</span><i>✦</i><span class="o">Widgets</span><i>✦</i><span>Dynamic Island</span><i>✦</i><span class="o">Face ID</span><i>✦</i><span>Assistant</span><i>✦</i>
-    <span class="o">Temps de repos</span><i>✦</i><span>Planning Combo</span><i>✦</i><span class="o">Widgets</span><i>✦</i><span>Dynamic Island</span><i>✦</i><span class="o">Face ID</span><i>✦</i><span>Assistant</span><i>✦</i>
+    <span class="o">Temps de repos</span><i></i><span>Planning Combo</span><i></i><span class="o">Widgets</span><i></i><span>Dynamic Island</span><i></i><span class="o">Face ID</span><i></i><span>Assistant</span><i></i>
+    <span class="o">Temps de repos</span><i></i><span>Planning Combo</span><i></i><span class="o">Widgets</span><i></i><span>Dynamic Island</span><i></i><span class="o">Face ID</span><i></i><span>Assistant</span><i></i>
   </div></div>
 </div>
+
+<!-- ============ EN BREF (texte qui s'éclaire au défilement) ============ -->
+<section class="sec" id="en-bref">
+  <div class="wrap narrow">
+    <span class="eyebrow">iolite, en bref</span>
+    <p class="manifesto" data-words>iolite est une application iPhone et web qui compte vos heures de travail, estime votre salaire net et suit votre planning. Elle gère les journées coupées, les heures supplémentaires, les repas fournis, les jours fériés et les congés payés, et vous prévient quand vos temps de repos ne sont pas respectés.</p>
+    <dl class="keyfacts" data-reveal>
+      <div><dt>Pour qui</dt><dd>Salariés aux horaires variables</dd></div>
+      <div><dt>Sur quoi</dt><dd>iPhone et navigateur web</dd></div>
+      <div><dt>Planning</dt><dd>Combo, Skello, tout lien iCal</dd></div>
+      <div><dt>Données</dt><dd>Hébergées dans l'Union européenne</dd></div>
+    </dl>
+  </div>
+</section>
 
 <!-- ============ DOULEURS ============ -->
 <section class="sec" id="douleurs">
@@ -55,53 +70,53 @@
       <h2 class="huge">Les horaires variables,<br><span class="grad">c'est déjà assez fatigant.</span></h2>
     </div>
     <div class="pains">
-      <article class="pain" data-reveal data-tilt><span class="pain-n">01</span><h3>«&nbsp;J'ai noté mes heures… quelque part.&nbsp;»</h3><p>Un carnet, des notes, des captures d'écran. À la fin du mois, impossible de tout retrouver.</p></article>
-      <article class="pain" data-reveal data-tilt><span class="pain-n">02</span><h3>«&nbsp;Ma fiche de paie, je la crois sur parole.&nbsp;»</h3><p>Heures sup majorées, repas, jours fériés&nbsp;: sans calcul de votre côté, difficile de vérifier.</p></article>
-      <article class="pain" data-reveal data-tilt><span class="pain-n">03</span><h3>«&nbsp;Mon planning a encore changé hier soir.&nbsp;»</h3><p>Un créneau déplacé, un service ajouté. On le découvre trop tard, ou pas du tout.</p></article>
-      <article class="pain" data-reveal data-tilt><span class="pain-n">04</span><h3>«&nbsp;J'ai enchaîné sans m'en rendre compte.&nbsp;»</h3><p>Plus de 10&nbsp;h dans la journée, un repos trop court&nbsp;: personne ne vous prévient.</p></article>
+      <article class="pain" data-reveal><span class="pain-n">01</span><h3>«&nbsp;J'ai noté mes heures… quelque part.&nbsp;»</h3><p>Un carnet, des notes, des captures d'écran. À la fin du mois, impossible de tout retrouver.</p></article>
+      <article class="pain" data-reveal><span class="pain-n">02</span><h3>«&nbsp;Ma fiche de paie, je la crois sur parole.&nbsp;»</h3><p>Heures sup majorées, repas, jours fériés&nbsp;: sans calcul de votre côté, difficile de vérifier.</p></article>
+      <article class="pain" data-reveal><span class="pain-n">03</span><h3>«&nbsp;Mon planning a encore changé hier soir.&nbsp;»</h3><p>Un créneau déplacé, un service ajouté. On le découvre trop tard, ou pas du tout.</p></article>
+      <article class="pain" data-reveal><span class="pain-n">04</span><h3>«&nbsp;J'ai enchaîné sans m'en rendre compte.&nbsp;»</h3><p>Plus de 10&nbsp;h dans la journée, un repos trop court&nbsp;: personne ne vous prévient.</p></article>
     </div>
   </div>
 </section>
 
 <!-- ============ HISTOIRE AU DÉFILEMENT ============ -->
-<section class="story" id="story">
+<section class="story" id="story" aria-label="Comment fonctionne iolite">
   <div class="wrap story-in">
     <div class="story-steps">
       <div class="step" data-screen="0">
         <span class="eyebrow">01 · Pointer</span>
-        <h3 class="big-h">Un geste pour commencer, un geste pour finir.</h3>
+        <h2 class="big-h">Un geste pour commencer, un geste pour finir.</h2>
         <p class="lead">iolite enregistre l'heure exacte, reconnaît le service du midi ou du soir et met votre journée à jour.</p>
-        <div class="step-ph">{{phone shift "sm-ph"}}</div>
+        {{shot shift 'Journée pointée dans iolite'}}
       </div>
       <div class="step" data-screen="1">
         <span class="eyebrow">02 · Planning</span>
-        <h3 class="big-h">Votre planning arrive tout seul.</h3>
+        <h2 class="big-h">Votre planning arrive tout seul.</h2>
         <p class="lead">Collez le lien de votre planning en ligne&nbsp;: les horaires prévus s'affichent chaque jour, et vous êtes prévenu s'ils changent.</p>
-        <div class="step-ph">{{phone tomorrow "sm-ph"}}</div>
+        {{shot tomorrow 'Horaires prévus par le planning'}}
       </div>
       <div class="step" data-screen="2">
         <span class="eyebrow">03 · Oubli&nbsp;? Aucun souci</span>
-        <h3 class="big-h">Trois questions, et c'est rempli.</h3>
+        <h2 class="big-h">Trois questions, et c'est rempli.</h2>
         <p class="lead">Un questionnaire rapide vous propose les horaires de votre planning. Vous validez ou vous corrigez.</p>
-        <div class="step-ph">{{phone wizard "sm-ph"}}</div>
+        {{shot wizard 'Questionnaire de pointage'}}
       </div>
       <div class="step" data-screen="3">
         <span class="eyebrow">04 · Salaire</span>
-        <h3 class="big-h">Votre net, calculé chaque jour.</h3>
+        <h2 class="big-h">Votre net, calculé chaque jour.</h2>
         <p class="lead">Heures sup majorées, repas fournis, jours fériés et congés payés&nbsp;: tout est pris en compte.</p>
-        <div class="step-ph">{{phone stats "sm-ph"}}</div>
+        {{shot stats 'Salaire net estimé de la semaine'}}
       </div>
       <div class="step" data-screen="4">
         <span class="eyebrow">05 · Statistiques</span>
-        <h3 class="big-h">Votre mois, d'un seul coup d'œil.</h3>
+        <h2 class="big-h">Votre mois, d'un seul coup d'œil.</h2>
         <p class="lead">Un calendrier coloré, vos heures sup, vos repas, l'écart avec le planning. Touchez un jour pour le détail.</p>
-        <div class="step-ph">{{phone month "sm-ph"}}</div>
+        {{shot month 'Calendrier du mois'}}
       </div>
       <div class="step" data-screen="5">
         <span class="eyebrow">06 · Assistant</span>
-        <h3 class="big-h">iolite veille sur vous.</h3>
+        <h2 class="big-h">iolite veille sur vous.</h2>
         <p class="lead">Résumé chaque dimanche, alertes sur les temps de repos, et réponses à vos questions sur vos heures.</p>
-        <div class="step-ph">{{phone alerts "sm-ph"}}</div>
+        {{shot alerts 'Assistant iolite'}}
       </div>
     </div>
     <div class="story-stage">
@@ -109,16 +124,60 @@
         <div class="phone big"><div class="ph-body"><span class="ph-btn b1"></span><span class="ph-btn b2"></span><span class="ph-btn b3"></span>
           <div class="ph-screen"><div class="ph-sb" style="background:#4a4c95"><b>9:41</b><i class="ph-isl"></i><span class="ph-ic"><i></i><i></i><i></i></span></div>
             <div class="ph-stack">
-              <img src="/site/img/shift.webp" alt="Écran Shift" class="on" width="390" height="797">
-              <img src="/site/img/tomorrow.webp" alt="Planning du lendemain" loading="lazy" width="390" height="797">
-              <img src="/site/img/wizard.webp" alt="Questionnaire" loading="lazy" width="390" height="797">
-              <img src="/site/img/stats.webp" alt="Salaire de la semaine" loading="lazy" width="390" height="797">
-              <img src="/site/img/month.webp" alt="Calendrier du mois" loading="lazy" width="390" height="797">
-              <img src="/site/img/alerts.webp" alt="Assistant iolite" loading="lazy" width="390" height="797">
+              <img src="/site/img/shift.webp" alt="" class="on" width="390" height="797">
+              <img src="/site/img/tomorrow.webp" alt="" loading="lazy" width="390" height="797">
+              <img src="/site/img/wizard.webp" alt="" loading="lazy" width="390" height="797">
+              <img src="/site/img/stats.webp" alt="" loading="lazy" width="390" height="797">
+              <img src="/site/img/month.webp" alt="" loading="lazy" width="390" height="797">
+              <img src="/site/img/alerts.webp" alt="" loading="lazy" width="390" height="797">
             </div><i class="ph-home"></i>
           </div><span class="ph-glare"></span></div></div>
       </div>
       <div class="story-dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UNE JOURNÉE ============ -->
+<section class="sec day-sec" id="journee">
+  <div class="wrap">
+    <div class="sec-h center" data-reveal>
+      <span class="eyebrow">Une journée avec iolite</span>
+      <h2 class="huge">De 10&nbsp;h à minuit,<br><span class="grad">tout se compte tout seul.</span></h2>
+    </div>
+    <div class="daytl" id="daytl">
+      <div class="dt-track"><i class="dt-fill"></i></div>
+      <div class="dt-ev" style="--p:0"><span class="dt-t">10:00</span><span class="dt-dot"></span><div class="dt-card"><b>Je commence</b><small>Service du midi lancé, le chrono démarre.</small></div></div>
+      <div class="dt-ev" style="--p:.29"><span class="dt-t">14:30</span><span class="dt-dot"></span><div class="dt-card"><b>J'ai fini</b><small>4h30 pointées · repas noté.</small></div></div>
+      <div class="dt-ev" style="--p:.57"><span class="dt-t">18:00</span><span class="dt-dot"></span><div class="dt-card"><b>Service du soir</b><small>Dynamic Island et écran verrouillé.</small></div></div>
+      <div class="dt-ev" style="--p:.86"><span class="dt-t">23:00</span><span class="dt-dot"></span><div class="dt-card"><b>9h30 aujourd'hui</b><small>≈ 83 € net · semaine à jour.</small></div></div>
+      <div class="dt-ev" style="--p:1"><span class="dt-t">23:05</span><span class="dt-dot hot"></span><div class="dt-card hot"><b>Planning</b><small>Demain 11h/15h et 19h/23h30.</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SIMULATEUR ============ -->
+<section class="sec" id="simulateur">
+  <div class="wrap">
+    <div class="sim" data-reveal>
+      <div class="sim-txt">
+        <span class="eyebrow">Simulateur</span>
+        <h2 class="huge">Combien valent<br><span class="grad">vos heures sup&nbsp;?</span></h2>
+        <p class="lead">Bougez les curseurs. iolite fait ce calcul pour vous, chaque jour, avec vos vraies heures.</p>
+        <div class="sim-in">
+          <label><span>Heures travaillées par semaine <b id="simHv">39 h</b></span><input type="range" id="simH" min="35" max="48" step="0.5" value="39"></label>
+          <label><span>Taux horaire brut <b id="simRv">12,50 €</b></span><input type="range" id="simR" min="11.90" max="25" step="0.05" value="12.5"></label>
+        </div>
+      </div>
+      <div class="sim-out" aria-live="polite">
+        <div class="so-main"><small>Net estimé par mois</small><b id="simNet">1 794 €</b></div>
+        <div class="so-row"><span>Heures sup par mois</span><b id="simSup">17h20</b></div>
+        <div class="so-row"><span>Dont majoration</span><b id="simMaj">+54 €</b></div>
+        <div class="so-row"><span>Brut estimé</span><b id="simBrut">2 300 €</b></div>
+        <div class="so-bar"><i id="simBarBase"></i><i id="simBarSup" class="sup"></i></div>
+        <div class="so-leg"><span><i></i>35 premières heures</span><span><i class="sup"></i>Heures sup</span></div>
+        <p class="so-note">Estimation indicative pour un temps plein de 35&nbsp;h&nbsp;: heures sup majorées de 25&nbsp;% de la 36<sup>e</sup> à la 43<sup>e</sup> heure, puis de 50&nbsp;%&nbsp;; cotisations salariales d'environ 22&nbsp;%.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -131,27 +190,6 @@
       <div class="fact" data-reveal><b><span data-count="2">2</span><small>min</small></b><span>pour configurer votre contrat</span></div>
       <div class="fact" data-reveal><b><span data-count="0">0</span></b><span>publicité, zéro pistage</span></div>
       <div class="fact" data-reveal><b><span data-count="100">100</span><small>%</small></b><span>de vos données en Europe</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ GALERIE ============ -->
-<section class="sec gallery-sec">
-  <div class="wrap">
-    <div class="sec-h" data-reveal>
-      <span class="eyebrow">L'app, en vrai</span>
-      <h2 class="huge">Belle, rapide,<br><span class="grad">et vraiment pratique.</span></h2>
-    </div>
-  </div>
-  <div class="gallery" id="gallery">
-    <div class="g-track">
-      <figure>{{phone shift "g" 'Shift'}}<figcaption>Votre journée</figcaption></figure>
-      <figure>{{phone stats "g" 'Statistiques semaine'}}<figcaption>Votre semaine</figcaption></figure>
-      <figure>{{phone month "g" 'Calendrier'}}<figcaption>Votre mois</figcaption></figure>
-      <figure>{{phone month2 "g" 'Congés payés'}}<figcaption>Vos congés</figcaption></figure>
-      <figure>{{phone year "g" 'Année'}}<figcaption>Votre année</figcaption></figure>
-      <figure>{{phone alerts-top "g" 'Assistant'}}<figcaption>Votre assistant</figcaption></figure>
-      <figure>{{phone params "g" 'Réglages'}}<figcaption>Vos réglages</figcaption></figure>
     </div>
   </div>
 </section>
@@ -192,12 +230,12 @@
       <h2 class="huge">Pour tous ceux dont<br><span class="grad">les horaires bougent.</span></h2>
     </div>
     <div class="jobs">
-      <a class="job" href="pour-qui#restauration" data-reveal data-tilt><span class="job-e">🍽️</span><b>Restauration</b><small>Journées coupées, repas fournis</small></a>
-      <a class="job" href="pour-qui#hotellerie" data-reveal data-tilt><span class="job-e">🛎️</span><b>Hôtellerie</b><small>Nuits, week-ends, fériés</small></a>
-      <a class="job" href="pour-qui#commerce" data-reveal data-tilt><span class="job-e">🛍️</span><b>Commerce</b><small>Plannings qui changent chaque semaine</small></a>
-      <a class="job" href="pour-qui#sante" data-reveal data-tilt><span class="job-e">🩺</span><b>Santé et aide</b><small>Gardes et amplitudes longues</small></a>
-      <a class="job" href="pour-qui#etudiants" data-reveal data-tilt><span class="job-e">🎓</span><b>Étudiants</b><small>Job, alternance, emploi du temps</small></a>
-      <a class="job" href="pour-qui#multi" data-reveal data-tilt><span class="job-e">🔀</span><b>Plusieurs emplois</b><small>Chaque employeur à part</small></a>
+      <a class="job" href="pour-qui#restauration" data-reveal><span class="job-i">{{icon utensils}}</span><b>Restauration</b><small>Journées coupées, repas fournis</small></a>
+      <a class="job" href="pour-qui#hotellerie" data-reveal><span class="job-i">{{icon concierge}}</span><b>Hôtellerie</b><small>Nuits, week-ends, fériés</small></a>
+      <a class="job" href="pour-qui#commerce" data-reveal><span class="job-i">{{icon bag}}</span><b>Commerce</b><small>Plannings qui changent chaque semaine</small></a>
+      <a class="job" href="pour-qui#sante" data-reveal><span class="job-i">{{icon pulse}}</span><b>Santé et aide</b><small>Gardes et amplitudes longues</small></a>
+      <a class="job" href="pour-qui#etudiants" data-reveal><span class="job-i">{{icon cap}}</span><b>Étudiants</b><small>Job, alternance, emploi du temps</small></a>
+      <a class="job" href="pour-qui#multi" data-reveal><span class="job-i">{{icon layers}}</span><b>Plusieurs emplois</b><small>Chaque employeur à part</small></a>
     </div>
   </div>
 </section>
@@ -213,11 +251,28 @@
         <a class="link" href="confidentialite">Notre politique de confidentialité <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <ul class="tc-list">
-        <li><b>🇪🇺</b>Hébergées en Irlande, dans l'Union européenne</li>
-        <li><b>🙅</b>Aucune publicité, aucun pistage</li>
-        <li><b>🔒</b>Votre employeur n'a pas accès à vos données</li>
-        <li><b>🗑️</b>Export et suppression depuis les Réglages</li>
+        <li><span class="tc-i">{{icon pin}}</span>Hébergées en Irlande, dans l'Union européenne</li>
+        <li><span class="tc-i">{{icon ban}}</span>Aucune publicité, aucun pistage</li>
+        <li><span class="tc-i">{{icon lock}}</span>Votre employeur n'a pas accès à vos données</li>
+        <li><span class="tc-i">{{icon trash}}</span>Export et suppression depuis les Réglages</li>
       </ul>
     </div>
+  </div>
+</section>
+
+<!-- ============ QUESTIONS ============ -->
+<section class="sec tight" id="questions">
+  <div class="wrap narrow">
+    <div class="sec-h center" data-reveal>
+      <span class="eyebrow">Questions fréquentes</span>
+      <h2 class="huge">L'essentiel,<br><span class="grad">en quatre réponses.</span></h2>
+    </div>
+    <div class="faq" data-faq>
+      <details data-reveal><summary>Qu'est-ce que iolite&nbsp;?<i></i></summary><p>iolite est une application iPhone et web qui compte vos heures de travail, estime votre salaire net et suit votre planning. Elle s'adresse aux salariés aux horaires variables&nbsp;: restauration, hôtellerie, commerce, santé, étudiants.</p></details>
+      <details data-reveal><summary>Le salaire calculé est-il exact&nbsp;?<i></i></summary><p>C'est une estimation fiable, basée sur votre contrat, vos heures sup majorées, les repas fournis, les jours fériés et les congés payés. Elle sert à vérifier votre fiche de paie&nbsp;; seul votre bulletin officiel fait foi.</p></details>
+      <details data-reveal><summary>Fonctionne-t-il avec mon planning Combo ou Skello&nbsp;?<i></i></summary><p>Oui. iolite lit tout planning en ligne qui propose un lien iCal (Combo, Skello, Google Agenda, ADE…) et compare les horaires prévus avec vos heures réelles.</p></details>
+      <details data-reveal><summary>Mon employeur voit-il mes données&nbsp;?<i></i></summary><p>Non. iolite est votre outil personnel&nbsp;: vos heures et votre salaire ne sont visibles que par vous, et sont hébergés dans l'Union européenne.</p></details>
+    </div>
+    <p class="center more"><a class="link" href="aide">Toutes les questions <svg class="arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
   </div>
 </section>

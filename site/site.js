@@ -73,11 +73,11 @@
       mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5;
       if (fan && !raf) raf = requestAnimationFrame(function () { raf = 0; fan.style.setProperty('--ry', (-14 + mx * 22) + 'deg'); fan.style.setProperty('--rx', (8 - my * 14) + 'deg'); });
     }, { passive: true });
-    document.querySelectorAll('[data-tilt]').forEach(function (el) {
+    document.querySelectorAll('.lock3d[data-tilt], .wg[data-tilt]').forEach(function (el) {
       el.addEventListener('pointermove', function (e) {
         var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
         el.style.transition = 'transform .15s ease-out';
-        el.style.transform = 'perspective(900px) rotateX(' + (-y * 10) + 'deg) rotateY(' + (x * 12) + 'deg) translateZ(10px)';
+        el.style.transform = 'perspective(900px) rotateX(' + (-y * 8) + 'deg) rotateY(' + (x * 10) + 'deg)';
       });
       el.addEventListener('pointerleave', function () { el.style.transition = 'transform .7s cubic-bezier(.2,.8,.2,1)'; el.style.transform = ''; });
     });
@@ -85,6 +85,71 @@
       b.addEventListener('pointermove', function (e) { var r = b.getBoundingClientRect(); b.style.transform = 'translate(' + (e.clientX - r.left - r.width / 2) * .22 + 'px,' + (e.clientY - r.top - r.height / 2) * .3 + 'px)'; });
       b.addEventListener('pointerleave', function () { b.style.transform = ''; });
     });
+  }
+
+  /* ---------- apparition des composants (classe .in) ---------- */
+  var rio = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); rio.unobserve(e.target); } }); }, { threshold: .2 });
+  document.querySelectorAll('[data-reveal]').forEach(function (el) { rio.observe(el); });
+
+  /* ---------- manifeste : les mots s'éclairent au défilement ---------- */
+  var man = document.querySelector('[data-words]');
+  if (man) {
+    man.innerHTML = man.textContent.trim().split(/\s+/).map(function (w) { return '<span class="w">' + w + '</span>'; }).join(' ');
+    var words = man.querySelectorAll('.w');
+    if (reduce) words.forEach(function (w) { w.classList.add('on'); });
+    else {
+      man.setAttribute('data-ready', '');
+      var lit = function () {
+        var r = man.getBoundingClientRect(), p = (innerHeight * .78 - r.top) / (r.height + innerHeight * .3);
+        var n = Math.round(Math.max(0, Math.min(1, p)) * words.length);
+        words.forEach(function (w, i) { w.classList.toggle('on', i < n); });
+      };
+      lit(); addEventListener('scroll', lit, { passive: true });
+    }
+  }
+
+  /* ---------- une journée : la ligne se dessine au défilement ---------- */
+  var tl = document.getElementById('daytl');
+  if (tl) {
+    var evs = tl.querySelectorAll('.dt-ev');
+    var draw = function () {
+      var r = tl.getBoundingClientRect(), p = (innerHeight * .75 - r.top) / (r.height + innerHeight * .1);
+      p = Math.max(0, Math.min(1, p)); if (reduce) p = 1;
+      tl.style.setProperty('--prog', p.toFixed(3));
+      var mob = innerWidth <= 960;
+      evs.forEach(function (ev, i) { var at = mob ? i / (evs.length - 1) : parseFloat(ev.style.getPropertyValue('--p')); ev.classList.toggle('on', p >= at - .02); });
+    };
+    draw(); addEventListener('scroll', draw, { passive: true }); addEventListener('resize', draw);
+  }
+
+  /* ---------- simulateur ---------- */
+  var sH = document.getElementById('simH');
+  if (sH) {
+    var sR = document.getElementById('simR');
+    var eur = function (v) { return Math.round(v).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ') + ' €'; };
+    var hm = function (h) { var m = Math.round(h * 60); return Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0'); };
+    var fill = function (el) { el.style.setProperty('--f', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); };
+    var shown = {};
+    var anim = function (id, to, f) {
+      var el = document.getElementById(id), from = shown[id] == null ? to : shown[id]; shown[id] = to;
+      if (reduce || from === to) { el.textContent = f(to); return; }
+      var t0 = performance.now();
+      (function st(t) { var k = Math.min(1, (t - t0) / 450), e = 1 - Math.pow(1 - k, 3); el.textContent = f(from + (to - from) * e); if (k < 1) requestAnimationFrame(st); })(t0);
+    };
+    var calc = function () {
+      var h = +sH.value, r = +sR.value, c = 35, w = 52 / 12;
+      var s1 = Math.max(0, Math.min(h, c + 8) - c), s2 = Math.max(0, h - (c + 8));
+      var base = c * r * w, sup = (s1 * 1.25 + s2 * 1.5) * r * w, maj = (s1 * .25 + s2 * .5) * r * w, brut = base + sup;
+      document.getElementById('simHv').textContent = String(h).replace('.', ',') + ' h';
+      document.getElementById('simRv').textContent = r.toFixed(2).replace('.', ',') + ' €';
+      anim('simNet', brut * .78, eur); anim('simBrut', brut, eur); anim('simMaj', maj, function (v) { return '+' + eur(v); });
+      document.getElementById('simSup').textContent = hm((s1 + s2) * w);
+      document.getElementById('simBarBase').style.width = (base / brut * 100) + '%';
+      document.getElementById('simBarSup').style.width = (sup / brut * 100) + '%';
+      [sH, sR].forEach(fill);
+    };
+    [sH, sR].forEach(function (el) { el.addEventListener('input', calc); });
+    calc();
   }
 
   /* ---------- histoire au défilement : l'écran du téléphone change ---------- */
@@ -152,7 +217,7 @@
     // grand texte du pied de page
     if (has('.foot-big')) g.from('.foot-big', { yPercent: 40, opacity: 0, ease: 'none', scrollTrigger: { trigger: '.foot', start: 'top bottom', end: 'top 40%', scrub: true } });
     // téléphones de l'appel final
-    if (has('.final-phones')) g.from('.final-phones .phone', { y: 200, rotateX: 30, opacity: 0, stagger: .1, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.final', start: 'top 75%' } });
+    if (has('.final-art')) g.from('.fa-icon, .fa-chip', { scale: .5, opacity: 0, stagger: .1, duration: 1.2, ease: 'back.out(1.6)', scrollTrigger: { trigger: '.final', start: 'top 75%' } });
     // écran verrouillé et widgets
     document.querySelectorAll('.lock3d, .widgets, .islands').forEach(function (el) {
       g.from(el.classList.contains('lock3d') ? el : el.children, { rotateX: 30, y: 80, opacity: 0, duration: 1.3, stagger: .12, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%' } });

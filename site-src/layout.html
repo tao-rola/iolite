@@ -9,17 +9,39 @@
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="{{url}}">
+<link rel="alternate" hreflang="fr" href="{{url}}">
+<link rel="alternate" hreflang="x-default" href="{{url}}">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<meta name="author" content="iolite">
+<meta name="application-name" content="iolite">
+<meta name="apple-mobile-web-app-title" content="iolite">
+<meta property="og:site_name" content="iolite">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{url}}">
 <meta property="og:title" content="{{title}}">
 <meta property="og:description" content="{{desc}}">
-<meta property="og:image" content="https://iolite.team/icon-512.png">
-<meta property="og:type" content="website">
+<meta property="og:image" content="https://iolite.team/site/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="iolite : vos heures et votre salaire, enfin clairs">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{title}}">
+<meta name="twitter:description" content="{{desc}}">
+<meta name="twitter:image" content="https://iolite.team/site/img/og.png">
+<link rel="sitemap" type="application/xml" href="https://iolite.team/sitemap.xml">
+<link rel="alternate" type="text/markdown" title="iolite pour les IA" href="https://iolite.team/llms.txt">
+{{preload}}
+{{jsonld}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="/site/site.css">
 <script>document.documentElement.classList.replace('no-js','js')</script>
 </head>
 <body data-page="{{page}}">
+<a class="skip" href="#contenu">Aller au contenu</a>
 
 <!-- fond animé : dégradé de l'app -->
 <div class="bg" aria-hidden="true">
@@ -76,20 +98,22 @@
   <a class="store big" href="#telecharger"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span><small data-store-small>Bientôt sur</small><b>l'App Store</b></span></a>
 </div>
 
-<main>
-{{body}}
+<main id="contenu">
+{{crumbs}}{{body}}
 
 <!-- appel final, commun à toutes les pages -->
 <section class="sec final-sec" id="telecharger">
   <div class="wrap">
     <div class="final" data-reveal>
-      <div class="final-phones" aria-hidden="true">
-        {{phone stats "fp l"}}
-        {{phone shift "fp c"}}
-        {{phone alerts "fp r"}}
+      <div class="final-art" aria-hidden="true">
+        <div class="fa-rings"><i></i><i></i><i></i></div>
+        <img class="fa-icon" src="/icon-512.png" alt="" width="200" height="200" loading="lazy">
+        <span class="fa-chip a">{{icon clock}}9h30</span>
+        <span class="fa-chip b">{{icon euro}}691 €</span>
+        <span class="fa-chip c">{{icon calendar}}Planning</span>
+        <span class="fa-chip d">{{icon bell}}Rappel 22:00</span>
       </div>
       <div class="final-txt">
-        <img class="final-icon" src="/icon-512.png" alt="" width="88" height="88">
         <h2 class="huge">Reprenez la main<br><span class="grad">sur vos heures.</span></h2>
         <p class="lead">iolite arrive très bientôt sur l'App Store. Commencez dès maintenant sur le web&nbsp;: votre compte vous suivra sur iPhone.</p>
         <div class="ctas center">
