@@ -21,7 +21,7 @@ def phone(img, cls='', alt=''):
     """iPhone en 3D avec une vraie capture de l'app"""
     return (f'<div class="phone {cls}"><div class="ph-body"><span class="ph-btn b1"></span><span class="ph-btn b2"></span><span class="ph-btn b3"></span>'
             f'<div class="ph-screen"><div class="ph-sb" style="background:{STATUS_BG}"><b>9:41</b><i class="ph-isl"></i><span class="ph-ic"><i></i><i></i><i></i></span></div>'
-            f'<img src="/site/img/{img}.webp" alt="{alt}" loading="lazy" decoding="async" width="390" height="797"></div>'
+            f'<img src="/site/img/{img}.webp" alt="{alt}" loading="lazy" decoding="async" width="390" height="797"><i class="ph-home"></i></div>'
             f'<span class="ph-glare"></span></div></div>')
 
 def expand(html):

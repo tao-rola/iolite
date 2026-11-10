@@ -5,6 +5,16 @@
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+  if (!APP_STORE_URL) {
+    var toast = document.createElement('div'); toast.className = 'toast'; toast.setAttribute('role', 'status');
+    toast.innerHTML = '<img src="/icon-192.png" alt=""><p><b>Bientôt sur l\'App Store</b>L\'app iPhone arrive très vite. En attendant, utilisez la version web avec le même compte.</p><a href="https://iolite-app.pages.dev">Version web</a>';
+    body.appendChild(toast); var tt;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-store], a[href="#telecharger"]'); if (!a) return;
+      if (a.hasAttribute('data-store')) e.preventDefault();
+      clearTimeout(tt); toast.classList.add('on'); tt = setTimeout(function () { toast.classList.remove('on'); }, 5200);
+    });
+  }
   if (APP_STORE_URL) {
     document.querySelectorAll('[data-store]').forEach(function (a) { a.href = APP_STORE_URL; a.target = '_blank'; a.rel = 'noopener'; });
     document.querySelectorAll('[data-store-small]').forEach(function (s) { s.textContent = 'Télécharger dans'; });
@@ -103,12 +113,13 @@
     g.registerPlugin(ST); doc.classList.add('gsap-on');
 
     // entrée de page
+    var has = function (sel) { return document.querySelector(sel); };
     var tl = g.timeline({ defaults: { ease: 'expo.out' } });
-    tl.from('.display .ln>span', { yPercent: 115, rotate: 4, duration: 1.3, stagger: .1 })
-      .from('[data-hero]:not(.display)', { y: 30, opacity: 0, duration: 1.1, stagger: .08 }, .25);
+    tl.from('.display .ln>span', { yPercent: 115, rotate: 4, duration: 1, stagger: .08 })
+      .from('[data-hero]:not(.display)', { y: 26, opacity: 0, duration: .9, stagger: .06 }, .15);
     if (document.querySelector('.fan')) {
-      tl.from('.fan .phone', { y: 260, opacity: 0, rotateX: 40, duration: 1.6, stagger: .12, ease: 'power4.out' }, .2)
-        .from('.hero-stage .chip', { scale: .6, opacity: 0, y: 30, duration: 1, stagger: .12, ease: 'back.out(1.7)' }, .9);
+      tl.from('.fan .phone', { y: 220, opacity: 0, rotateX: 36, duration: 1.2, stagger: .1, ease: 'power4.out' }, .1)
+        .from('.hero-stage .chip', { scale: .6, opacity: 0, y: 30, duration: .8, stagger: .1, ease: 'back.out(1.7)' }, .6);
       g.to('.fan', { yPercent: -12, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
       g.to('.f-l', { xPercent: -18, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
       g.to('.f-r', { xPercent: 18, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
@@ -139,12 +150,14 @@
         scrollTrigger: { trigger: '.gallery', start: 'top 90%', end: 'bottom -40%', scrub: 1, invalidateOnRefresh: true } });
     }
     // grand texte du pied de page
-    g.from('.foot-big', { yPercent: 40, opacity: 0, ease: 'none', scrollTrigger: { trigger: '.foot', start: 'top bottom', end: 'top 40%', scrub: true } });
+    if (has('.foot-big')) g.from('.foot-big', { yPercent: 40, opacity: 0, ease: 'none', scrollTrigger: { trigger: '.foot', start: 'top bottom', end: 'top 40%', scrub: true } });
     // téléphones de l'appel final
-    g.from('.final-phones .phone', { y: 200, rotateX: 30, opacity: 0, stagger: .1, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.final', start: 'top 75%' } });
+    if (has('.final-phones')) g.from('.final-phones .phone', { y: 200, rotateX: 30, opacity: 0, stagger: .1, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.final', start: 'top 75%' } });
     // écran verrouillé et widgets
-    g.from('.lock3d, .wg, .isl-expanded, .isl-compact', { rotateX: 30, y: 80, opacity: 0, duration: 1.3, stagger: .12, ease: 'expo.out', scrollTrigger: { trigger: '.lock3d, .widgets, .islands', start: 'top 85%' } });
-    g.from('.nt', { x: 120, opacity: 0, duration: 1, stagger: .12, ease: 'expo.out', scrollTrigger: { trigger: '.notif-stack', start: 'top 80%' } });
+    document.querySelectorAll('.lock3d, .widgets, .islands').forEach(function (el) {
+      g.from(el.classList.contains('lock3d') ? el : el.children, { rotateX: 30, y: 80, opacity: 0, duration: 1.3, stagger: .12, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
+    });
+    if (has('.notif-stack')) g.from('.nt', { x: 120, opacity: 0, duration: 1, stagger: .12, ease: 'expo.out', scrollTrigger: { trigger: '.notif-stack', start: 'top 80%' } });
 
     addEventListener('load', function () { ST.refresh(); });
   }
