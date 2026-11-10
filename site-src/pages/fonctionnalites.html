@@ -1,0 +1,143 @@
+<section class="page-hero">
+  <div class="wrap center">
+    <span class="eyebrow" data-hero>Fonctionnalités</span>
+    <h1 class="display sm" data-hero><span class="ln"><span>Tout ce qu'il faut.</span></span><span class="ln"><span class="grad">Rien de compliqué.</span></span></h1>
+    <p class="lead mx" data-hero>De votre premier pointage à votre fiche de paie, iolite s'occupe des calculs. Voici tout ce que l'app fait pour vous.</p>
+    <nav class="chips" data-hero aria-label="Aller à">
+      <a href="#pointer">Pointer</a><a href="#planning">Planning</a><a href="#salaire">Salaire</a><a href="#stats">Statistiques</a><a href="#assistant">Assistant</a><a href="#reglages">Réglages</a>
+    </nav>
+  </div>
+</section>
+
+<section class="sec feat" id="pointer">
+  <div class="wrap split">
+    <div data-reveal>
+      <span class="eyebrow">Pointer</span>
+      <h2 class="huge">Chaque service,<br><span class="grad">en un geste.</span></h2>
+      <p class="lead">Appuyez en arrivant, appuyez en partant. iolite reconnaît le service du midi ou du soir, compte les pauses et met tout à jour, même hors connexion.</p>
+      <ul class="ticks">
+        <li><b>Journées continues ou coupées</b> en deux services, avec pauses.</li>
+        <li><b>Repos, congé payé, absence</b>&nbsp;: un choix suffit.</li>
+        <li><b>Oubli de pointer&nbsp;?</b> Le questionnaire vous propose les horaires prévus.</li>
+        <li><b>Repas pris au travail</b> notés à chaque service.</li>
+      </ul>
+    </div>
+    <div class="duo" data-reveal>
+      {{phone shift "d1 tilt-l" 'Journée pointée'}}
+      {{phone wizard "d2 tilt-r" 'Questionnaire'}}
+    </div>
+  </div>
+</section>
+
+<section class="sec feat" id="planning">
+  <div class="wrap split rev">
+    <div data-reveal>
+      <span class="eyebrow">Planning</span>
+      <h2 class="huge">Votre planning,<br><span class="grad">toujours à jour.</span></h2>
+      <p class="lead">Collez le lien de votre planning en ligne&nbsp;: iolite le lit tout seul, affiche les horaires prévus chaque jour et compare avec ce que vous avez vraiment fait.</p>
+      <ul class="ticks">
+        <li><b>Tout lien iCal</b>&nbsp;: Combo, Skello, Google Agenda, ADE…</li>
+        <li><b>Notification si demain change</b>&nbsp;: «&nbsp;Demain 10h/14h30 et 18h/23h&nbsp;».</li>
+        <li><b>Écart avec le planning</b> chaque semaine et chaque mois.</li>
+        <li><b>Import d'un fichier .ics</b> si vous n'avez pas de lien.</li>
+      </ul>
+    </div>
+    <div class="solo" data-reveal>
+      {{phone tomorrow "tilt-r" 'Planning du jour'}}
+      <div class="chip c-notif in-scene" data-float="1"><img src="/icon-192.png" alt="" width="32" height="32"><div><b>Planning <small>21:04</small></b><p>Demain 11h/15h et 19h/23h30</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec feat" id="salaire">
+  <div class="wrap split">
+    <div data-reveal>
+      <span class="eyebrow">Salaire</span>
+      <h2 class="huge">Votre net,<br><span class="grad">au fil des heures.</span></h2>
+      <p class="lead">Renseignez votre contrat une fois. iolite estime votre brut et votre net chaque semaine, chaque mois et sur l'année.</p>
+      <ul class="ticks">
+        <li><b>Heures sup majorées</b> selon le Code du travail ou la convention HCR.</li>
+        <li><b>Repas fournis</b>, jours fériés et congés payés pris en compte.</li>
+        <li><b>Taux horaire ou salaire mensuel</b>, cotisations ajustables.</li>
+      </ul>
+      <p class="note">Une estimation pour vérifier votre fiche de paie&nbsp;: seul votre bulletin officiel fait foi.</p>
+    </div>
+    <div class="duo" data-reveal>
+      {{phone stats "d1 tilt-l" 'Salaire de la semaine'}}
+      {{phone year "d2 tilt-r" 'Salaire de l’année'}}
+    </div>
+  </div>
+</section>
+
+<section class="sec feat" id="stats">
+  <div class="wrap split rev">
+    <div data-reveal>
+      <span class="eyebrow">Statistiques</span>
+      <h2 class="huge">Tout votre mois,<br><span class="grad">en couleurs.</span></h2>
+      <p class="lead">Un calendrier pour voir d'un coup d'œil vos jours travaillés, vos alertes, vos congés et vos jours fériés. Touchez un jour pour l'ouvrir.</p>
+      <ul class="ticks">
+        <li><b>Jours travaillés, heures sup, repas</b> et écart avec le planning.</li>
+        <li><b>Compteur de congés payés</b> acquis et pris.</li>
+        <li><b>Jours fériés</b> de votre région.</li>
+      </ul>
+    </div>
+    <div class="duo" data-reveal>
+      {{phone month "d1 tilt-l" 'Calendrier du mois'}}
+      {{phone month2 "d2 tilt-r" 'Congés payés'}}
+    </div>
+  </div>
+</section>
+
+<section class="sec feat" id="assistant">
+  <div class="wrap split">
+    <div data-reveal>
+      <span class="eyebrow">Assistant</span>
+      <h2 class="huge">iolite veille<br><span class="grad">sur vous.</span></h2>
+      <p class="lead">L'onglet iolite rassemble ce que l'app a remarqué, et répond à vos questions sur vos heures, en français.</p>
+      <ul class="ticks">
+        <li><b>Résumé chaque dimanche</b>&nbsp;: heures, heures sup, repas, net.</li>
+        <li><b>Alertes</b> au-delà de 10&nbsp;h par jour, amplitude et repos trop courts.</li>
+        <li><b>Posez vos questions</b>&nbsp;: «&nbsp;Combien de congés me reste-t-il&nbsp;?&nbsp;»</li>
+      </ul>
+    </div>
+    <div class="duo" data-reveal>
+      {{phone alerts-top "d1 tilt-l" 'Messages iolite'}}
+      {{phone alerts "d2 tilt-r" 'Questions à iolite'}}
+    </div>
+  </div>
+</section>
+
+<section class="sec feat" id="reglages">
+  <div class="wrap split rev">
+    <div data-reveal>
+      <span class="eyebrow">Réglages</span>
+      <h2 class="huge">Votre contrat,<br><span class="grad">vos règles.</span></h2>
+      <p class="lead">Type de contrat, heures par semaine, salaire, convention, région, repas, rappels&nbsp;: iolite s'adapte à votre situation, et à plusieurs emplois à la fois.</p>
+      <ul class="ticks">
+        <li><b>Plusieurs emplois</b>, chacun avec son contrat et son planning.</li>
+        <li><b>Rappels</b> aux heures de votre choix.</li>
+        <li><b>Export de vos données</b> et suppression du compte.</li>
+      </ul>
+    </div>
+    <div class="solo" data-reveal>
+      {{phone params "tilt-r" 'Réglages'}}
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-h center" data-reveal>
+      <span class="eyebrow">Et encore</span>
+      <h2 class="huge">Les petits détails<br><span class="grad">qui changent tout.</span></h2>
+    </div>
+    <div class="bento">
+      <div class="bx" data-reveal data-tilt><span class="bx-ic">📴</span><h3>Hors connexion</h3><p>Pointez sans réseau, tout se synchronise ensuite.</p></div>
+      <div class="bx" data-reveal data-tilt><span class="bx-ic">🔄</span><h3>iPhone et web</h3><p>Le même compte partout, mis à jour en temps réel.</p></div>
+      <div class="bx" data-reveal data-tilt><span class="bx-ic">⏰</span><h3>Alerte 10&nbsp;h</h3><p>Une notification si votre journée dépasse 10&nbsp;h.</p></div>
+      <div class="bx" data-reveal data-tilt><span class="bx-ic">📅</span><h3>Fin de contrat</h3><p>Un rappel une semaine avant, pour anticiper.</p></div>
+      <div class="bx" data-reveal data-tilt><span class="bx-ic">🏖️</span><h3>Congés payés</h3><p>Le compteur se met à jour tout seul.</p></div>
+      <div class="bx" data-reveal data-tilt><span class="bx-ic">📤</span><h3>Export</h3><p>Toutes vos données en un clic.</p></div>
+    </div>
+  </div>
+</section>
