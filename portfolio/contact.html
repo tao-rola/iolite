@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <base href="/portfolio/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Contact | Tao ROLA</title>
+  <meta name="description" content="Contacter Tao ROLA : photographie, vidéo, graphisme et développement web à Rouen.">
+  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://wdhihttfwizcegxxhkrn.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="assets/app.css?v=16230502">
+</head>
+<body class="bg-[#0a0a0a] min-h-screen" data-title="Contact">
+  <div id="top"></div>
+  <main class="pt-20 sm:pt-24 px-5 sm:px-6 md:px-12 pb-16">
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8 sm:mb-10 animate-fade-up">
+        <h1 class="text-4xl sm:text-5xl font-bold text-white">Contact</h1>
+        <p class="text-white/50 text-lg mt-2 sm:mt-3">Un projet, une question ? Écrivez-moi, je vous réponds rapidement.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 sm:gap-3 mb-10" id="quick"></div>
+        <form id="form" class="space-y-5" novalidate>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div><label for="f-name" class="text-sm text-white/60 mb-2 block pl-5">Nom</label><input id="f-name" name="name" class="pill-field" required maxlength="200" autocomplete="name" placeholder="Votre nom"></div>
+            <div><label for="f-email" class="text-sm text-white/60 mb-2 block pl-5">Email</label><input id="f-email" name="email" type="email" class="pill-field" required maxlength="320" autocomplete="email" inputmode="email" placeholder="votre@email.com"></div>
+          </div>
+          <div><label for="f-subject" class="text-sm text-white/60 mb-2 block pl-5">Sujet</label><input id="f-subject" name="subject" class="pill-field" required maxlength="300" placeholder="Objet de votre message"></div>
+          <div><label for="f-message" class="text-sm text-white/60 mb-2 block pl-5">Message</label><textarea id="f-message" name="message" class="pill-field !rounded-3xl !h-auto min-h-[160px] py-4 resize-y" required maxlength="5000" placeholder="Votre message..."></textarea></div>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+          <div class="flex justify-center md:justify-start pt-1">
+            <button class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none" type="submit" id="f-send"></button>
+          </div>
+        </form>
+    </div>
+  </main>
+  <div id="pied"></div>
+  <script defer src="assets/common.js?v=8ebc71c9"></script>
+  <script defer src="assets/contact.js?v=1ac365ca"></script>
+</body>
+</html>

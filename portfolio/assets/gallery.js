@@ -25,13 +25,13 @@
     const slides = (p.gallery || []).filter(Boolean);
     if (slides.length > 1) {
       /* diaporama : la 1re image donne la hauteur, les suivantes défilent en fondu par-dessus */
-      return `<div class="relative overflow-hidden bg-black aspect-[4/5]" data-slides>
+      return `<div class="relative overflow-hidden bg-black aspect-[16/10]" data-slides data-fit>
         ${slides.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
         <div class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${slides.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full transition-colors duration-500 ${i ? 'bg-white/30' : 'bg-white/90'}"></span>`).join('')}</div>
       </div>`;
     }
     if (k === 'image') return cat === 'developpement'
-      ? `<div class="relative overflow-hidden bg-black aspect-[4/5]"><img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top"></div>`
+      ? `<div class="relative overflow-hidden bg-black aspect-[16/10]" data-fit><img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top"></div>`
       : `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
   }
@@ -73,6 +73,11 @@
     }
     byId = Object.fromEntries(projects.map((p) => [p.id, p]));
     grid.innerHTML = `<div class="columns-1 sm:columns-2 lg:columns-3 gap-4">${projects.map(card).join('')}</div>`;
+    grid.querySelectorAll('[data-fit]').forEach((box) => {
+      const img = box.querySelector('img'); if (!img) return;
+      const fit = () => { if (img.naturalWidth) box.style.aspectRatio = Math.max(img.naturalWidth / img.naturalHeight, 0.8).toFixed(3); };
+      img.complete ? fit() : img.addEventListener('load', fit, { once: true });
+    });
     grid.querySelectorAll('video').forEach(watchVideo);
     grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
   }

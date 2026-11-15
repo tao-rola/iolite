@@ -1,6 +1,6 @@
 /* Portfolio Tao ROLA : page Mon profil */
 (function () {
-  const { rest, icon, esc, CONTACT, withSettings, topBar, footer, toast } = window.TR;
+  const { icon, esc, CONTACT, withSettings, topBar, footer } = window.TR;
   document.getElementById('top').innerHTML = topBar(document.body.dataset.title);
   document.getElementById('pied').innerHTML = footer();
   document.querySelectorAll('[data-ic]').forEach((s) => (s.outerHTML = icon(s.dataset.ic, 'w-6 h-6 text-emerald-500')));
@@ -71,32 +71,4 @@
       ? `<a href="${esc(s.cv_pdf_url)}" target="_blank" rel="noopener" download="CV_Tao_ROLA.pdf" class="flex items-center gap-2 text-emerald-500 hover:text-emerald-400 text-sm transition-colors duration-300 py-1">${icon('download')}Télécharger mon CV</a>` : '';
   });
 
-  /* formulaire de contact */
-  const form = document.getElementById('form');
-  const send = document.getElementById('f-send');
-  const label = `${icon('send', 'w-4 h-4')}Envoyer le message`;
-  send.innerHTML = label;
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = Object.fromEntries(new FormData(form));
-    if (fd.website) return; /* robot */
-    for (const k of ['name', 'email', 'subject', 'message']) {
-      if (!String(fd[k] || '').trim()) { toast('Merci de remplir tous les champs.', 'error'); form.elements[k].focus(); return; }
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fd.email)) { toast('Adresse e-mail invalide.', 'error'); form.elements.email.focus(); return; }
-    send.disabled = true; send.textContent = 'Envoi…';
-    const msg = { name: fd.name.trim(), email: fd.email.trim(), subject: fd.subject.trim(), message: fd.message.trim() };
-    /* 1) sauvegarde dans la base (visible dans l'admin)  2) e-mail envoyé à Tao via FormSubmit */
-    const [db, mail] = await Promise.all([
-      rest('portfolio_messages', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(msg) }).then((r) => r.ok).catch(() => false),
-      fetch('https://formsubmit.co/ajax/' + CONTACT.email, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ _subject: `Portfolio : ${msg.subject}`, _replyto: msg.email, _template: 'table', _captcha: 'false', Nom: msg.name, Email: msg.email, Sujet: msg.subject, Message: msg.message }),
-      }).then((r) => r.ok).catch(() => false),
-    ]);
-    send.disabled = false; send.innerHTML = label;
-    if (!db && !mail) { toast("Le message n'a pas pu être envoyé. Réessayez ou écrivez à " + CONTACT.email, 'error'); return; }
-    form.reset();
-    toast('Message envoyé ! Je vous réponds rapidement.');
-  });
 })();

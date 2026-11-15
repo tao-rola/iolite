@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="assets/app.css?v=f09b14c3">
+  <link rel="stylesheet" href="assets/app.css?v=16230502">
 </head>
 <body class="bg-[#0a0a0a] min-h-screen" data-title="Mon Profil">
   <div id="top"></div>
@@ -51,26 +51,14 @@
         <div class="flex flex-wrap gap-2 sm:gap-3" id="skills"></div>
       </section>
 
-      <!-- contact -->
-      <section class="mb-4 md:mb-16" id="contact">
-        <div class="flex items-center gap-3 mb-6 md:mb-8"><span data-ic="messageSquare"></span><h3 class="text-2xl font-bold text-white">Me Contacter</h3></div>
-        <form id="form" class="space-y-5" novalidate>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div><label for="f-name" class="text-sm text-white/60 mb-2 block pl-5">Nom</label><input id="f-name" name="name" class="pill-field" required maxlength="200" autocomplete="name" placeholder="Votre nom"></div>
-            <div><label for="f-email" class="text-sm text-white/60 mb-2 block pl-5">Email</label><input id="f-email" name="email" type="email" class="pill-field" required maxlength="320" autocomplete="email" inputmode="email" placeholder="votre@email.com"></div>
-          </div>
-          <div><label for="f-subject" class="text-sm text-white/60 mb-2 block pl-5">Sujet</label><input id="f-subject" name="subject" class="pill-field" required maxlength="300" placeholder="Objet de votre message"></div>
-          <div><label for="f-message" class="text-sm text-white/60 mb-2 block pl-5">Message</label><textarea id="f-message" name="message" class="pill-field !rounded-3xl !h-auto min-h-[160px] py-4 resize-y" required maxlength="5000" placeholder="Votre message..."></textarea></div>
-          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
-          <div class="flex justify-center md:justify-start pt-1">
-            <button class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none" type="submit" id="f-send"></button>
-          </div>
-        </form>
-      </section>
+      <!-- contact : page dédiée -->
+      <div class="flex justify-center md:justify-start mb-4">
+        <a href="contact" class="inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all duration-300 hover:scale-[1.02]">Me contacter</a>
+      </div>
     </div>
   </main>
   <div id="pied"></div>
-  <script defer src="assets/common.js?v=4d9e648e"></script>
-  <script defer src="assets/profil.js?v=303059d0"></script>
+  <script defer src="assets/common.js?v=8ebc71c9"></script>
+  <script defer src="assets/profil.js?v=8a146150"></script>
 </body>
 </html>
