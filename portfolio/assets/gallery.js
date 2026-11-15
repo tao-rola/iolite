@@ -87,14 +87,27 @@
       </div>`;
   }
 
-  let byId = {};
+  let byId = {}, items = [], cols = 0;
+  const colCount = () => (innerWidth >= 1024 ? 3 : innerWidth >= 640 ? 2 : 1);
+  function layout() {
+    const n = colCount(); if (n === cols || !items.length) return; cols = n;
+    const wrap = grid.querySelector('.masonry'); if (!wrap) return;
+    const columns = Array.from({ length: n }, () => { const c = document.createElement('div'); c.className = 'flex-1 min-w-0'; return c; });
+    items.forEach((el, i) => columns[i % n].appendChild(el));
+    wrap.replaceChildren(...columns);
+  }
+  addEventListener('resize', layout);
   function render(projects) {
     if (!projects.length) {
       grid.innerHTML = `<div class="text-center py-24"><div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">${icon('layers', 'w-6 h-6')}</div><p class="text-white/60">Les projets arrivent bientôt.</p></div>`;
       return;
     }
     byId = Object.fromEntries(projects.map((p) => [p.id, p]));
-    grid.innerHTML = `<div class="columns-1 sm:columns-2 lg:columns-3 gap-4">${projects.map(card).join('')}</div>`;
+    /* mosaïque façon Pinterest, remplie de gauche à droite : les projets voisins dans la liste se retrouvent dans des colonnes différentes */
+    grid.innerHTML = `<div class="masonry flex gap-4 items-start"></div><div class="hidden">${projects.map(card).join('')}</div>`;
+    items = [...grid.lastElementChild.children];
+    cols = 0; layout();
+    grid.lastElementChild.remove();
     grid.querySelectorAll('[data-pagescroll]').forEach((box) => {
       const img = box.querySelector('img');
       const setup = () => {
