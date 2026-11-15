@@ -23,8 +23,27 @@
       ['2020 - 2023', 'Lycée Blaise Pascal', 'Rouen', "Filière Sciences et Technologies de l'Industrie et du Développement Durable - Bac obtenu avec mention Assez Bien"],
     ]],
     ['briefcase', 'Expérience Professionnelle', [
-      ['Septembre 2025 - Présent', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale, marketing événementiel, gestion des réseaux sociaux'],
-      ['Août 2024 - Présent', 'Chef de Rang', "Restaurant Le Bouillon d'Or, Rouen", 'Service en salle, gestion de la relation client'],
+      ['Octobre 2026 - Présent', 'Serveur', 'Café de Rouen Quais de Seine, Rouen', ''],
+      ['Septembre 2026 - Octobre 2026', 'Commercial', 'Axecibles, Rouen', [
+        'Prospection de TPE et artisans par téléphone et sur le terrain',
+        'Vente en one shot de solutions web (sites internet, référencement)',
+        'Négociation et signature des contrats dès le premier rendez-vous',
+      ]],
+      ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale, marketing événementiel, gestion des réseaux sociaux'],
+      ['Septembre 2025', 'Responsable de salle / Chef de rang', 'Le Bouillon Italia, Rouen', [
+        'Supervision et coordination du service en salle (ouverture, mise en place, fermeture)',
+        "Encadrement et animation d'une équipe de serveurs au quotidien",
+        'Accueil et prise en charge, gestion des situations délicates et réclamations clients',
+        "Garant des standards de qualité de service et de l'expérience client",
+        'Gestion des réservations et optimisation du placement en salle',
+        "Formation et intégration des nouveaux membres de l'équipe",
+      ]],
+      ['Avril 2025 - Juin 2025', 'Stagiaire Chargé de Communication et Développeur Web', 'Attineos Cybersécurité, Rouen', "Création de supports de communication digitale et développement d'interfaces web"],
+      ['Août 2024 - Avril 2025', 'Chef de Rang', "Restaurant Le Bouillon d'Or, Rouen", [
+        "Gestion d'un rang en totale autonomie dans un restaurant à fort volume de couverts",
+        'Service à table soigné, conseil à la carte et fidélisation de la clientèle',
+        'Coordination avec la cuisine pour fluidifier le rythme du service',
+      ]],
       ['Octobre 2023 - Juin 2025', 'Employé Polyvalent', 'Food-Truck Clara Pizza, Rouen', "Caissier, assistant cuisinier, préposé à l'entretien ménager"],
       ['Septembre 2023 - Présent', 'Entrepreneur Individuel', 'Auto-entreprise Gallium, Rouen', "Maître d'hôtel, barman, serveur / chef de rang, hôte d'accueil, photographe"],
       ['Juillet 2022', 'Employé Polyvalent', "Crêperie du Cap, Île d'Arz", "Serveur, préposé à l'entretien ménager, barman occasionnel"],
@@ -43,8 +62,10 @@
             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emerald-500"></div>
             <div class="flex items-center gap-2 mb-2">${icon('calendar', 'w-4 h-4 text-white/40')}<span class="text-sm text-emerald-500">${date}</span></div>
             <h4 class="text-lg sm:text-xl font-semibold text-white mb-1">${role}</h4>
-            <p class="text-white/60 mb-2">${place}</p>
-            <p class="text-white/50 text-sm">${desc}</p>
+            <p class="text-white/60 ${desc && desc.length ? 'mb-2' : ''}">${place}</p>
+            ${Array.isArray(desc)
+              ? `<ul class="space-y-1.5">${desc.map((d) => `<li class="relative pl-4 text-white/50 text-sm before:content-[''] before:absolute before:left-0 before:top-[.55em] before:w-1.5 before:h-1.5 before:rounded-full before:bg-emerald-500/60">${d}</li>`).join('')}</ul>`
+              : desc ? `<p class="text-white/50 text-sm">${desc}</p>` : ''}
           </div>`).join('')}
       </div>
     </section>`).join('');
