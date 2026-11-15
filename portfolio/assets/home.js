@@ -42,7 +42,9 @@
     else goTo(id);
   });
 
+  let lastCat = null;
   function setActive(id, cat) {
+    if (cat) lastCat = cat; else if (id === 'categories') cat = lastCat; else lastCat = null;
     dots.querySelectorAll('button').forEach((b) => {
       const on = b.dataset.goto === id, d = b.querySelector('.dot');
       d.style.height = on ? '28px' : '8px'; d.style.background = on ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.4)';
@@ -70,7 +72,7 @@
     return `
       <a href="${c.href}" data-card="${cat}" class="group relative block h-full min-h-0 rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 bg-[#0a0a0a] transition-all duration-500">
         <div class="bg-layers absolute inset-0 transition-transform duration-700 group-hover:scale-105"></div>
-        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/55 transition-colors duration-500"></div>
+        <div class="absolute inset-0 ${cat === 'developpement' ? 'bg-black/40 group-hover:bg-black/25' : 'bg-black/70 group-hover:bg-black/55'} transition-colors duration-500"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
         <div class="relative z-10 h-full flex flex-col justify-between p-5 sm:p-6 lg:p-8">
           <div>
@@ -91,7 +93,7 @@
     return '';
   }
   /* projets sans média (développement) : aperçu « navigateur » flouté */
-  const devLayer = (p) => `<div class="w-full h-full blur-[3px] animate-zoom">${devPlaceholder(p, 'h-full')}</div>`;
+  const devLayer = (p) => `<div class="w-full h-full blur-[2px] animate-zoom scale-110">${devPlaceholder(p, 'h-full')}</div>`;
 
   const cardsEl = document.getElementById('cards');
   cardsEl.innerHTML = CATS.map(cardShell).join('');
