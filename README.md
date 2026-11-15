@@ -20,4 +20,4 @@ Chaque envoi sur la branche `main` est mis en ligne automatiquement par Netlify.
 - `portfolio/` : portfolio de Tao ROLA, servi sur https://iolite.team/portfolio/ (non indexé, aucun lien depuis l'app ; iolite-app.pages.dev/portfolio et Netlify y redirigent)
 - Données dans Supabase (tables `portfolio_*`, stockage `portfolio`), gestion depuis `/portfolio/admin`
 - `portfolio-src/` : source Tailwind. Après modification des pages :
-  `npx tailwindcss@3 -c portfolio-src/tailwind.config.js -i portfolio-src/input.css -o portfolio/assets/app.css --minify`
+  `python3 portfolio-src/build.py` (feuille de style + empreintes de cache)

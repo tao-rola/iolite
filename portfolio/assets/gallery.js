@@ -1,6 +1,6 @@
 /* Portfolio Tao ROLA : pages galerie (Audiovisuel, Graphisme, Développement) */
 (function () {
-  const { icon, esc, getProjects, kindOf, ytId, hostOf, topBar, footer, projectModal, devPlaceholder, watchVideo } = window.TR;
+  const { icon, esc, withProjects, kindOf, ytId, hostOf, posterOf, ytLoopSrc, projectLink, topBar, footer, projectModal, devPlaceholder, watchVideo } = window.TR;
   const cat = document.body.dataset.category;
   const grid = document.getElementById('grid');
   document.getElementById('top').innerHTML = topBar(document.body.dataset.title);
@@ -12,15 +12,17 @@
   function media(p) {
     const k = kindOf(p);
     if (k === 'youtube') {
-      const id = ytId(p.media_url);
-      return `<div class="relative aspect-video bg-black">
-        <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${esc(p.title)}" loading="lazy" class="w-full h-full object-cover">
-        <iframe data-yt="${id}" class="yt absolute inset-0 w-full h-full pointer-events-none opacity-0 transition-opacity duration-500" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1"></iframe>
-        <span class="absolute top-3 left-3 w-9 h-9 rounded-full bg-black/60 backdrop-blur flex items-center justify-center text-white/90">${icon('play', 'w-4 h-4')}</span>
+      /* vignette affichée tout de suite, puis la vidéo YouTube muette en boucle (sans interaction) dès qu'elle est à l'écran */
+      return `<div class="relative aspect-video bg-black overflow-hidden">
+        <img src="${posterOf(p)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover">
+        <iframe data-yt="${ytId(p.media_url)}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.02] opacity-0 transition-opacity duration-700" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
       </div>`;
     }
-    if (k === 'video') return `<video src="${esc(p.media_url)}#t=0.1" class="w-full h-auto block bg-black" muted loop playsinline preload="none"></video>`;
-    if (k === 'image') return `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" class="w-full h-auto block">`;
+    if (k === 'video') {
+      const poster = p.poster_url ? `poster="${esc(p.poster_url)}"` : '';
+      return `<video src="${esc(p.media_url)}${p.poster_url ? '' : '#t=0.1'}" ${poster} class="w-full h-auto block bg-black ${p.poster_url ? '' : 'min-h-[180px]'}" muted loop playsinline preload="${p.poster_url ? 'none' : 'metadata'}"></video>`;
+    }
+    if (k === 'image') return `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
   }
 
@@ -29,7 +31,7 @@
     return `
       <div class="break-inside-avoid mb-4 animate-fade-up" style="animation-delay:${Math.min(i, 8) * 60}ms">
         <article class="group relative bg-white/5 rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300">
-          <button type="button" data-open="${p.id}" class="block w-full text-left" aria-label="Ouvrir ${esc(p.title)}">
+          <div role="button" tabindex="0" data-open="${p.id}" class="block w-full text-left cursor-pointer" aria-label="Ouvrir ${esc(p.title)}">
             ${media(p)}
             <!-- souris : informations au survol, comme sur le site d'origine -->
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden [@media(hover:hover)]:block">
@@ -37,15 +39,15 @@
                 <h3 class="text-white font-semibold mb-1">${esc(p.title)}</h3>
                 ${p.description ? `<p class="text-white/70 text-sm mb-2 line-clamp-2">${esc(p.description)}</p>` : ''}
                 ${tags ? `<div class="flex flex-wrap gap-1 mb-2">${tags}</div>` : ''}
-                <span class="inline-flex items-center gap-1 text-emerald-400 text-sm">${icon('externalLink')}${cat === 'developpement' ? 'Voir le projet' : 'Voir le projet'}</span>
+                ${projectLink(p) ? `<a href="${esc(projectLink(p))}" target="_blank" rel="noopener noreferrer" data-ext class="inline-flex items-center gap-1 text-emerald-400 text-sm hover:text-emerald-300">${icon('externalLink')}Voir le projet</a>` : `<span class="inline-flex items-center gap-1 text-emerald-400 text-sm">${icon('externalLink')}Détails</span>`}
               </div>
             </div>
-          </button>
+          </div>
           <!-- écran tactile : titre toujours visible sous le média -->
           <div class="[@media(hover:hover)]:hidden px-4 py-3 border-t border-white/10">
             <div class="flex items-center justify-between gap-3">
               <h3 class="text-white font-semibold text-[15px] leading-snug">${esc(p.title)}</h3>
-              <button type="button" data-open="${p.id}" class="shrink-0 text-emerald-400 text-sm font-medium">Détails</button>
+              ${projectLink(p) ? `<a href="${esc(projectLink(p))}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-emerald-400 text-sm font-medium">Voir le projet</a>` : `<button type="button" data-open="${p.id}" class="shrink-0 text-emerald-400 text-sm font-medium">Détails</button>`}
             </div>
             ${tags ? `<div class="flex gap-1 mt-2 overflow-x-auto no-scrollbar whitespace-nowrap -mx-1 px-1">${tags}</div>` : ''}
           </div>
@@ -72,33 +74,35 @@
       </article>`;
   }
 
-  getProjects(cat).then((projects) => {
+  let byId = {};
+  function render(projects) {
     if (!projects.length) {
       grid.innerHTML = `<div class="text-center py-24"><div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">${icon('layers', 'w-6 h-6')}</div><p class="text-white/60">Les projets arrivent bientôt.</p></div>`;
       return;
     }
+    byId = Object.fromEntries(projects.map((p) => [p.id, p]));
     grid.innerHTML = cat === 'developpement'
       ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-5">${projects.map(devCard).join('')}</div>`
       : `<div class="columns-1 sm:columns-2 lg:columns-3 gap-4">${projects.map(card).join('')}</div>`;
-
     grid.querySelectorAll('video').forEach(watchVideo);
+    grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
+  }
 
-    /* aperçu YouTube animé seulement à la souris, au survol (léger sur mobile) */
-    if (matchMedia('(hover: hover)').matches) {
-      grid.querySelectorAll('article').forEach((a) => {
-        const f = a.querySelector('iframe.yt'); if (!f) return;
-        a.addEventListener('mouseenter', () => {
-          if (!f.src) f.src = `https://www.youtube-nocookie.com/embed/${f.dataset.yt}?autoplay=1&mute=1&loop=1&playlist=${f.dataset.yt}&controls=0&modestbranding=1&playsinline=1`;
-          f.classList.remove('opacity-0');
-        });
-        a.addEventListener('mouseleave', () => { f.classList.add('opacity-0'); });
-      });
-    }
+  /* YouTube : chargé quand visible, déchargé quand il sort largement de l'écran (fluidité) */
+  const ytObs = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach(({ target: f, isIntersecting }) => {
+    if (isIntersecting) {
+      if (!f.src) { f.onload = () => setTimeout(() => f.classList.remove('opacity-0'), 600); f.src = ytLoopSrc(f.dataset.yt); }
+    } else if (f.src) { f.removeAttribute('src'); f.classList.add('opacity-0'); }
+  }), { rootMargin: '300px 0px' }) : null;
 
-    const byId = Object.fromEntries(projects.map((p) => [p.id, p]));
-    grid.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-open]');
-      if (b && byId[b.dataset.open]) projectModal(byId[b.dataset.open]);
-    });
+  grid.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return; /* liens externes (YouTube, site) */
+    const b = e.target.closest('[data-open]');
+    if (b && byId[b.dataset.open]) projectModal(byId[b.dataset.open]);
   });
+  grid.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-open]')) { e.preventDefault(); projectModal(byId[e.target.dataset.open]); }
+  });
+
+  withProjects(cat, render);
 })();

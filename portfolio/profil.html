@@ -8,10 +8,13 @@
   <meta name="theme-color" content="#0a0a0a">
   <title>CV Tao ROLA - Diplômé BUT MMI Rouen | Profil & Compétences</title>
   <meta name="description" content="Parcours, expériences et compétences de Tao ROLA, diplômé d'un BUT Métiers du Multimédia et de l'Internet à Rouen.">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://wdhihttfwizcegxxhkrn.supabase.co" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/app.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="assets/app.css?v=fadcc7ef">
 </head>
 <body class="bg-[#0a0a0a] min-h-screen" data-title="Mon Profil">
   <div id="top"></div>
@@ -22,7 +25,7 @@
       <div class="flex flex-col md:flex-row items-center gap-8 mb-12 md:mb-16 animate-fade-up">
         <div class="relative shrink-0">
           <div class="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-emerald-500/30 bg-white/5">
-            <img id="photo" alt="Tao ROLA" class="w-full h-full object-cover opacity-0 transition-opacity duration-500" onload="this.classList.remove('opacity-0')">
+            <img id="photo" src="assets/photo.webp" alt="Tao ROLA" width="256" height="256" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
           </div>
           <div class="absolute -z-10 inset-0 bg-emerald-500/20 blur-3xl rounded-full"></div>
         </div>
@@ -67,8 +70,7 @@
     </div>
   </main>
   <div id="pied"></div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-  <script src="assets/common.js"></script>
-  <script src="assets/profil.js"></script>
+  <script defer src="assets/common.js?v=90edd022"></script>
+  <script defer src="assets/profil.js?v=303059d0"></script>
 </body>
 </html>

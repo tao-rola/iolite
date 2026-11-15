@@ -1,6 +1,6 @@
 /* Portfolio Tao ROLA : page d'accueil */
 (function () {
-  const { icon, esc, CATEGORIES, CONTACT, getProjects, kindOf, ytId, homeNav, footer, devPlaceholder } = window.TR;
+  const { icon, esc, CATEGORIES, CONTACT, withProjects, kindOf, ytId, posterOf, homeNav, footer, devPlaceholder } = window.TR;
   const snap = document.getElementById('snap');
 
   document.getElementById('nav').innerHTML = homeNav('accueil');
@@ -87,8 +87,8 @@
   function layerFor(p) {
     const k = kindOf(p);
     const cls = 'w-full h-full object-cover blur-sm animate-zoom';
-    if (k === 'video') return `<video data-src="${esc(p.media_url)}" class="${cls}" muted loop playsinline preload="none"></video>`;
-    if (k === 'youtube') return `<img src="https://i.ytimg.com/vi/${ytId(p.media_url)}/hqdefault.jpg" alt="" class="${cls}" loading="lazy">`;
+    if (k === 'video') return `<video data-src="${esc(p.media_url)}" ${p.poster_url ? `poster="${esc(p.poster_url)}"` : ''} class="${cls}" muted loop playsinline preload="none"></video>`;
+    if (k === 'youtube') return `<img src="${posterOf(p)}" alt="" class="${cls}" loading="lazy" decoding="async">`;
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="" class="${cls}" loading="lazy">`;
     return '';
   }
@@ -98,10 +98,11 @@
   const cardsEl = document.getElementById('cards');
   cardsEl.innerHTML = CATS.map(cardShell).join('');
 
-  async function buildCard(cat) {
+  function buildCard(cat, all) {
     const card = cardsEl.querySelector(`[data-card="${cat}"]`);
     const layers = card.querySelector('.bg-layers');
-    const projects = (await getProjects(cat)).slice(0, 6);
+    const projects = all.filter((p) => p.category === cat).slice(0, 6);
+    delete rotators[cat];
     const html = projects.map((p) => (kindOf(p) === 'none' ? (cat === 'developpement' ? devLayer(p) : '') : layerFor(p))).filter(Boolean);
     if (!html.length) {
       layers.innerHTML = `<div class="absolute inset-0 bg-grid animate-zoom"></div><div class="glow animate-float w-[70%] h-[70%] top-[15%] left-[15%]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%)"></div>`;
@@ -138,6 +139,6 @@
 
   let inCats = false;
   new IntersectionObserver(([e]) => { inCats = e.isIntersecting; setPlaying(inCats); }, { root: snap, threshold: 0.3 }).observe(document.getElementById('categories'));
-  Promise.all(CATS.map(buildCard)).then(() => setPlaying(inCats));
+  withProjects(null, (all) => { CATS.forEach((c) => buildCard(c, all)); setPlaying(inCats); });
   document.addEventListener('visibilitychange', () => setPlaying(inCats));
 })();

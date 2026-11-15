@@ -1,6 +1,6 @@
 /* Portfolio Tao ROLA : page Mon profil */
 (function () {
-  const { sb, icon, esc, CONTACT, getSettings, topBar, footer, openModal, toast } = window.TR;
+  const { rest, icon, esc, CONTACT, withSettings, topBar, footer, toast } = window.TR;
   document.getElementById('top').innerHTML = topBar(document.body.dataset.title);
   document.getElementById('pied').innerHTML = footer();
   document.querySelectorAll('[data-ic]').forEach((s) => (s.outerHTML = icon(s.dataset.ic, 'w-6 h-6 text-emerald-500')));
@@ -24,7 +24,7 @@
       ['2020 - 2023', 'Lycée Blaise Pascal', 'Rouen', "Filière Sciences et Technologies de l'Industrie et du Développement Durable - Bac obtenu avec mention Assez Bien."],
     ]],
     ['briefcase', 'Expérience Professionnelle', [
-      ['Octobre 2026 - Présent', 'Serveur', 'Café de Rouen Quais de Seine, Rouen', 'Service en salle et accueil de la clientèle.'],
+      ['Octobre 2026 - Présent', 'Serveur Barman', 'Café de Rouen Quais de Seine, Rouen', 'Service en salle et au bar, accueil de la clientèle.'],
       ['Septembre 2026 - Octobre 2026', 'Commercial', 'Axecibles, Rouen', "Prospection de TPE et d'artisans par téléphone et sur le terrain. Vente en one shot de solutions web (sites internet, référencement), avec négociation et signature des contrats dès le premier rendez-vous."],
       ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale et marketing événementiel. Gestion des réseaux sociaux du restaurant.'],
       ['Septembre 2025 - Septembre 2026', 'Chef de Rang', 'Le Bouillon Italia, Rouen', "Gestion d'un rang et participation à l'ouverture, à la mise en place et à la fermeture de la salle. Accueil des clients, gestion des réservations, du placement et des réclamations, dans le respect des standards de qualité. Formation et intégration des nouveaux membres de l'équipe."],
@@ -59,20 +59,16 @@
   const SKILLS = ['PHP, HTML, CSS, SQL', 'JavaScript, Python','Photoshop, Illustrator, After Effects', 'Suite Microsoft Office', 'Google Workspace', 'Productions Audio/Vidéo', 'Guitare, Piano, Ukulélé', 'Anglais (B2), Espagnol (B1)'];
   document.getElementById('skills').innerHTML = SKILLS.map((s) => `<div class="px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-sm sm:text-base">${s}</div>`).join('');
 
-  /* réglages dynamiques : photo, disponibilité, CV */
-  getSettings().then((s) => {
-    if (s.photo_url) document.getElementById('photo').src = s.photo_url;
+  /* réglages dynamiques : photo, disponibilité, CV (PDF) */
+  withSettings((s) => {
+    const photo = document.getElementById('photo');
+    const src = s.photo_thumb_url || s.photo_url;
+    if (src && photo.getAttribute('src') !== src) photo.src = src;
     document.getElementById('dispo').innerHTML = s.available
       ? '<div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div><span class="text-sm text-white/70">Disponible pour de nouveaux projets</span>'
       : '<div class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div><span class="text-sm text-white/70">Indisponible pour de nouveaux projets</span>';
-    const links = [];
-    if (s.cv_pdf_url) links.push(`<a href="${esc(s.cv_pdf_url)}" target="_blank" rel="noopener" download="CV_Tao_ROLA.pdf" class="flex items-center gap-2 text-emerald-500 hover:text-emerald-400 text-sm transition-colors duration-300 py-1">${icon('download')}Télécharger mon CV</a>`);
-    if (s.cv_video_url) links.push(`<button type="button" id="cv-video" class="flex items-center gap-2 text-emerald-500 hover:text-emerald-400 text-sm transition-colors duration-300 py-1">${icon('video')}Consulter le CV vidéo</button>`);
-    document.getElementById('cv-links').innerHTML = links.join('');
-    const b = document.getElementById('cv-video');
-    if (b) b.addEventListener('click', () => openModal(`
-      <div class="bg-black flex justify-center"><video src="${esc(s.cv_video_url)}" class="w-full max-h-[80dvh] object-contain" controls autoplay playsinline></video></div>
-      <div class="p-4 sm:p-5"><p class="text-white font-semibold">CV vidéo - Tao ROLA</p></div>`));
+    document.getElementById('cv-links').innerHTML = s.cv_pdf_url
+      ? `<a href="${esc(s.cv_pdf_url)}" target="_blank" rel="noopener" download="CV_Tao_ROLA.pdf" class="flex items-center gap-2 text-emerald-500 hover:text-emerald-400 text-sm transition-colors duration-300 py-1">${icon('download')}Télécharger mon CV</a>` : '';
   });
 
   /* formulaire de contact */
@@ -89,11 +85,17 @@
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fd.email)) { toast('Adresse e-mail invalide.', 'error'); form.elements.email.focus(); return; }
     send.disabled = true; send.textContent = 'Envoi…';
-    const { error } = await sb.from('portfolio_messages').insert({
-      name: fd.name.trim(), email: fd.email.trim(), subject: fd.subject.trim(), message: fd.message.trim(),
-    });
+    const msg = { name: fd.name.trim(), email: fd.email.trim(), subject: fd.subject.trim(), message: fd.message.trim() };
+    /* 1) sauvegarde dans la base (visible dans l'admin)  2) e-mail envoyé à Tao via FormSubmit */
+    const [db, mail] = await Promise.all([
+      rest('portfolio_messages', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(msg) }).then((r) => r.ok).catch(() => false),
+      fetch('https://formsubmit.co/ajax/' + CONTACT.email, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ _subject: `Portfolio : ${msg.subject}`, _replyto: msg.email, _template: 'table', _captcha: 'false', Nom: msg.name, Email: msg.email, Sujet: msg.subject, Message: msg.message }),
+      }).then((r) => r.ok).catch(() => false),
+    ]);
     send.disabled = false; send.innerHTML = label;
-    if (error) { console.error(error); toast("Le message n'a pas pu être envoyé. Réessayez ou écrivez à " + CONTACT.email, 'error'); return; }
+    if (!db && !mail) { toast("Le message n'a pas pu être envoyé. Réessayez ou écrivez à " + CONTACT.email, 'error'); return; }
     form.reset();
     toast('Message envoyé ! Je vous réponds rapidement.');
   });

@@ -63,10 +63,44 @@
     return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   }
 
+  /* ---------- aperçus optimisés (générés dans le navigateur) ---------- */
+  function makePoster(src) {
+    return new Promise((resolve, reject) => {
+      const v = document.createElement('video');
+      const t = setTimeout(() => reject(new Error('délai dépassé')), 45000);
+      v.crossOrigin = 'anonymous'; v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = src;
+      v.onloadeddata = () => { v.currentTime = Math.min(0.6, (v.duration || 2) / 4); };
+      v.onseeked = () => {
+        const w = Math.min(720, v.videoWidth || 720), h = Math.round((v.videoHeight || 405) * w / (v.videoWidth || 720));
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(v, 0, 0, w, h);
+        c.toBlob((b) => { clearTimeout(t); b ? resolve(b) : reject(new Error('image impossible')); }, 'image/webp', 0.72);
+      };
+      v.onerror = () => { clearTimeout(t); reject(new Error('vidéo illisible')); };
+    });
+  }
+  function makeThumb(src, size = 400) {
+    return new Promise((resolve, reject) => {
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const s = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement('canvas'); c.width = c.height = size;
+        const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+        x.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+        c.toBlob((b) => (b ? resolve(b) : reject(new Error('image impossible'))), 'image/webp', 0.75);
+      };
+      img.onerror = () => reject(new Error('image illisible')); img.src = src;
+    });
+  }
+  async function uploadBlob(blob, path) {
+    const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: blob.type || 'image/webp', cacheControl: '31536000', upsert: true });
+    if (error) throw error;
+    return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  }
+
   /* ---------- tableau de bord ---------- */
   function render() {
     const unread = messages.filter((m) => !m.is_read).length;
-    const legacy = projects.filter((p) => isLegacy(p.media_url)).length + ['photo_url', 'cv_video_url', 'cv_pdf_url'].filter((k) => isLegacy(settings[k])).length;
+    const legacy = projects.filter((p) => isLegacy(p.media_url)).length + ['photo_url', 'cv_pdf_url'].filter((k) => isLegacy(settings[k])).length + projects.filter((p) => kindOf(p) === 'video' && !p.poster_url).length;
     const T = [['projets', 'Projets', 'layers', projects.length], ['messages', 'Messages', 'inbox', unread], ['reglages', 'Réglages', 'settings', 0], ['medias', 'Médias', 'upload', legacy]];
     app.innerHTML = `
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -79,7 +113,7 @@
       <div id="panel"></div>`;
     document.getElementById('out').onclick = () => sb.auth.signOut();
     app.querySelectorAll('[data-tab]').forEach((b) => (b.onclick = () => { tab = b.dataset.tab; render(); }));
-    ({ projets: renderProjects, messages: renderMessages, reglages: renderSettings, medias: renderMedia })[tab]();
+    ({ projets: renderProjects, messages: renderMessages, reglages: renderSettings, medias: () => { renderMedia(); renderPosters(); } })[tab]();
   }
 
   /* ---------- projets ---------- */
@@ -174,13 +208,21 @@
       try {
         let media_url = f.media_url.value.trim();
         const file = f.file.files[0];
-        if (file) { btn.textContent = 'Envoi du fichier…'; media_url = await upload(file, f.category.value); }
+        let poster_url = p.poster_url || '';
+        if (file) {
+          btn.textContent = 'Envoi du fichier…'; media_url = await upload(file, f.category.value);
+          poster_url = '';
+          if (file.type.startsWith('video')) {
+            btn.textContent = 'Création de l\'aperçu…';
+            try { poster_url = await uploadBlob(await makePoster(URL.createObjectURL(file)), `posters/${Date.now()}.webp`); } catch (e) { console.warn(e); }
+          }
+        } else if (media_url !== p.media_url) poster_url = '';
         let media_type = f.media_type.value;
         if (ytId(media_url)) media_type = 'youtube';
         const row = {
           category: f.category.value, title: f.title.value.trim(), description: f.description.value.trim(),
           tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), media_type, media_url,
-          link: f.link.value.trim(), sort_order: parseInt(f.sort_order.value, 10) || 0, published: f.published.checked,
+          link: f.link.value.trim(), sort_order: parseInt(f.sort_order.value, 10) || 0, published: f.published.checked, poster_url,
           updated_at: new Date().toISOString(),
         };
         if (!row.title) throw new Error('Le titre est obligatoire.');
@@ -249,24 +291,28 @@
         </div>
         ${fileRow('photo_url', 'Photo de profil', 'image/*', settings.photo_url)}
         ${fileRow('cv_pdf_url', 'CV (PDF)', 'application/pdf', settings.cv_pdf_url)}
-        ${fileRow('cv_video_url', 'CV vidéo', 'video/*', settings.cv_video_url)}
       </div>`;
     const panel = document.getElementById('panel');
     document.getElementById('avail').onclick = async () => { if (await saveSettings({ available: !settings.available })) { toast('Disponibilité mise à jour.'); renderSettings(); } };
     panel.querySelectorAll('[data-file]').forEach((inp) => (inp.onchange = async () => {
       const file = inp.files[0]; if (!file) return;
       toast('Envoi en cours…');
-      try { const url = await upload(file, 'profil'); if (await saveSettings({ [inp.dataset.file]: url })) { toast('Fichier enregistré.'); renderSettings(); } }
+      try {
+        const url = await upload(file, 'profil');
+        const patch = { [inp.dataset.file]: url };
+        if (inp.dataset.file === 'photo_url') patch.photo_thumb_url = await uploadBlob(await makeThumb(URL.createObjectURL(file)), `profil/photo-${Date.now()}.webp`);
+        if (await saveSettings(patch)) { toast('Fichier enregistré.'); renderSettings(); }
+      }
       catch (err) { toast(err.message || String(err), 'error'); }
     }));
-    panel.querySelectorAll('[data-clear]').forEach((b) => (b.onclick = async () => { if (await saveSettings({ [b.dataset.clear]: '' })) renderSettings(); }));
+    panel.querySelectorAll('[data-clear]').forEach((b) => (b.onclick = async () => { if (await saveSettings({ [b.dataset.clear]: '', ...(b.dataset.clear === 'photo_url' ? { photo_thumb_url: '' } : {}) })) renderSettings(); }));
   }
 
   /* ---------- migration des médias Base44 vers Supabase ---------- */
   function renderMedia() {
     const items = [
       ...projects.filter((p) => isLegacy(p.media_url)).map((p) => ({ kind: 'project', id: p.id, label: p.title, url: p.media_url })),
-      ...['photo_url', 'cv_video_url', 'cv_pdf_url'].filter((k) => isLegacy(settings[k])).map((k) => ({ kind: 'setting', id: k, label: { photo_url: 'Photo de profil', cv_video_url: 'CV vidéo', cv_pdf_url: 'CV (PDF)' }[k], url: settings[k] })),
+      ...['photo_url', 'cv_pdf_url'].filter((k) => isLegacy(settings[k])).map((k) => ({ kind: 'setting', id: k, label: { photo_url: 'Photo de profil', cv_pdf_url: 'CV (PDF)' }[k], url: settings[k] })),
     ];
     document.getElementById('panel').innerHTML = `
       <div class="p-5 sm:p-6 rounded-xl bg-white/5 border border-white/10 mb-4">
@@ -306,6 +352,36 @@
       await loadAll();
       toast(`${ok}/${items.length} média(s) copié(s).`, ok === items.length ? 'ok' : 'error');
       setTimeout(render, 1500);
+    };
+  }
+
+  /* aperçus d'image des vidéos : affichage instantané sur le site */
+  function renderPosters() {
+    const todo = projects.filter((p) => kindOf(p) === 'video' && !p.poster_url);
+    const box = document.createElement('div');
+    box.className = 'mt-8';
+    box.innerHTML = `
+      <div class="p-5 sm:p-6 rounded-xl bg-white/5 border border-white/10 mb-4">
+        <h3 class="text-white text-lg font-semibold mb-1">Aperçus des vidéos</h3>
+        <p class="text-white/50 text-sm mb-4">Crée une image légère de chaque vidéo : elle s'affiche immédiatement sur le site pendant que la vidéo se charge. Fait automatiquement pour les nouvelles vidéos importées.</p>
+        ${todo.length ? `<button class="btn-primary" id="posters">${icon('refresh')}Créer ${todo.length} aperçu${todo.length > 1 ? 's' : ''}</button>` : `<p class="text-emerald-400 text-sm flex items-center gap-2">${icon('check')}Toutes les vidéos ont un aperçu.</p>`}
+      </div>
+      <div class="space-y-2">${todo.map((p, i) => `<div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10"><span class="flex-1 min-w-0 truncate text-white text-sm">${esc(p.title)}</span><span class="text-xs text-white/40 shrink-0" id="ps-${i}">en attente</span></div>`).join('')}</div>`;
+    document.getElementById('panel').appendChild(box);
+    const btn = document.getElementById('posters'); if (!btn) return;
+    btn.onclick = async () => {
+      btn.disabled = true; let ok = 0;
+      for (let i = 0; i < todo.length; i++) {
+        const p = todo[i], st = document.getElementById('ps-' + i);
+        try {
+          st.textContent = 'création…'; st.className = 'text-xs text-amber-400 shrink-0';
+          const url = await uploadBlob(await makePoster(p.media_url), `posters/${p.id}.webp`);
+          const { error } = await sb.from('portfolio_projects').update({ poster_url: url }).eq('id', p.id);
+          if (error) throw error;
+          st.textContent = 'fait ✓'; st.className = 'text-xs text-emerald-400 shrink-0'; ok++;
+        } catch (err) { console.error(p, err); st.textContent = 'échec : ' + (err.message || err); st.className = 'text-xs text-red-400 shrink-0 max-w-[50%] truncate'; }
+      }
+      await loadAll(); toast(`${ok}/${todo.length} aperçu(s) créé(s).`, ok === todo.length ? 'ok' : 'error'); setTimeout(render, 1200);
     };
   }
 

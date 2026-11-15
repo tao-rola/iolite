@@ -2,9 +2,11 @@
 (function () {
   const SB_URL = 'https://wdhihttfwizcegxxhkrn.supabase.co';
   const SB_KEY = 'sb_publishable_R9Wnnwoo5YGoyrn52K1Prw_ju-OJkeA';
-  const sb = window.supabase.createClient(SB_URL, SB_KEY, {
+  /* client Supabase complet uniquement sur la page admin ; les pages publiques utilisent l'API REST (plus léger) */
+  const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, {
     auth: { storageKey: 'tao-portfolio-auth', persistSession: true, autoRefreshToken: true },
-  });
+  }) : null;
+  const rest = (path, opts = {}) => fetch(`${SB_URL}/rest/v1/${path}`, { ...opts, headers: { apikey: SB_KEY, 'Content-Type': 'application/json', ...(opts.headers || {}) } });
 
   const CONTACT = {
     email: 'tao.rola.pro@gmail.com',
@@ -59,19 +61,34 @@
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  /* ---------- données ---------- */
-  async function getProjects(category) {
-    let q = sb.from('portfolio_projects').select('*').eq('published', true)
-      .order('sort_order', { ascending: false }).order('created_at', { ascending: false });
-    if (category) q = q.eq('category', category);
-    const { data, error } = await q;
-    if (error) { console.error(error); return []; }
-    return data || [];
+  /* ---------- données (mises en cache sur l'appareil pour un affichage immédiat) ---------- */
+  const CACHE_KEY = 'tr-portfolio-v1';
+  const readCache = () => { try { return JSON.parse(localStorage.getItem(CACHE_KEY)) || {}; } catch { return {}; } };
+  const writeCache = (patch) => { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ...readCache(), ...patch })); } catch {} };
+  let projectsReq = null, settingsReq = null;
+  const fetchProjects = () => projectsReq || (projectsReq = rest('portfolio_projects?select=*&published=eq.true&order=sort_order.desc,created_at.desc')
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((d) => { writeCache({ projects: d }); return d; })
+    .catch((e) => { console.error(e); return readCache().projects || []; }));
+  const fetchSettings = () => settingsReq || (settingsReq = rest('portfolio_settings?select=*&id=eq.1')
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((d) => { const s = d[0] || {}; writeCache({ settings: s }); return s; })
+    .catch((e) => { console.error(e); return readCache().settings || {}; }));
+
+  /* onData est appelé tout de suite avec le cache (s'il existe), puis avec les données fraîches si elles ont changé */
+  function withProjects(category, onData) {
+    const pick = (all) => (category ? all.filter((p) => p.category === category) : all);
+    const cached = readCache().projects;
+    if (cached) onData(pick(cached), true);
+    fetchProjects().then((fresh) => { if (!cached || JSON.stringify(cached) !== JSON.stringify(fresh)) onData(pick(fresh), false); });
   }
-  async function getSettings() {
-    const { data } = await sb.from('portfolio_settings').select('*').eq('id', 1).maybeSingle();
-    return data || {};
+  function withSettings(onData) {
+    const cached = readCache().settings;
+    if (cached) onData(cached);
+    fetchSettings().then((fresh) => { if (!cached || JSON.stringify(cached) !== JSON.stringify(fresh)) onData(fresh); });
   }
+  const getProjects = (category) => fetchProjects().then((all) => (category ? all.filter((p) => p.category === category) : all));
+  const getSettings = fetchSettings;
 
   const ytId = (url) => {
     const m = String(url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/))([\w-]{11})/);
@@ -83,6 +100,10 @@
     if (p.media_type === 'image' || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(p.media_url)) return 'image';
     return 'video';
   };
+  const posterOf = (p) => p.poster_url || (kindOf(p) === 'youtube' ? `https://i.ytimg.com/vi/${ytId(p.media_url)}/hqdefault.jpg` : '');
+  /* YouTube en boucle, muet, sans aucune interaction possible */
+  const ytLoopSrc = (id) => `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disablekb=1&fs=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1`;
+  const projectLink = (p) => p.link || (kindOf(p) === 'youtube' ? p.media_url : '');
   const hostOf = (url) => { try { return new URL(url).host; } catch { return ''; } };
 
   /* ---------- navigation ---------- */
@@ -220,12 +241,13 @@
   function projectModal(p) {
     const k = kindOf(p);
     let media = '';
-    if (k === 'youtube') media = `<div class="aspect-video bg-black"><iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytId(p.media_url)}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${esc(p.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
-    else if (k === 'video') media = `<div class="bg-black flex justify-center"><video src="${esc(p.media_url)}" class="w-full max-h-[60dvh] object-contain" controls autoplay muted loop playsinline></video></div>`;
+    if (k === 'youtube') media = `<div class="relative aspect-video bg-black overflow-hidden"><img src="${posterOf(p)}" alt="" class="absolute inset-0 w-full h-full object-cover"><iframe class="absolute inset-0 w-full h-full pointer-events-none scale-[1.02]" src="${ytLoopSrc(ytId(p.media_url))}" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1"></iframe></div>`;
+    else if (k === 'video') media = `<div class="bg-black flex justify-center"><video src="${esc(p.media_url)}" ${p.poster_url ? `poster="${esc(p.poster_url)}"` : ''} class="w-full max-h-[60dvh] object-contain" controls autoplay muted loop playsinline></video></div>`;
     else if (k === 'image') media = `<div class="bg-black flex justify-center"><img src="${esc(p.media_url)}" alt="${esc(p.title)}" class="w-full max-h-[60dvh] object-contain"></div>`;
     else if (p.category === 'developpement') media = devPlaceholder(p, 'aspect-video');
-    const link = p.link
-      ? `<a href="${esc(p.link)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/5 transition-all">${icon('externalLink')}${p.category === 'developpement' ? 'Voir le site' : 'Voir le projet'}</a>` : '';
+    const href = projectLink(p);
+    const link = href
+      ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/5 transition-all">${icon('externalLink')}${p.category === 'developpement' ? 'Voir le site' : k === 'youtube' ? 'Voir le projet sur YouTube' : 'Voir le projet'}</a>` : '';
     openModal(`
       ${media}
       <div class="p-5 sm:p-8">
@@ -265,6 +287,6 @@
   }, { rootMargin: '100px' }) : null;
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
-  window.TR = { sb, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, ytId, kindOf, hostOf, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
+  window.TR = { sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
   document.addEventListener('DOMContentLoaded', initCursor);
 })();
