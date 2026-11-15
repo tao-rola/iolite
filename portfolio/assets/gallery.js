@@ -48,7 +48,7 @@
     /* sites internet : carte verticale, chaque page défile de haut en bas puis laisse place à la suivante */
     if (p.device === 'desktop') {
       if (!shots.length) return `<div class="relative aspect-[3/4] bg-[#0d0d0d]">${initial}</div>`;
-      return `<div class="relative aspect-[3/4] overflow-hidden bg-white" data-pagescroll>
+      return `<div class="relative aspect-[3/4] overflow-hidden bg-[#0d0d0d]" data-pagescroll>
         ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform transition-opacity duration-700 ${i ? 'opacity-0' : 'opacity-100'}">`).join('')}
         ${shots.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5 pointer-events-none z-10">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow ring-1 ring-black/20 transition-colors duration-500 ${i ? 'bg-white/50' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
@@ -105,11 +105,15 @@
         timer = setTimeout(async () => {
           if (imgs.length > 1) await ready(imgs[(i + 1) % imgs.length]);
           if (imgs.length === 1) { img.animate([{ transform: `translateY(-${d}px)` }, { transform: 'translateY(0)' }], { duration: 1200, easing: 'ease-in-out', fill: 'forwards' }).onfinish = play; return; }
-          const next = (i + 1) % imgs.length;
+          const next = (i + 1) % imgs.length, prev = imgs[i];
+          try { await imgs[next].decode(); } catch {}
+          /* fondu enchaîné : la page suivante apparaît par-dessus, puis la précédente disparaît (aucun flash blanc) */
+          imgs[next].getAnimations().forEach((a) => a.cancel());
           imgs[next].style.transform = 'translateY(0)';
-          imgs[i].classList.replace('opacity-100', 'opacity-0'); imgs[next].classList.replace('opacity-0', 'opacity-100');
+          imgs[next].style.zIndex = '2'; prev.style.zIndex = '1';
+          imgs[next].classList.replace('opacity-0', 'opacity-100');
           dots[i]?.classList.replace('bg-white', 'bg-white/50'); dots[next]?.classList.replace('bg-white/50', 'bg-white');
-          const prev = imgs[i]; setTimeout(() => prev.getAnimations().forEach((a) => a.cancel()), 800);
+          setTimeout(() => { prev.classList.replace('opacity-100', 'opacity-0'); prev.style.zIndex = ''; prev.getAnimations().forEach((a) => a.cancel()); }, 750);
           i = next; play();
         }, 1200);
       };
