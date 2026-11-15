@@ -25,12 +25,14 @@
     const slides = (p.gallery || []).filter(Boolean);
     if (slides.length > 1) {
       /* diaporama : la 1re image donne la hauteur, les suivantes défilent en fondu par-dessus */
-      return `<div class="relative overflow-hidden bg-black" data-slides>
-        ${slides.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="${i ? 'absolute inset-0 h-full object-cover object-top opacity-0' : 'relative h-auto opacity-100'} w-full block transition-opacity duration-1000">`).join('')}
+      return `<div class="relative overflow-hidden bg-black aspect-[4/5]" data-slides>
+        ${slides.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
         <div class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${slides.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full transition-colors duration-500 ${i ? 'bg-white/30' : 'bg-white/90'}"></span>`).join('')}</div>
       </div>`;
     }
-    if (k === 'image') return `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
+    if (k === 'image') return cat === 'developpement'
+      ? `<div class="relative overflow-hidden bg-black aspect-[4/5]"><img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top"></div>`
+      : `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
   }
 
@@ -93,7 +95,6 @@
       const imgs = el.querySelectorAll('img'), dots = el.querySelectorAll('.dot');
       const cur = +(el.dataset.i || 0), next = (cur + 1) % imgs.length;
       imgs[cur].classList.replace('opacity-100', 'opacity-0'); imgs[next].classList.replace('opacity-0', 'opacity-100');
-      imgs[0].classList.toggle('opacity-0', next !== 0); imgs[0].classList.toggle('opacity-100', next === 0);
       dots[cur]?.classList.replace('bg-white/90', 'bg-white/30'); dots[next]?.classList.replace('bg-white/30', 'bg-white/90');
       el.dataset.i = next;
     });
