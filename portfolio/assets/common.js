@@ -11,7 +11,6 @@
     phone: '07 68 47 97 25', tel: '0768479725',
     instagram: 'https://www.instagram.com/gallium.visuals/', instagramName: '@gallium.visuals',
     linkedin: 'https://www.linkedin.com/in/tao-rola/',
-    gallium: 'https://gallium.base44.app/',
   };
 
   const CATEGORIES = {
@@ -106,7 +105,6 @@
         <nav aria-label="Navigation principale" class="pointer-events-auto max-w-full animate-fade-in">
           <div class="flex items-center gap-0.5 md:gap-1 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-1.5 md:px-2 py-1.5 md:py-2">
             ${items.map(btn).join('')}
-            <a href="${CONTACT.gallium}" target="_blank" rel="noopener noreferrer" class="px-2.5 min-[400px]:px-3 md:px-5 py-2 text-[11px] min-[400px]:text-xs md:text-sm font-medium text-white/70 hover:text-white transition-colors duration-300 rounded-full">Gallium</a>
           </div>
         </nav>
       </div>`;
@@ -138,7 +136,7 @@
               <h4 class="text-lg font-semibold text-white mb-4">Liens Rapides</h4>
               <ul class="space-y-2">
                 ${link('./', 'Accueil')}${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
-                ${link('profil', 'Mon profil')}${link('admin', 'Administration')}${link(CONTACT.gallium, 'Gallium', true)}
+                ${link('profil', 'Mon profil')}${link('admin', 'Administration')}
               </ul>
             </div>
             <div>
