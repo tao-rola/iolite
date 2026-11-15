@@ -26,7 +26,7 @@
     const shots = slides.length ? slides : (k === 'image' ? [p.media_url] : []);
     /* images qui défilent en fondu (une seule image = image fixe) */
     const screen = (fallback) => shots.length ? `<div class="absolute inset-0" ${shots.length > 1 ? 'data-slides' : ''}>
-        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
+        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
         ${shots.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow transition-colors duration-500 ${i ? 'bg-white/40' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>` : fallback;
     const initial = `<div class="absolute inset-0 bg-grid flex flex-col items-center justify-center gap-3"><div class="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl font-bold">${esc(String(p.title || '?').trim().charAt(0).toUpperCase())}</div><p class="text-white font-semibold text-center px-4">${esc(p.title)}</p></div>`;
@@ -38,7 +38,7 @@
     /* applications : carte horizontale, les écrans défilent de droite à gauche en continu */
     if (p.device === 'phone') {
       if (!shots.length) return `<div class="relative aspect-[16/10] bg-[#0d0d0d]">${initial}</div>`;
-      const row = shots.map((src) => `<img src="${esc(src)}" alt="" loading="lazy" decoding="async" class="h-full w-auto mr-3 sm:mr-4 rounded-xl ring-1 ring-white/10 shadow-xl shrink-0">`).join('');
+      const row = shots.map((src) => `<img src="${esc(src)}" alt="" decoding="async" class="h-full w-auto mr-3 sm:mr-4 rounded-xl ring-1 ring-white/10 shadow-xl shrink-0">`).join('');
       return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
         <div class="glow" style="width:80%;height:80%;top:10%;left:10%;background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.25"></div>
         <div class="absolute inset-y-[9%] left-0 flex w-max animate-marquee" style="animation-duration:${Math.max(shots.length * 6, 18)}s">${row}${row}</div>
@@ -49,7 +49,7 @@
     if (p.device === 'desktop') {
       if (!shots.length) return `<div class="relative aspect-[3/4] bg-[#0d0d0d]">${initial}</div>`;
       return `<div class="relative aspect-[3/4] overflow-hidden bg-white" data-pagescroll>
-        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform transition-opacity duration-700 ${i ? 'opacity-0' : 'opacity-100'}">`).join('')}
+        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform transition-opacity duration-700 ${i ? 'opacity-0' : 'opacity-100'}">`).join('')}
         ${shots.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5 pointer-events-none z-10">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow ring-1 ring-black/20 transition-colors duration-500 ${i ? 'bg-white/50' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
     }
@@ -102,7 +102,8 @@
       if (anim) anim.cancel();
       anim = img.animate([{ transform: 'translateY(0)' }, { transform: `translateY(-${d}px)` }], { duration: Math.max(4000, d * 14), delay: 900, easing: 'ease-in-out', fill: 'forwards' });
       anim.onfinish = () => {
-        timer = setTimeout(() => {
+        timer = setTimeout(async () => {
+          if (imgs.length > 1) await ready(imgs[(i + 1) % imgs.length]);
           if (imgs.length === 1) { img.animate([{ transform: `translateY(-${d}px)` }, { transform: 'translateY(0)' }], { duration: 1200, easing: 'ease-in-out', fill: 'forwards' }).onfinish = play; return; }
           const next = (i + 1) % imgs.length;
           imgs[next].style.transform = 'translateY(0)';
