@@ -72,7 +72,7 @@
     return `
       <a href="${c.href}" data-card="${cat}" class="group relative block h-full min-h-0 rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 bg-[#0a0a0a] transition-all duration-500">
         <div class="bg-layers absolute inset-0 transition-transform duration-700 group-hover:scale-105"></div>
-        <div class="absolute inset-0 ${cat === 'developpement' ? 'bg-black/40 group-hover:bg-black/25' : 'bg-black/70 group-hover:bg-black/55'} transition-colors duration-500"></div>
+        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/55 transition-colors duration-500"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
         <div class="relative z-10 h-full flex flex-col justify-between p-5 sm:p-6 lg:p-8">
           <div>
@@ -103,7 +103,11 @@
     const layers = card.querySelector('.bg-layers');
     const projects = all.filter((p) => p.category === cat).slice(0, 6);
     delete rotators[cat];
-    const html = projects.map((p) => (kindOf(p) === 'none' ? (cat === 'developpement' ? devLayer(p) : '') : layerFor(p))).filter(Boolean);
+    const html = projects.flatMap((p) => {
+      const slides = (p.gallery || []).filter(Boolean);
+      if (slides.length > 1) return slides.slice(0, 4).map((src) => `<img src="${esc(src)}" alt="" class="w-full h-full object-cover object-top blur-sm animate-zoom" loading="lazy" decoding="async">`);
+      return [kindOf(p) === 'none' ? (cat === 'developpement' ? devLayer(p) : '') : layerFor(p)];
+    }).filter(Boolean);
     if (!html.length) {
       layers.innerHTML = `<div class="absolute inset-0 bg-grid animate-zoom"></div><div class="glow animate-float w-[70%] h-[70%] top-[15%] left-[15%]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%)"></div>`;
       return;

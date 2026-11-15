@@ -189,6 +189,10 @@
           ${icon('upload')}<span id="fname">Importer une vidéo ou une image (max ${MAX_MB} Mo)</span>
           <input type="file" name="file" accept="video/*,image/*" class="sr-only">
         </label>
+        <div><label class="text-sm text-white/70 mb-2 block">Diaporama : images qui défilent dans la carte (une adresse par ligne, idéal pour les sites et applications)</label>
+          <textarea name="gallery" class="field !min-h-[90px] font-mono text-xs" placeholder="https://…">${esc((p.gallery || []).join('\n'))}</textarea>
+          <label class="mt-2 btn-ghost !h-9 cursor-pointer">${icon('upload')}Ajouter des captures<input type="file" name="gfiles" accept="image/*" multiple class="sr-only"></label>
+          <span id="gcount" class="text-xs text-white/40 ml-2"></span></div>
         <div><label class="text-sm text-white/70 mb-2 block">Lien externe (YouTube, site…)</label><input name="link" class="field" placeholder="https://" value="${esc(p.link || '')}"></div>
         <label class="flex items-center gap-3 text-sm text-white/80"><input type="checkbox" name="published" class="w-5 h-5 accent-emerald-500" ${p.published ? 'checked' : ''}>Visible sur le site</label>
         <div class="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end pt-2">
@@ -202,6 +206,7 @@
       document.getElementById('fname').textContent = file ? `${file.name} (${(file.size / 1048576).toFixed(1)} Mo)` : 'Importer…';
       if (file) f.media_type.value = file.type.startsWith('image') ? 'image' : 'video';
     };
+    f.gfiles.onchange = () => { const n = f.gfiles.files.length; document.getElementById('gcount').textContent = n ? `${n} image(s) à envoyer` : ''; };
     f.onsubmit = async (e) => {
       e.preventDefault();
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
@@ -217,12 +222,16 @@
             try { poster_url = await uploadBlob(await makePoster(URL.createObjectURL(file)), `posters/${Date.now()}.webp`); } catch (e) { console.warn(e); }
           }
         } else if (media_url !== p.media_url) poster_url = '';
+        const gallery = f.gallery.value.split('\n').map((u) => u.trim()).filter(Boolean);
+        for (const g of f.gfiles.files) { btn.textContent = 'Envoi des captures…'; gallery.push(await upload(g, f.category.value + '/captures')); }
+        if (!media_url && gallery.length) media_url = gallery[0];
         let media_type = f.media_type.value;
         if (ytId(media_url)) media_type = 'youtube';
+        else if (!file && gallery.length && media_url === gallery[0]) media_type = 'image';
         const row = {
           category: f.category.value, title: f.title.value.trim(), description: f.description.value.trim(),
           tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), media_type, media_url,
-          link: f.link.value.trim(), sort_order: parseInt(f.sort_order.value, 10) || 0, published: f.published.checked, poster_url,
+          link: f.link.value.trim(), sort_order: parseInt(f.sort_order.value, 10) || 0, published: f.published.checked, poster_url, gallery,
           updated_at: new Date().toISOString(),
         };
         if (!row.title) throw new Error('Le titre est obligatoire.');
