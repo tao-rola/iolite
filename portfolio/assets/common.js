@@ -94,11 +94,13 @@
       ['graphisme', 'Graphisme', 'Graphisme'],
       ['developpement', 'Développement', 'Dév.'],
     ];
-    const btn = ([id, full, short]) => `
+    /* Accueil remonte en haut ; les catégories ouvrent directement leur page */
+    const btn = ([id, full, short]) => id === 'accueil' ? `
       <button type="button" data-goto="${id}" class="nav-btn relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-[11px] min-[400px]:text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300">
         <span class="nav-pill absolute inset-0 bg-emerald-500 rounded-full transition-opacity duration-300 ${id === active ? 'opacity-100' : 'opacity-0'}"></span>
         <span class="nav-label relative z-10 ${id === active ? 'text-white' : 'text-white/70 hover:text-white'}"><span class="sm:hidden">${short}</span><span class="hidden sm:inline">${full}</span></span>
-      </button>`;
+      </button>` : `
+      <a href="${CATEGORIES[id].href}" class="relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-[11px] min-[400px]:text-xs md:text-sm font-medium rounded-full whitespace-nowrap text-white/70 hover:text-white transition-colors duration-300"><span class="sm:hidden">${short}</span><span class="hidden sm:inline">${full}</span></a>`;
     return `
       <div class="fixed top-0 inset-x-0 z-50 flex justify-center pt-safe md:pt-6 px-2 pointer-events-none">
         <nav aria-label="Navigation principale" class="pointer-events-auto max-w-full animate-fade-in">
