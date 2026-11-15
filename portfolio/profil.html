@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#0a0a0a">
-  <title>CV Tao ROLA - Étudiant BUT MMI Rouen | Profil & Compétences</title>
-  <meta name="description" content="Parcours, expériences et compétences de Tao ROLA, étudiant en BUT Métiers du Multimédia et de l'Internet à Rouen.">
+  <title>CV Tao ROLA - Diplômé BUT MMI Rouen | Profil & Compétences</title>
+  <meta name="description" content="Parcours, expériences et compétences de Tao ROLA, diplômé d'un BUT Métiers du Multimédia et de l'Internet à Rouen.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
 </head>
 <body class="bg-[#0a0a0a] min-h-screen" data-title="Mon Profil">
   <div id="top"></div>
-  <main class="pt-24 sm:pt-32 px-5 sm:px-6 md:px-12 pb-12">
+  <main class="pt-20 sm:pt-24 px-5 sm:px-6 md:px-12 pb-12">
     <div class="max-w-5xl mx-auto">
 
       <!-- en-tête -->
@@ -28,7 +28,7 @@
         </div>
         <div class="flex-1 text-center md:text-left">
           <h2 class="text-4xl md:text-5xl font-bold text-white mb-3">Tao ROLA</h2>
-          <p class="text-lg sm:text-xl text-emerald-500 mb-4">Étudiant en BUT Métiers du Multimédia et de l'Internet</p>
+          <p class="text-lg sm:text-xl text-emerald-500 mb-4">Diplômé d'un BUT Métiers du Multimédia et de l'Internet</p>
           <div class="flex items-center gap-2 justify-center md:justify-start mb-4" id="dispo">
             <div class="w-3 h-3 rounded-full bg-white/20 animate-pulse"></div><span class="text-sm text-white/50">…</span>
           </div>
@@ -51,18 +51,18 @@
       <!-- contact -->
       <section class="mb-4 md:mb-16" id="contact">
         <div class="flex items-center gap-3 mb-6 md:mb-8"><span data-ic="messageSquare"></span><h3 class="text-2xl font-bold text-white">Me Contacter</h3></div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 md:p-8">
-          <form id="form" class="space-y-4" novalidate>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label for="f-name" class="text-sm text-white/70 mb-2 block">Nom *</label><input id="f-name" name="name" class="field" required maxlength="200" autocomplete="name" placeholder="Votre nom"></div>
-              <div><label for="f-email" class="text-sm text-white/70 mb-2 block">Email *</label><input id="f-email" name="email" type="email" class="field" required maxlength="320" autocomplete="email" inputmode="email" placeholder="votre@email.com"></div>
-            </div>
-            <div><label for="f-subject" class="text-sm text-white/70 mb-2 block">Sujet *</label><input id="f-subject" name="subject" class="field" required maxlength="300" placeholder="Objet de votre message"></div>
-            <div><label for="f-message" class="text-sm text-white/70 mb-2 block">Message *</label><textarea id="f-message" name="message" class="field" required maxlength="5000" placeholder="Votre message..."></textarea></div>
-            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
-            <button class="btn-primary w-full" type="submit" id="f-send"></button>
-          </form>
-        </div>
+        <form id="form" class="space-y-5" novalidate>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div><label for="f-name" class="text-sm text-white/60 mb-2 block pl-5">Nom</label><input id="f-name" name="name" class="pill-field" required maxlength="200" autocomplete="name" placeholder="Votre nom"></div>
+            <div><label for="f-email" class="text-sm text-white/60 mb-2 block pl-5">Email</label><input id="f-email" name="email" type="email" class="pill-field" required maxlength="320" autocomplete="email" inputmode="email" placeholder="votre@email.com"></div>
+          </div>
+          <div><label for="f-subject" class="text-sm text-white/60 mb-2 block pl-5">Sujet</label><input id="f-subject" name="subject" class="pill-field" required maxlength="300" placeholder="Objet de votre message"></div>
+          <div><label for="f-message" class="text-sm text-white/60 mb-2 block pl-5">Message</label><textarea id="f-message" name="message" class="pill-field !rounded-3xl !h-auto min-h-[160px] py-4 resize-y" required maxlength="5000" placeholder="Votre message..."></textarea></div>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+          <div class="flex justify-center md:justify-start pt-1">
+            <button class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none" type="submit" id="f-send"></button>
+          </div>
+        </form>
       </section>
     </div>
   </main>

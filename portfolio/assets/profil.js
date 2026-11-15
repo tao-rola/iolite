@@ -20,18 +20,18 @@
   const SECTIONS = [
     ['graduationCap', 'Formation', [
       ['Septembre 2026', 'Formation Commerciale', 'Axecibles, Rouen', 'Formation au métier de commercial et aux techniques de vente en one shot.'],
-      ['2024 - Présent', 'Bachelor Universitaire et Technologique', 'IUT, Rouen', "Filière Métier du Multimédia et de l'Internet - Spécialité Création Numérique (3ème année en cours)."],
+      ['2023 - 2026', 'Bachelor Universitaire et Technologique', 'IUT, Rouen', "Filière Métiers du Multimédia et de l'Internet - Spécialité Création Numérique. Diplôme obtenu."],
       ['2020 - 2023', 'Lycée Blaise Pascal', 'Rouen', "Filière Sciences et Technologies de l'Industrie et du Développement Durable - Bac obtenu avec mention Assez Bien."],
     ]],
     ['briefcase', 'Expérience Professionnelle', [
       ['Octobre 2026 - Présent', 'Serveur', 'Café de Rouen Quais de Seine, Rouen', 'Service en salle et accueil de la clientèle.'],
       ['Septembre 2026 - Octobre 2026', 'Commercial', 'Axecibles, Rouen', "Prospection de TPE et d'artisans par téléphone et sur le terrain. Vente en one shot de solutions web (sites internet, référencement), avec négociation et signature des contrats dès le premier rendez-vous."],
       ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale et marketing événementiel. Gestion des réseaux sociaux du restaurant.'],
-      ['Septembre 2025', 'Responsable de salle / Chef de rang', 'Le Bouillon Italia, Rouen', "Supervision et coordination du service en salle, de l'ouverture à la fermeture. Encadrement, animation et formation de l'équipe de serveurs. Accueil des clients, gestion des réservations, du placement et des réclamations, dans le respect des standards de qualité."],
+      ['Septembre 2025 - Septembre 2026', 'Chef de Rang', 'Le Bouillon Italia, Rouen', "Gestion d'un rang et participation à l'ouverture, à la mise en place et à la fermeture de la salle. Accueil des clients, gestion des réservations, du placement et des réclamations, dans le respect des standards de qualité. Formation et intégration des nouveaux membres de l'équipe."],
       ['Avril 2025 - Juin 2025', 'Stagiaire Chargé de Communication et Développeur Web', 'Attineos Cybersécurité, Rouen', "Création de supports de communication digitale. Développement d'interfaces web."],
       ['Août 2024 - Avril 2025', 'Chef de Rang', "Restaurant Le Bouillon d'Or, Rouen", "Gestion d'un rang en totale autonomie dans un restaurant à fort volume de couverts. Service soigné, conseil à la carte et fidélisation de la clientèle, en coordination avec la cuisine."],
       ['Octobre 2023 - Juin 2025', 'Employé Polyvalent', 'Food-Truck Clara Pizza, Rouen', 'Tenue de la caisse et assistance en cuisine. Entretien et nettoyage du food-truck.'],
-      ['Septembre 2023 - Présent', 'Entrepreneur Individuel', 'Auto-entreprise Gallium, Rouen', "Prestations événementielles en tant que maître d'hôtel, barman, serveur, chef de rang et hôte d'accueil. Activité de photographe."],
+      ['Septembre 2023 - Présent', 'Entrepreneur Individuel', 'Auto-entreprise Gallium, Rouen', "Prestations en photographie et en vidéo (shootings, interviews, reportages). Création graphique : identités visuelles, supports de communication et motion design. Conception et développement de sites internet et d'applications web."],
       ['Juillet 2022', 'Employé Polyvalent', "Crêperie du Cap, Île d'Arz", "Service en salle et entretien des locaux. Barman à l'occasion."],
     ]],
     ['users', 'Engagement Associatif', [

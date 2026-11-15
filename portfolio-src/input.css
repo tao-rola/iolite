@@ -25,6 +25,7 @@
   .field { @apply flex h-11 md:h-10 w-full rounded-md border px-3 py-1 text-base md:text-sm bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-emerald-500/60 transition-colors; }
   textarea.field { @apply h-auto py-2 min-h-[150px]; }
   select.field option { background: #111; }
+  .pill-field { @apply block w-full h-12 rounded-full bg-white/[.04] border border-white/15 px-5 text-base md:text-sm text-white placeholder:text-white/30 transition-all duration-300 hover:border-white/30 focus:outline-none focus:border-emerald-500/70 focus:bg-white/[.07] focus:ring-4 focus:ring-emerald-500/10; }
   .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-11 md:h-10 px-4 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors disabled:opacity-50 disabled:pointer-events-none; }
   .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-3 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50; }
   .tag { @apply text-xs bg-white/20 text-white px-2 py-0.5 rounded; }

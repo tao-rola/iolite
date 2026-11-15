@@ -7,3 +7,15 @@
   from = "/api/combo"
   to = "/.netlify/functions/combo"
   status = 200
+
+# portfolio : adresse officielle sur iolite.team
+[[redirects]]
+  from = "/portfolio/*"
+  to = "https://iolite.team/portfolio/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/portfolio"
+  to = "https://iolite.team/portfolio/"
+  status = 301
+  force = true

@@ -110,15 +110,11 @@
       </div>`;
   }
 
-  function topBar(title) {
+  /* pages internes : simple bouton « Retour » arrondi en haut à gauche (le titre est passé en paramètre pour compatibilité) */
+  function topBar() {
     return `
-      <header class="fixed top-0 inset-x-0 z-40 bg-black/60 backdrop-blur-xl border-b border-white/10" style="padding-top:env(safe-area-inset-top)">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
-          <a href="./" class="flex items-center gap-2 text-white/70 hover:text-white transition-colors min-w-[4.5rem]">${icon('arrowLeft', 'w-5 h-5')}<span class="text-sm sm:text-base">Retour</span></a>
-          <h1 class="text-base sm:text-xl font-semibold text-white truncate text-center">${esc(title)}</h1>
-          <div class="min-w-[4.5rem]"></div>
-        </div>
-      </header>`;
+      <a href="./" class="fixed z-40 left-4 sm:left-6 md:left-8 inline-flex items-center gap-2 pl-3 pr-4 sm:pl-4 sm:pr-5 py-2 sm:py-2.5 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-white/80 hover:text-white hover:border-white/30 text-sm font-medium transition-all duration-300 animate-fade-in"
+         style="top:max(1rem, env(safe-area-inset-top))" aria-label="Retour à l'accueil">${icon('arrowLeft', 'w-4 h-4')}<span>Retour</span></a>`;
   }
 
   function footer() {

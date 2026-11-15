@@ -37,6 +37,11 @@ export async function onRequest({ request, next, env }) {
     return next();
   }
 
+  // le portfolio vit sur iolite.team/portfolio/ : l'ancienne adresse de l'app y renvoie
+  if (url.hostname === 'iolite-app.pages.dev' && (url.pathname === '/portfolio' || url.pathname.startsWith('/portfolio/'))) {
+    url.hostname = SITE; return Response.redirect(url.toString(), 301);
+  }
+
   // autres adresses (iolite-app.pages.dev…) : l'aperçu du site reste visible mais n'est pas indexé
   const res = await next();
   if (url.pathname.startsWith('/site')) {
