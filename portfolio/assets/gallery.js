@@ -23,16 +23,37 @@
       return `<video src="${esc(p.media_url)}${p.poster_url ? '' : '#t=0.1'}" ${poster} class="w-full h-auto block bg-black ${p.poster_url ? '' : 'min-h-[180px]'}" muted loop playsinline preload="${p.poster_url ? 'none' : 'metadata'}"></video>`;
     }
     const slides = (p.gallery || []).filter(Boolean);
-    if (slides.length > 1) {
-      /* diaporama : la 1re image donne la hauteur, les suivantes défilent en fondu par-dessus */
-      return `<div class="relative overflow-hidden bg-black aspect-[16/10]" data-slides data-fit>
-        ${slides.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
-        <div class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${slides.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full transition-colors duration-500 ${i ? 'bg-white/30' : 'bg-white/90'}"></span>`).join('')}</div>
+    const shots = slides.length ? slides : (k === 'image' ? [p.media_url] : []);
+    /* images qui défilent en fondu (une seule image = image fixe) */
+    const screen = (fallback) => shots.length ? `<div class="absolute inset-0" ${shots.length > 1 ? 'data-slides' : ''}>
+        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
+        ${shots.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow transition-colors duration-500 ${i ? 'bg-white/40' : 'bg-white'}"></span>`).join('')}</div>` : ''}
+      </div>` : fallback;
+    const initial = `<div class="absolute inset-0 bg-grid flex flex-col items-center justify-center gap-3"><div class="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl font-bold">${esc(String(p.title || '?').trim().charAt(0).toUpperCase())}</div><p class="text-white font-semibold text-center px-4">${esc(p.title)}</p></div>`;
+    const stage = (inner) => `<div class="relative overflow-hidden bg-[#0d0d0d] px-6 py-7 sm:px-8 sm:py-9">
+        <div class="glow" style="width:70%;height:70%;top:15%;left:15%;background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.28"></div>
+        <div class="relative">${inner}</div>
       </div>`;
-    }
-    if (k === 'image') return cat === 'developpement'
-      ? `<div class="relative overflow-hidden bg-black aspect-[16/10]" data-fit><img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top"></div>`
-      : `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
+
+    /* format téléphone (applications) */
+    if (p.device === 'phone') return stage(`
+      <div class="relative mx-auto w-[64%] max-w-[260px] aspect-[9/19] rounded-[2.2rem] bg-black border-[7px] border-[#1c1c1e] shadow-[0_25px_60px_-15px_rgba(0,0,0,.8)] ring-1 ring-white/10 overflow-hidden">
+        ${screen(initial)}
+        <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-[34%] h-[18px] rounded-full bg-black z-10"></div>
+      </div>`);
+
+    /* format ordinateur (sites internet) */
+    if (p.device === 'desktop') return stage(`
+      <div class="rounded-lg overflow-hidden bg-black ring-1 ring-white/15 shadow-[0_25px_60px_-15px_rgba(0,0,0,.8)]">
+        <div class="flex items-center gap-1.5 px-3 h-7 bg-[#1c1c1e] border-b border-white/10">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></span><span class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></span><span class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></span>
+          <span class="ml-2 flex-1 min-w-0 truncate text-[10px] text-white/40 bg-white/5 rounded px-2 py-0.5">${esc(hostOf(p.link) || '')}</span>
+        </div>
+        <div class="relative aspect-[16/10]">${screen(initial)}</div>
+      </div>`);
+
+    if (slides.length > 1) return `<div class="relative overflow-hidden bg-black aspect-[16/10]">${screen('')}</div>`;
+    if (k === 'image') return `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
   }
 
@@ -73,11 +94,6 @@
     }
     byId = Object.fromEntries(projects.map((p) => [p.id, p]));
     grid.innerHTML = `<div class="columns-1 sm:columns-2 lg:columns-3 gap-4">${projects.map(card).join('')}</div>`;
-    grid.querySelectorAll('[data-fit]').forEach((box) => {
-      const img = box.querySelector('img'); if (!img) return;
-      const fit = () => { if (img.naturalWidth) box.style.aspectRatio = Math.max(img.naturalWidth / img.naturalHeight, 0.8).toFixed(3); };
-      img.complete ? fit() : img.addEventListener('load', fit, { once: true });
-    });
     grid.querySelectorAll('video').forEach(watchVideo);
     grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
   }
@@ -100,7 +116,7 @@
       const imgs = el.querySelectorAll('img'), dots = el.querySelectorAll('.dot');
       const cur = +(el.dataset.i || 0), next = (cur + 1) % imgs.length;
       imgs[cur].classList.replace('opacity-100', 'opacity-0'); imgs[next].classList.replace('opacity-0', 'opacity-100');
-      dots[cur]?.classList.replace('bg-white/90', 'bg-white/30'); dots[next]?.classList.replace('bg-white/30', 'bg-white/90');
+      dots[cur]?.classList.replace('bg-white', 'bg-white/40'); dots[next]?.classList.replace('bg-white/40', 'bg-white');
       el.dataset.i = next;
     });
   }, 3000);

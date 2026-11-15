@@ -172,9 +172,11 @@
     openModal(`
       <form id="pf" class="p-5 sm:p-8 space-y-4">
         <h2 class="text-2xl font-bold text-white pr-10">${isNew ? 'Nouveau projet' : 'Modifier le projet'}</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div><label class="text-sm text-white/70 mb-2 block">Catégorie</label>
             <select name="category" class="field">${Object.entries(CATEGORIES).map(([k, v]) => `<option value="${k}" ${p.category === k ? 'selected' : ''}>${v.label}</option>`).join('')}</select></div>
+          <div><label class="text-sm text-white/70 mb-2 block">Format de la carte</label>
+            <select name="device" class="field">${[['', 'Normal'], ['phone', 'Téléphone (application)'], ['desktop', 'Ordinateur (site internet)']].map(([k, l]) => `<option value="${k}" ${(p.device || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div><label class="text-sm text-white/70 mb-2 block">Ordre d'affichage</label><input name="sort_order" type="number" class="field" value="${p.sort_order ?? 0}"></div>
         </div>
         <div><label class="text-sm text-white/70 mb-2 block">Titre *</label><input name="title" class="field" required value="${esc(p.title || '')}"></div>
@@ -231,7 +233,7 @@
         const row = {
           category: f.category.value, title: f.title.value.trim(), description: f.description.value.trim(),
           tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), media_type, media_url,
-          link: f.link.value.trim(), sort_order: parseInt(f.sort_order.value, 10) || 0, published: f.published.checked, poster_url, gallery,
+          link: f.link.value.trim(), sort_order: parseInt(f.sort_order.value, 10) || 0, published: f.published.checked, poster_url, gallery, device: f.device.value,
           updated_at: new Date().toISOString(),
         };
         if (!row.title) throw new Error('Le titre est obligatoire.');
