@@ -15,3 +15,9 @@ En ligne : https://iolite-gallium.netlify.app
 - `serveur.js` : serveur local pour tester sur l'ordinateur (`node serveur.js`)
 
 Chaque envoi sur la branche `main` est mis en ligne automatiquement par Netlify.
+
+## Portfolio (page cachée)
+- `portfolio/` : portfolio de Tao ROLA, servi sur `/portfolio/` (non indexé, aucun lien depuis l'app)
+- Données dans Supabase (tables `portfolio_*`, stockage `portfolio`), gestion depuis `/portfolio/admin`
+- `portfolio-src/` : source Tailwind. Après modification des pages :
+  `npx tailwindcss@3 -c portfolio-src/tailwind.config.js -i portfolio-src/input.css -o portfolio/assets/app.css --minify`

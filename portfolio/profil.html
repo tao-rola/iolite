@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <base href="/portfolio/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>CV Tao ROLA - Étudiant BUT MMI Rouen | Profil & Compétences</title>
+  <meta name="description" content="Parcours, expériences et compétences de Tao ROLA, étudiant en BUT Métiers du Multimédia et de l'Internet à Rouen.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body class="bg-[#0a0a0a] min-h-screen" data-title="Mon Profil">
+  <div id="top"></div>
+  <main class="pt-24 sm:pt-32 px-5 sm:px-6 md:px-12 pb-12">
+    <div class="max-w-5xl mx-auto">
+
+      <!-- en-tête -->
+      <div class="flex flex-col md:flex-row items-center gap-8 mb-12 md:mb-16 animate-fade-up">
+        <div class="relative shrink-0">
+          <div class="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-emerald-500/30 bg-white/5">
+            <img id="photo" alt="Tao ROLA" class="w-full h-full object-cover opacity-0 transition-opacity duration-500" onload="this.classList.remove('opacity-0')">
+          </div>
+          <div class="absolute -z-10 inset-0 bg-emerald-500/20 blur-3xl rounded-full"></div>
+        </div>
+        <div class="flex-1 text-center md:text-left">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-3">Tao ROLA</h2>
+          <p class="text-lg sm:text-xl text-emerald-500 mb-4">Étudiant en BUT Métiers du Multimédia et de l'Internet</p>
+          <div class="flex items-center gap-2 justify-center md:justify-start mb-4" id="dispo">
+            <div class="w-3 h-3 rounded-full bg-white/20 animate-pulse"></div><span class="text-sm text-white/50">…</span>
+          </div>
+          <p class="text-white/60 leading-relaxed max-w-2xl mx-auto md:mx-0">Passionné d'image et professionnel de l'événementiel, je crée des contenus visuels impactants et accompagne mes clients dans la réalisation de leurs projets les plus ambitieux.</p>
+          <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-3 mt-5" id="cv-links"></div>
+        </div>
+      </div>
+
+      <!-- coordonnées -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-12 md:mb-16" id="coords"></div>
+
+      <div id="timeline"></div>
+
+      <!-- compétences -->
+      <section class="mb-12 md:mb-16">
+        <div class="flex items-center gap-3 mb-6 md:mb-8"><span data-ic="award"></span><h3 class="text-2xl font-bold text-white">Compétences</h3></div>
+        <div class="flex flex-wrap gap-2 sm:gap-3" id="skills"></div>
+      </section>
+
+      <!-- contact -->
+      <section class="mb-4 md:mb-16" id="contact">
+        <div class="flex items-center gap-3 mb-6 md:mb-8"><span data-ic="messageSquare"></span><h3 class="text-2xl font-bold text-white">Me Contacter</h3></div>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 md:p-8">
+          <form id="form" class="space-y-4" novalidate>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div><label for="f-name" class="text-sm text-white/70 mb-2 block">Nom *</label><input id="f-name" name="name" class="field" required maxlength="200" autocomplete="name" placeholder="Votre nom"></div>
+              <div><label for="f-email" class="text-sm text-white/70 mb-2 block">Email *</label><input id="f-email" name="email" type="email" class="field" required maxlength="320" autocomplete="email" inputmode="email" placeholder="votre@email.com"></div>
+            </div>
+            <div><label for="f-subject" class="text-sm text-white/70 mb-2 block">Sujet *</label><input id="f-subject" name="subject" class="field" required maxlength="300" placeholder="Objet de votre message"></div>
+            <div><label for="f-message" class="text-sm text-white/70 mb-2 block">Message *</label><textarea id="f-message" name="message" class="field" required maxlength="5000" placeholder="Votre message..."></textarea></div>
+            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+            <button class="btn-primary w-full" type="submit" id="f-send"></button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div id="pied"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="assets/common.js"></script>
+  <script src="assets/profil.js"></script>
+</body>
+</html>

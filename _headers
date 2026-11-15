@@ -8,3 +8,10 @@
 /manifest.webmanifest
   Content-Type: application/manifest+json
   Cache-Control: no-cache
+# portfolio caché : jamais indexé par les moteurs de recherche
+/portfolio/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache
+/portfolio/assets/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: public, max-age=300

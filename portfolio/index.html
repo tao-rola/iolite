@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <base href="/portfolio/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>Tao ROLA - Portfolio MMI Rouen | Photographie, Vidéo, Design, Graphisme & Développement</title>
+  <meta name="description" content="Portfolio de Tao ROLA, étudiant en BUT MMI à Rouen : audiovisuel, graphisme et développement d'applications et de sites internet.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body class="bg-[#0a0a0a]">
+  <div id="nav"></div>
+
+  <!-- repères de section -->
+  <div id="dots" class="fixed right-2.5 md:right-8 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-3"></div>
+
+  <main id="snap" class="h-screen-d overflow-y-auto snap-y snap-mandatory scroll-smooth">
+    <!-- Accueil -->
+    <div class="snap-start h-screen-d" id="accueil">
+      <section class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6">
+        <div class="glow animate-float w-[260px] h-[260px] md:w-[400px] md:h-[400px] top-[15%] left-[-10%] md:left-[10%]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%)"></div>
+        <div class="glow animate-float w-[240px] h-[240px] md:w-[380px] md:h-[380px] top-[40%] md:top-[20%] right-[-10%] md:right-[10%]" style="background:radial-gradient(circle,#059669 0%,transparent 70%);animation-delay:1s"></div>
+        <h1 class="relative z-10 text-5xl min-[400px]:text-6xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight text-center animate-fade-up" style="animation-delay:.2s">Tao ROLA</h1>
+        <div class="relative z-10 h-12 flex items-center justify-center mt-4">
+          <p class="text-xl md:text-2xl text-emerald-400 font-medium"><span id="typed"></span><span class="animate-pulse">|</span></p>
+        </div>
+        <a href="profil" class="relative z-10 mt-8 px-8 py-3 rounded-full border border-white/30 text-white/80 text-sm font-medium hover:bg-white/5 hover:border-white/50 transition-all duration-300 animate-fade-up" style="animation-delay:.6s">Mon profil</a>
+        <div class="absolute bottom-8 md:bottom-12 z-10 pb-safe">
+          <div class="flex items-center justify-center gap-4" id="socials"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- sections catégories (remplies par home.js) -->
+    <div class="snap-start h-screen-d" id="audiovisuel" data-cat="audiovisuel"></div>
+    <div class="snap-start h-screen-d" id="graphisme" data-cat="graphisme"></div>
+    <div class="snap-start h-screen-d" id="developpement" data-cat="developpement"></div>
+
+    <div class="snap-start" id="pied"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="assets/common.js"></script>
+  <script src="assets/home.js"></script>
+</body>
+</html>
