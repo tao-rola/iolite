@@ -91,8 +91,8 @@
   /* YouTube : chargé quand visible, déchargé quand il sort largement de l'écran (fluidité) */
   const ytObs = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach(({ target: f, isIntersecting }) => {
     if (isIntersecting) {
-      if (!f.src) { f.onload = () => setTimeout(() => f.classList.remove('opacity-0'), 3200); /* on attend que les éléments YouTube de démarrage disparaissent */ f.src = ytLoopSrc(f.dataset.yt); }
-    } else if (f.src) { f.removeAttribute('src'); f.classList.add('opacity-0'); }
+      if (!f.src) { f.src = ytLoopSrc(f.dataset.yt); clearTimeout(f._t); f._t = setTimeout(() => f.src && f.classList.remove('opacity-0'), 4500); /* on attend que l'habillage YouTube de démarrage disparaisse */ }
+    } else if (f.src) { clearTimeout(f._t); f.removeAttribute('src'); f.classList.add('opacity-0'); }
   }), { rootMargin: '300px 0px' }) : null;
 
   grid.addEventListener('click', (e) => {
