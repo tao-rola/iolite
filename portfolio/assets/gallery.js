@@ -35,22 +35,23 @@
         <div class="relative">${inner}</div>
       </div>`;
 
-    /* format téléphone (applications) */
-    if (p.device === 'phone') return stage(`
-      <div class="relative mx-auto w-[64%] max-w-[260px] aspect-[9/19] rounded-[2.2rem] bg-black border-[7px] border-[#1c1c1e] shadow-[0_25px_60px_-15px_rgba(0,0,0,.8)] ring-1 ring-white/10 overflow-hidden">
-        ${screen(initial)}
-        <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-[34%] h-[18px] rounded-full bg-black z-10"></div>
-      </div>`);
+    /* applications : carte horizontale, les écrans défilent de droite à gauche en continu */
+    if (p.device === 'phone') {
+      if (!shots.length) return `<div class="relative aspect-[16/10] bg-[#0d0d0d]">${initial}</div>`;
+      const row = shots.map((src) => `<img src="${esc(src)}" alt="" loading="lazy" decoding="async" class="h-full w-auto mr-3 sm:mr-4 rounded-xl ring-1 ring-white/10 shadow-xl shrink-0">`).join('');
+      return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
+        <div class="glow" style="width:80%;height:80%;top:10%;left:10%;background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.25"></div>
+        <div class="absolute inset-y-[9%] left-0 flex w-max animate-marquee" style="animation-duration:${Math.max(shots.length * 6, 18)}s">${row}${row}</div>
+      </div>`;
+    }
 
-    /* format ordinateur (sites internet) */
-    if (p.device === 'desktop') return stage(`
-      <div class="rounded-lg overflow-hidden bg-black ring-1 ring-white/15 shadow-[0_25px_60px_-15px_rgba(0,0,0,.8)]">
-        <div class="flex items-center gap-1.5 px-3 h-7 bg-[#1c1c1e] border-b border-white/10">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></span><span class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></span><span class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></span>
-          <span class="ml-2 flex-1 min-w-0 truncate text-[10px] text-white/40 bg-white/5 rounded px-2 py-0.5">${esc(hostOf(p.link) || '')}</span>
-        </div>
-        <div class="relative aspect-[16/10]">${screen(initial)}</div>
-      </div>`);
+    /* sites internet : carte verticale, la page complète défile de haut en bas */
+    if (p.device === 'desktop') {
+      if (!shots.length) return `<div class="relative aspect-[3/4] bg-[#0d0d0d]">${initial}</div>`;
+      return `<div class="relative aspect-[3/4] overflow-hidden bg-white" data-pagescroll>
+        <img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform">
+      </div>`;
+    }
 
     if (slides.length > 1) return `<div class="relative overflow-hidden bg-black aspect-[16/10]">${screen('')}</div>`;
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
@@ -94,6 +95,17 @@
     }
     byId = Object.fromEntries(projects.map((p) => [p.id, p]));
     grid.innerHTML = `<div class="columns-1 sm:columns-2 lg:columns-3 gap-4">${projects.map(card).join('')}</div>`;
+    grid.querySelectorAll('[data-pagescroll]').forEach((box) => {
+      const img = box.querySelector('img');
+      const setup = () => {
+        const d = img.offsetHeight - box.offsetHeight;
+        if (d <= 0) return;
+        img.style.setProperty('--d', `-${d}px`);
+        img.style.animation = `pagescroll ${Math.max(10, d / 45).toFixed(1)}s ease-in-out infinite`;
+      };
+      img.complete ? setup() : img.addEventListener('load', setup, { once: true });
+      addEventListener('resize', setup);
+    });
     grid.querySelectorAll('video').forEach(watchVideo);
     grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
   }

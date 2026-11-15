@@ -12,6 +12,7 @@ module.exports = {
         fadeUp: { from: { opacity: '0', transform: 'translateY(30px)' }, to: { opacity: '1', transform: 'none' } },
         fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
         sheet: { from: { transform: 'translateY(40px)', opacity: '0' }, to: { transform: 'none', opacity: '1' } },
+        marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
       },
       animation: {
         zoom: 'zoom 20s ease-in-out infinite',
@@ -19,6 +20,7 @@ module.exports = {
         'fade-up': 'fadeUp .8s ease-out both',
         'fade-in': 'fadeIn .4s ease-out both',
         sheet: 'sheet .35s cubic-bezier(.2,.8,.2,1) both',
+        marquee: 'marquee 30s linear infinite',
       },
     },
   },

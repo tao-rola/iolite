@@ -176,7 +176,7 @@
           <div><label class="text-sm text-white/70 mb-2 block">Catégorie</label>
             <select name="category" class="field">${Object.entries(CATEGORIES).map(([k, v]) => `<option value="${k}" ${p.category === k ? 'selected' : ''}>${v.label}</option>`).join('')}</select></div>
           <div><label class="text-sm text-white/70 mb-2 block">Format de la carte</label>
-            <select name="device" class="field">${[['', 'Normal'], ['phone', 'Téléphone (application)'], ['desktop', 'Ordinateur (site internet)']].map(([k, l]) => `<option value="${k}" ${(p.device || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+            <select name="device" class="field">${[['', 'Normal'], ['phone', 'Application : carte horizontale, écrans qui défilent'], ['desktop', 'Site internet : carte verticale, page qui défile']].map(([k, l]) => `<option value="${k}" ${(p.device || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div><label class="text-sm text-white/70 mb-2 block">Ordre d'affichage</label><input name="sort_order" type="number" class="field" value="${p.sort_order ?? 0}"></div>
         </div>
         <div><label class="text-sm text-white/70 mb-2 block">Titre *</label><input name="title" class="field" required value="${esc(p.title || '')}"></div>
