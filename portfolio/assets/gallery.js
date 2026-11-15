@@ -45,11 +45,12 @@
       </div>`;
     }
 
-    /* sites internet : carte verticale, la page complète défile de haut en bas */
+    /* sites internet : carte verticale, chaque page défile de haut en bas puis laisse place à la suivante */
     if (p.device === 'desktop') {
       if (!shots.length) return `<div class="relative aspect-[3/4] bg-[#0d0d0d]">${initial}</div>`;
       return `<div class="relative aspect-[3/4] overflow-hidden bg-white" data-pagescroll>
-        <img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform">
+        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform transition-opacity duration-700 ${i ? 'opacity-0' : 'opacity-100'}">`).join('')}
+        ${shots.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5 pointer-events-none z-10">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow ring-1 ring-black/20 transition-colors duration-500 ${i ? 'bg-white/50' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
     }
 
@@ -87,6 +88,34 @@
       </div>`;
   }
 
+  /* visite des pages d'un site : défilement vers le bas, pause, fondu vers la page suivante */
+  function pageTour(box) {
+    const imgs = [...box.querySelectorAll('img')], dots = box.querySelectorAll('.dot');
+    let i = 0, anim = null, timer = null;
+    const ready = (img) => (img.complete && img.naturalHeight ? Promise.resolve() : new Promise((r) => { img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true }); }));
+    async function play() {
+      if (!box.isConnected) return;
+      const img = imgs[i];
+      await ready(img);
+      const d = Math.max(0, img.offsetHeight - box.offsetHeight);
+      img.style.transform = 'translateY(0)';
+      if (anim) anim.cancel();
+      anim = img.animate([{ transform: 'translateY(0)' }, { transform: `translateY(-${d}px)` }], { duration: Math.max(4000, d * 14), delay: 900, easing: 'ease-in-out', fill: 'forwards' });
+      anim.onfinish = () => {
+        timer = setTimeout(() => {
+          if (imgs.length === 1) { img.animate([{ transform: `translateY(-${d}px)` }, { transform: 'translateY(0)' }], { duration: 1200, easing: 'ease-in-out', fill: 'forwards' }).onfinish = play; return; }
+          const next = (i + 1) % imgs.length;
+          imgs[next].style.transform = 'translateY(0)';
+          imgs[i].classList.replace('opacity-100', 'opacity-0'); imgs[next].classList.replace('opacity-0', 'opacity-100');
+          dots[i]?.classList.replace('bg-white', 'bg-white/50'); dots[next]?.classList.replace('bg-white/50', 'bg-white');
+          const prev = imgs[i]; setTimeout(() => prev.getAnimations().forEach((a) => a.cancel()), 800);
+          i = next; play();
+        }, 1200);
+      };
+    }
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) play();
+  }
+
   let byId = {}, items = [], cols = 0;
   const colCount = () => (innerWidth >= 1024 ? 3 : innerWidth >= 640 ? 2 : 1);
   function layout() {
@@ -108,17 +137,7 @@
     items = [...grid.lastElementChild.children];
     cols = 0; layout();
     grid.lastElementChild.remove();
-    grid.querySelectorAll('[data-pagescroll]').forEach((box) => {
-      const img = box.querySelector('img');
-      const setup = () => {
-        const d = img.offsetHeight - box.offsetHeight;
-        if (d <= 0) return;
-        img.style.setProperty('--d', `-${d}px`);
-        img.style.animation = `pagescroll ${Math.max(10, d / 45).toFixed(1)}s ease-in-out infinite`;
-      };
-      img.complete ? setup() : img.addEventListener('load', setup, { once: true });
-      addEventListener('resize', setup);
-    });
+    grid.querySelectorAll('[data-pagescroll]').forEach(pageTour);
     grid.querySelectorAll('video').forEach(watchVideo);
     grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
   }
