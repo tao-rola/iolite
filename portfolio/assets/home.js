@@ -2,7 +2,6 @@
 (function () {
   const { icon, esc, CATEGORIES, CONTACT, getProjects, kindOf, ytId, homeNav, footer, devPlaceholder } = window.TR;
   const snap = document.getElementById('snap');
-  const SECTIONS = ['accueil', 'audiovisuel', 'graphisme', 'developpement'];
 
   document.getElementById('nav').innerHTML = homeNav('accueil');
   document.getElementById('pied').innerHTML = footer();
@@ -25,45 +24,62 @@
   })();
 
   /* repères à droite + navigation */
+  const SECS = ['accueil', 'categories'];
+  const CATS = ['audiovisuel', 'graphisme', 'developpement'];
   const dots = document.getElementById('dots');
-  dots.innerHTML = SECTIONS.map((id) => `<button type="button" data-goto="${id}" class="group relative flex items-center p-1.5 -m-1.5" aria-label="Aller à ${id}"><span class="dot block rounded-full transition-all duration-300" style="width:4px;height:8px;background:rgba(255,255,255,.4)"></span></button>`).join('');
+  dots.innerHTML = SECS.map((id) => `<button type="button" data-goto="${id}" class="group relative flex items-center p-1.5 -m-1.5" aria-label="Aller à ${id}"><span class="dot block rounded-full transition-all duration-300" style="width:4px;height:8px;background:rgba(255,255,255,.4)"></span></button>`).join('');
   const goTo = (id) => { const el = document.getElementById(id); if (el) snap.scrollTo({ top: el.offsetTop, behavior: 'smooth' }); };
-  document.addEventListener('click', (e) => { const b = e.target.closest('[data-goto]'); if (b) { e.preventDefault(); goTo(b.dataset.goto); } });
+  const highlight = (cat) => {
+    const c = document.querySelector(`[data-card="${cat}"]`); if (!c) return;
+    c.classList.add('ring-2', 'ring-emerald-500/70');
+    setTimeout(() => c.classList.remove('ring-2', 'ring-emerald-500/70'), 1400);
+  };
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-goto]'); if (!b) return;
+    e.preventDefault();
+    const id = b.dataset.goto;
+    if (CATS.includes(id)) { goTo('categories'); setTimeout(() => highlight(id), 450); setActive('categories', id); }
+    else goTo(id);
+  });
 
-  function setActive(id) {
+  function setActive(id, cat) {
     dots.querySelectorAll('button').forEach((b) => {
       const on = b.dataset.goto === id, d = b.querySelector('.dot');
       d.style.height = on ? '28px' : '8px'; d.style.background = on ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.4)';
     });
+    const navOn = id === 'accueil' ? 'accueil' : cat || null;
     document.querySelectorAll('#nav .nav-btn').forEach((b) => {
-      const on = b.dataset.goto === id;
+      const on = b.dataset.goto === navOn;
       b.querySelector('.nav-pill').classList.toggle('opacity-100', on); b.querySelector('.nav-pill').classList.toggle('opacity-0', !on);
       const l = b.querySelector('.nav-label');
       l.classList.toggle('text-white', on); l.classList.toggle('text-white/70', !on);
     });
     dots.style.opacity = id === 'pied' ? '0' : '1';
   }
-  const secObs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { setActive(e.target.id); sectionVisible(e.target.id); } }), { root: snap, threshold: 0.55 });
-  [...SECTIONS, 'pied'].forEach((id) => secObs.observe(document.getElementById(id)));
+  const secObs = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    setActive(e.target.id);
+  }), { root: snap, threshold: 0.55 });
+  [...SECS, 'pied'].forEach((id) => secObs.observe(document.getElementById(id)));
   setActive('accueil');
 
-  /* sections catégories avec fonds animés */
+  /* trois grandes cases avec exemples qui défilent en fond flouté */
   const rotators = {};
-  function sectionShell(cat) {
+  function cardShell(cat) {
     const c = CATEGORIES[cat];
     return `
-      <section class="relative w-full h-full flex flex-col overflow-hidden bg-[#0a0a0a]">
-        <div class="bg-layers absolute inset-0"></div>
-        <div class="absolute inset-0 bg-black/75"></div>
-        <div class="relative z-10 pt-28 md:pt-24 px-6 md:px-12">
-          <h2 class="text-4xl sm:text-5xl font-bold text-white">${c.label}</h2>
-          <p class="text-white/50 text-lg mt-3">${c.sub}</p>
+      <a href="${c.href}" data-card="${cat}" class="group relative block h-full min-h-0 rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 bg-[#0a0a0a] transition-all duration-500">
+        <div class="bg-layers absolute inset-0 transition-transform duration-700 group-hover:scale-105"></div>
+        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/55 transition-colors duration-500"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
+        <div class="relative z-10 h-full flex flex-col justify-between p-5 sm:p-6 lg:p-8">
+          <div>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white">${c.label}</h2>
+            <p class="text-white/50 text-sm sm:text-base lg:text-lg mt-1.5 lg:mt-3">${c.sub}</p>
+          </div>
+          <span class="self-start inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-white/30 text-white text-xs sm:text-sm font-medium group-hover:bg-white/10 transition-all duration-300">${icon(c.icon)}${c.cta}</span>
         </div>
-        <div class="preview relative z-10 flex-1 min-h-0 px-6 md:px-12 flex items-center"></div>
-        <div class="relative z-10 px-6 md:px-12 pb-10 md:pb-12 pb-safe">
-          <a href="${c.href}" class="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/5 transition-all duration-300">${icon(c.icon)}${c.cta}</a>
-        </div>
-      </section>`;
+      </a>`;
   }
 
   function layerFor(p) {
@@ -74,31 +90,23 @@
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="" class="${cls}" loading="lazy">`;
     return '';
   }
+  /* projets sans média (développement) : aperçu « navigateur » flouté */
+  const devLayer = (p) => `<div class="w-full h-full blur-[3px] animate-zoom">${devPlaceholder(p, 'h-full')}</div>`;
 
-  async function buildSection(cat) {
-    const host = document.getElementById(cat);
-    host.innerHTML = sectionShell(cat);
-    const projects = (await getProjects(cat));
-    const withMedia = projects.filter((p) => kindOf(p) !== 'none').slice(0, 6);
-    const layers = host.querySelector('.bg-layers');
-    if (!withMedia.length) {
-      layers.innerHTML = `<div class="absolute inset-0 bg-grid animate-zoom"></div>
-        <div class="glow animate-float w-[320px] h-[320px] md:w-[520px] md:h-[520px] top-[20%] left-[5%]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%)"></div>
-        <div class="glow animate-float w-[280px] h-[280px] md:w-[420px] md:h-[420px] bottom-[5%] right-[5%]" style="background:radial-gradient(circle,#059669 0%,transparent 70%);animation-delay:2s"></div>`;
-    } else {
-      layers.innerHTML = withMedia.map((p, i) => `<div class="layer absolute inset-0 transition-opacity duration-1000 ${i ? 'opacity-0' : 'opacity-100'}">${layerFor(p)}</div>`).join('');
-      rotators[cat] = { i: 0, n: withMedia.length, layers: [...layers.querySelectorAll('.layer')], timer: null };
+  const cardsEl = document.getElementById('cards');
+  cardsEl.innerHTML = CATS.map(cardShell).join('');
+
+  async function buildCard(cat) {
+    const card = cardsEl.querySelector(`[data-card="${cat}"]`);
+    const layers = card.querySelector('.bg-layers');
+    const projects = (await getProjects(cat)).slice(0, 6);
+    const html = projects.map((p) => (kindOf(p) === 'none' ? (cat === 'developpement' ? devLayer(p) : '') : layerFor(p))).filter(Boolean);
+    if (!html.length) {
+      layers.innerHTML = `<div class="absolute inset-0 bg-grid animate-zoom"></div><div class="glow animate-float w-[70%] h-[70%] top-[15%] left-[15%]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%)"></div>`;
+      return;
     }
-    /* aperçu des projets de développement (section sans vidéos) */
-    if (cat === 'developpement' && projects.length) {
-      host.querySelector('.preview').innerHTML = `
-        <div class="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
-          ${projects.slice(0, 2).map((p, i) => `
-            <a href="developpement" class="${i ? 'hidden sm:block' : ''} group rounded-xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 bg-black/40">
-              ${kindOf(p) === 'image' ? `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" class="w-full aspect-[16/9] object-cover">` : devPlaceholder(p, 'aspect-[16/9] max-h-[32dvh]')}
-            </a>`).join('')}
-        </div>`;
-    }
+    layers.innerHTML = html.map((h, i) => `<div class="layer absolute inset-0 transition-opacity duration-1000 ${i ? 'opacity-0' : 'opacity-100'}">${h}</div>`).join('');
+    rotators[cat] = { i: 0, n: html.length, layers: [...layers.querySelectorAll('.layer')] };
   }
 
   function playLayer(cat, on) {
@@ -108,20 +116,26 @@
       if (on && idx === r.i) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
     });
   }
-  let current = null;
-  function sectionVisible(id) {
-    if (current && current !== id) { const r = rotators[current]; if (r) { clearInterval(r.timer); r.timer = null; } playLayer(current, false); }
-    current = id;
-    const r = rotators[id]; if (!r) return;
-    playLayer(id, true);
-    if (r.n > 1 && !r.timer) r.timer = setInterval(() => {
+  let playing = false, timer = null;
+  function setPlaying(on) {
+    playing = on && !document.hidden;
+    CATS.forEach((c) => playLayer(c, playing));
+    clearInterval(timer); timer = null;
+    if (!playing) return;
+    let step = 0;
+    /* les trois cases changent d'exemple en décalé, toutes les 6 s chacune */
+    timer = setInterval(() => {
+      const cat = CATS[step++ % CATS.length], r = rotators[cat];
+      if (!r || r.n < 2) return;
       r.layers[r.i].classList.replace('opacity-100', 'opacity-0');
       r.i = (r.i + 1) % r.n;
       r.layers[r.i].classList.replace('opacity-0', 'opacity-100');
-      playLayer(id, true);
-    }, 6000);
+      playLayer(cat, true);
+    }, 2000);
   }
 
-  Promise.all(['audiovisuel', 'graphisme', 'developpement'].map(buildSection)).then(() => { if (current) sectionVisible(current); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden && current) playLayer(current, false); else if (current) playLayer(current, true); });
+  let inCats = false;
+  new IntersectionObserver(([e]) => { inCats = e.isIntersecting; setPlaying(inCats); }, { root: snap, threshold: 0.3 }).observe(document.getElementById('categories'));
+  Promise.all(CATS.map(buildCard)).then(() => setPlaying(inCats));
+  document.addEventListener('visibilitychange', () => setPlaying(inCats));
 })();
