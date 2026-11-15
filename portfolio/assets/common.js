@@ -241,7 +241,7 @@
   function projectModal(p) {
     const k = kindOf(p);
     let media = '';
-    if (k === 'youtube') media = `<div class="relative aspect-video bg-black overflow-hidden"><img src="${posterOf(p)}" alt="" class="absolute inset-0 w-full h-full object-cover"><iframe class="absolute inset-0 w-full h-full pointer-events-none scale-[1.02]" src="${ytLoopSrc(ytId(p.media_url))}" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1"></iframe></div>`;
+    if (k === 'youtube') media = `<div class="relative aspect-video bg-black overflow-hidden"><iframe class="absolute inset-0 w-full h-full pointer-events-none scale-[1.2]" src="${ytLoopSrc(ytId(p.media_url))}" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" onload="setTimeout(()=>this.nextElementSibling&&(this.nextElementSibling.style.opacity='0'),3200)"></iframe><img src="${posterOf(p)}" alt="" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none"></div>`;
     else if (k === 'video') media = `<div class="bg-black flex justify-center"><video src="${esc(p.media_url)}" ${p.poster_url ? `poster="${esc(p.poster_url)}"` : ''} class="w-full max-h-[60dvh] object-contain" controls autoplay muted loop playsinline></video></div>`;
     else if (k === 'image') media = `<div class="bg-black flex justify-center"><img src="${esc(p.media_url)}" alt="${esc(p.title)}" class="w-full max-h-[60dvh] object-contain"></div>`;
     else if (p.category === 'developpement') media = devPlaceholder(p, 'aspect-video');

@@ -15,7 +15,7 @@
       /* vignette affichée tout de suite, puis la vidéo YouTube muette en boucle (sans interaction) dès qu'elle est à l'écran */
       return `<div class="relative aspect-video bg-black overflow-hidden">
         <img src="${posterOf(p)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover">
-        <iframe data-yt="${ytId(p.media_url)}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.02] opacity-0 transition-opacity duration-700" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
+        <iframe data-yt="${ytId(p.media_url)}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.2] opacity-0 transition-opacity duration-700" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
       </div>`;
     }
     if (k === 'video') {
@@ -91,7 +91,7 @@
   /* YouTube : chargé quand visible, déchargé quand il sort largement de l'écran (fluidité) */
   const ytObs = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach(({ target: f, isIntersecting }) => {
     if (isIntersecting) {
-      if (!f.src) { f.onload = () => setTimeout(() => f.classList.remove('opacity-0'), 600); f.src = ytLoopSrc(f.dataset.yt); }
+      if (!f.src) { f.onload = () => setTimeout(() => f.classList.remove('opacity-0'), 3200); /* on attend que les éléments YouTube de démarrage disparaissent */ f.src = ytLoopSrc(f.dataset.yt); }
     } else if (f.src) { f.removeAttribute('src'); f.classList.add('opacity-0'); }
   }), { rootMargin: '300px 0px' }) : null;
 
