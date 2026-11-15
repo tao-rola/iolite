@@ -19,38 +19,24 @@
   /* parcours */
   const SECTIONS = [
     ['graduationCap', 'Formation', [
-      ['2024 - Présent', 'Bachelor Universitaire et Technologique', 'IUT, Rouen', "Filière Métier du Multimédia et de l'Internet - Spécialité Création Numérique (3ème année en cours)"],
-      ['2020 - 2023', 'Lycée Blaise Pascal', 'Rouen', "Filière Sciences et Technologies de l'Industrie et du Développement Durable - Bac obtenu avec mention Assez Bien"],
+      ['Septembre 2026', 'Formation Commerciale', 'Axecibles, Rouen', 'Formation au métier de commercial et aux techniques de vente en one shot.'],
+      ['2024 - Présent', 'Bachelor Universitaire et Technologique', 'IUT, Rouen', "Filière Métier du Multimédia et de l'Internet - Spécialité Création Numérique (3ème année en cours)."],
+      ['2020 - 2023', 'Lycée Blaise Pascal', 'Rouen', "Filière Sciences et Technologies de l'Industrie et du Développement Durable - Bac obtenu avec mention Assez Bien."],
     ]],
     ['briefcase', 'Expérience Professionnelle', [
-      ['Octobre 2026 - Présent', 'Serveur', 'Café de Rouen Quais de Seine, Rouen', ''],
-      ['Septembre 2026 - Octobre 2026', 'Commercial', 'Axecibles, Rouen', [
-        'Prospection de TPE et artisans par téléphone et sur le terrain',
-        'Vente en one shot de solutions web (sites internet, référencement)',
-        'Négociation et signature des contrats dès le premier rendez-vous',
-      ]],
-      ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale, marketing événementiel, gestion des réseaux sociaux'],
-      ['Septembre 2025', 'Responsable de salle / Chef de rang', 'Le Bouillon Italia, Rouen', [
-        'Supervision et coordination du service en salle (ouverture, mise en place, fermeture)',
-        "Encadrement et animation d'une équipe de serveurs au quotidien",
-        'Accueil et prise en charge, gestion des situations délicates et réclamations clients',
-        "Garant des standards de qualité de service et de l'expérience client",
-        'Gestion des réservations et optimisation du placement en salle',
-        "Formation et intégration des nouveaux membres de l'équipe",
-      ]],
-      ['Avril 2025 - Juin 2025', 'Stagiaire Chargé de Communication et Développeur Web', 'Attineos Cybersécurité, Rouen', "Création de supports de communication digitale et développement d'interfaces web"],
-      ['Août 2024 - Avril 2025', 'Chef de Rang', "Restaurant Le Bouillon d'Or, Rouen", [
-        "Gestion d'un rang en totale autonomie dans un restaurant à fort volume de couverts",
-        'Service à table soigné, conseil à la carte et fidélisation de la clientèle',
-        'Coordination avec la cuisine pour fluidifier le rythme du service',
-      ]],
-      ['Octobre 2023 - Juin 2025', 'Employé Polyvalent', 'Food-Truck Clara Pizza, Rouen', "Caissier, assistant cuisinier, préposé à l'entretien ménager"],
-      ['Septembre 2023 - Présent', 'Entrepreneur Individuel', 'Auto-entreprise Gallium, Rouen', "Maître d'hôtel, barman, serveur / chef de rang, hôte d'accueil, photographe"],
-      ['Juillet 2022', 'Employé Polyvalent', "Crêperie du Cap, Île d'Arz", "Serveur, préposé à l'entretien ménager, barman occasionnel"],
+      ['Octobre 2026 - Présent', 'Serveur', 'Café de Rouen Quais de Seine, Rouen', 'Service en salle et accueil de la clientèle.'],
+      ['Septembre 2026 - Octobre 2026', 'Commercial', 'Axecibles, Rouen', "Prospection de TPE et d'artisans par téléphone et sur le terrain. Vente en one shot de solutions web (sites internet, référencement), avec négociation et signature des contrats dès le premier rendez-vous."],
+      ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale et marketing événementiel. Gestion des réseaux sociaux du restaurant.'],
+      ['Septembre 2025', 'Responsable de salle / Chef de rang', 'Le Bouillon Italia, Rouen', "Supervision et coordination du service en salle, de l'ouverture à la fermeture. Encadrement, animation et formation de l'équipe de serveurs. Accueil des clients, gestion des réservations, du placement et des réclamations, dans le respect des standards de qualité."],
+      ['Avril 2025 - Juin 2025', 'Stagiaire Chargé de Communication et Développeur Web', 'Attineos Cybersécurité, Rouen', "Création de supports de communication digitale. Développement d'interfaces web."],
+      ['Août 2024 - Avril 2025', 'Chef de Rang', "Restaurant Le Bouillon d'Or, Rouen", "Gestion d'un rang en totale autonomie dans un restaurant à fort volume de couverts. Service soigné, conseil à la carte et fidélisation de la clientèle, en coordination avec la cuisine."],
+      ['Octobre 2023 - Juin 2025', 'Employé Polyvalent', 'Food-Truck Clara Pizza, Rouen', 'Tenue de la caisse et assistance en cuisine. Entretien et nettoyage du food-truck.'],
+      ['Septembre 2023 - Présent', 'Entrepreneur Individuel', 'Auto-entreprise Gallium, Rouen', "Prestations événementielles en tant que maître d'hôtel, barman, serveur, chef de rang et hôte d'accueil. Activité de photographe."],
+      ['Juillet 2022', 'Employé Polyvalent', "Crêperie du Cap, Île d'Arz", "Service en salle et entretien des locaux. Barman à l'occasion."],
     ]],
     ['users', 'Engagement Associatif', [
-      ['Septembre 2022 - Décembre 2023', 'Pôle Communication', "Association Vulg'Art, Rouen", 'Référent principal, community manager, graphiste'],
-      ['Décembre 2018 - Décembre 2024', 'Pôle Événementiel', 'Association Amnesty International, Rennes', "Coordinateur d'événements (Salon d'art et d'artisanat d'Amnesty Rennes)"],
+      ['Septembre 2022 - Décembre 2023', 'Pôle Communication', "Association Vulg'Art, Rouen", "Référent principal du pôle communication. Community manager et graphiste de l'association."],
+      ['Décembre 2018 - Décembre 2024', 'Pôle Événementiel', 'Association Amnesty International, Rennes', "Coordination d'événements, dont le Salon d'art et d'artisanat d'Amnesty Rennes."],
     ]],
   ];
   document.getElementById('timeline').innerHTML = SECTIONS.map(([ic, title, items]) => `
