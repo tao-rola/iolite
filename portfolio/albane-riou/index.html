@@ -5,714 +5,516 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Albane Riou — Portfolio · iolite.team</title>
 <meta name="description" content="Portfolio d'Albane Riou, étudiante en BUT Métiers du Multimédia et de l'Internet à l'IUT de Rouen : illustration, audiovisuel, 3D et communication.">
-<meta name="theme-color" content="#7f9cc0">
+<meta name="theme-color" content="#0a0a0a">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="/portfolio/assets/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,800;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
    Variables
    ========================================================= */
 :root{
-  --bg:#7f9cc0;
-  --bg-dark:#6585ad;
-  --paper:#f7f2e8;
-  --paper-2:#efe7d6;
-  --ink:#27364a;
-  --ink-soft:#5a6a80;
-  --accent:#4a6a94;
-  --board:#2f4562;
-  --board-2:#253852;
-  --kraft:#c9a97c;
-  --rose:#e8b9b5;
-  --sky:#b9cfe6;
-  --sage:#bfd0b4;
-  --script:'Pinyon Script', cursive;
-  --hand:'Caveat', cursive;
-  --serif:'Cormorant Garamond', Georgia, serif;
-  --type:'Special Elite', 'Courier New', monospace;
-  /* taille d'une page (portrait) */
-  --pw: min(41vw, calc((100svh - 150px) * .72));
+  --black:#0a0a0a;
+  --ink:#111;
+  --paper:#f3f1ec;
+  --paper-2:#e7e4dd;
+  --grey:#8a8780;
+  --red:#d3231b;
+  --display:'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  --sans:'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+  --serif:'Instrument Serif', Georgia, serif;
+  --pw: min(40vw, calc((100svh - 150px) * .72));
   --ph: calc(var(--pw) / .72);
-  --flip: .95s;
+  --flip: 1s;
 }
-@media (max-width: 760px){
-  :root{ --pw: min(92vw, calc((100svh - 130px) * .72)); }
-}
+@media (max-width: 760px){ :root{ --pw: min(92vw, calc((100svh - 140px) * .72)); } }
 @media (prefers-reduced-motion: reduce){ :root{ --flip:.01s; } }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  font-family:var(--serif);
-  color:var(--ink);
-  background:
-    radial-gradient(ellipse at 50% 40%, #9cb4d2 0%, var(--bg) 45%, var(--bg-dark) 100%);
-  overflow:hidden;
+  background:var(--black);color:#fff;font-family:var(--sans);overflow:hidden;
   -webkit-font-smoothing:antialiased;
 }
-/* grain léger sur le fond */
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+body::before{ /* halo très léger sous le magazine */
+  content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 55% at 50% 52%, rgba(255,255,255,.07), transparent 70%);
 }
 a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* =========================================================
-   Barre du haut
+   En-tête & navigation
    ========================================================= */
 .topbar{
-  position:fixed;top:0;left:0;right:0;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 22px;color:#fff;font-family:var(--type);font-size:13px;letter-spacing:.04em;
+  position:fixed;top:0;left:0;right:0;z-index:50;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:16px 26px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;
 }
-.topbar a{text-decoration:none;opacity:.85;transition:opacity .2s}
+.topbar a{text-decoration:none;opacity:.7;transition:opacity .2s}
 .topbar a:hover{opacity:1}
-.topbar .who{font-family:var(--script);font-size:26px;letter-spacing:0;opacity:.95}
+.topbar .mast{font-family:var(--display);font-size:22px;letter-spacing:.02em;opacity:1}
+.topbar nav{display:flex;gap:22px;justify-content:flex-end}
+.topbar nav button{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;transition:opacity .2s,color .2s}
+.topbar nav button:hover,.topbar nav button.on{opacity:1}
+.topbar nav button.on{color:var(--red)}
+@media (max-width: 900px){ .topbar nav{display:none} .topbar{grid-template-columns:1fr auto 1fr} }
+
+.controls{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;
+  display:flex;align-items:center;gap:18px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+}
+.controls button{
+  width:40px;height:40px;border:1px solid rgba(255,255,255,.35);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,opacity .2s;
+}
+.controls button:hover{background:#fff;color:#000;border-color:#fff}
+.controls button:disabled{opacity:.2;pointer-events:none}
+.controls .ind{min-width:170px;text-align:center;opacity:.8}
+.progress{position:fixed;left:0;bottom:0;height:2px;background:var(--red);z-index:41;transition:width var(--flip) cubic-bezier(.645,.045,.355,1)}
+.hint{
+  position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:40;font-family:var(--serif);font-style:italic;
+  font-size:17px;opacity:.75;transition:opacity .6s;pointer-events:none;white-space:nowrap;
+}
+.hint.hide{opacity:0}
 
 /* =========================================================
-   Scène & livre
+   Magazine (mécanique de pages)
    ========================================================= */
-.stage{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  padding-top:20px;
-}
-.book-wrap{ position:relative; width:calc(var(--pw) * 2); height:var(--ph); }
-.book{
-  position:absolute;inset:0;
-  perspective:2800px; perspective-origin:50% 40%;
-  transition:transform var(--flip) cubic-bezier(.645,.045,.355,1);
-}
-.book.at-start{ transform:translateX(-25%); }
-.book.at-end{ transform:translateX(25%); }
-
-/* Mode mobile : une seule page, la reliure est sur le bord gauche */
-.mobile .book-wrap{ width:var(--pw); overflow:hidden; border-radius:4px 10px 10px 4px; }
-.mobile .book{ left:calc(var(--pw) * -1); right:auto; width:calc(var(--pw) * 2); }
-.mobile .book.at-start,.mobile .book.at-end{ transform:none; }
+.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding-top:14px}
+.book-wrap{position:relative;width:calc(var(--pw) * 2);height:var(--ph)}
+.book{position:absolute;inset:0;perspective:3000px;perspective-origin:50% 45%;transition:transform var(--flip) cubic-bezier(.645,.045,.355,1)}
+.book.at-start{transform:translateX(-25%)}
+.book.at-end{transform:translateX(25%)}
+.mobile .book-wrap{width:var(--pw);overflow:hidden}
+.mobile .book{left:calc(var(--pw) * -1);right:auto;width:calc(var(--pw) * 2)}
+.mobile .book.at-start,.mobile .book.at-end{transform:none}
 
 .leaf{
   position:absolute;top:0;left:50%;width:50%;height:100%;
-  transform-origin:left center;
-  transform-style:preserve-3d;
+  transform-origin:left center;transform-style:preserve-3d;
   transition:transform var(--flip) cubic-bezier(.645,.045,.355,1);
 }
-.leaf.flipped{ transform:rotateY(-180deg); }
-.side{
-  position:absolute;inset:0;overflow:hidden;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
-}
-.side.back{ transform:rotateY(180deg); }
-.side.front{ border-radius:0 6px 6px 0; box-shadow: 6px 8px 22px rgba(20,35,60,.28); }
-.side.back { border-radius:6px 0 0 6px; box-shadow:-6px 8px 22px rgba(20,35,60,.28); }
+.leaf.flipped{transform:rotateY(-180deg)}
+.side{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper)}
+.side.back{transform:rotateY(180deg)}
+.side.front{box-shadow:10px 14px 40px rgba(0,0,0,.55)}
+.side.back{box-shadow:-10px 14px 40px rgba(0,0,0,.55)}
+/* pli central */
+.side::before{content:"";position:absolute;top:0;bottom:0;width:9%;pointer-events:none;z-index:20}
+.side.front::before{left:0;background:linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,.06) 35%, rgba(0,0,0,0))}
+.side.back::before{right:0;background:linear-gradient(-90deg, rgba(0,0,0,.28), rgba(0,0,0,.06) 35%, rgba(0,0,0,0))}
+.mobile .side.front::before{width:4%}
+/* reflet pendant la rotation */
+.side::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:21;opacity:0;
+  background:linear-gradient(90deg, rgba(0,0,0,.35), rgba(255,255,255,.18) 45%, rgba(0,0,0,0) 75%)}
+.leaf.turning .side::after{animation:sheen var(--flip) ease-in-out}
+@keyframes sheen{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+/* tranche */
+.edge{position:absolute;top:.6%;bottom:.6%;width:6px;z-index:0;pointer-events:none;transition:opacity .4s;
+  background:repeating-linear-gradient(90deg,#eceae4 0 1px,#bdb9b0 1px 2px)}
+.edge.r{right:-4px}.edge.l{left:-4px}
+.mobile .edge{display:none}
 
-/* ombre de reliure */
-.side::before{
-  content:"";position:absolute;top:0;bottom:0;width:14%;pointer-events:none;z-index:20;
-}
-.side.front::before{ left:0; background:linear-gradient(90deg, rgba(40,50,70,.22), rgba(40,50,70,0)); }
-.side.back::before { right:0; background:linear-gradient(-90deg, rgba(40,50,70,.22), rgba(40,50,70,0)); }
-/* reflet pendant que la page tourne */
-.side::after{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:21;opacity:0;
-  background:linear-gradient(90deg, rgba(0,0,0,.18), rgba(255,255,255,.25) 40%, rgba(0,0,0,0) 70%);
-}
-.leaf.turning .side::after{ animation:sheen var(--flip) ease-in-out; }
-@keyframes sheen{ 0%{opacity:0} 45%{opacity:1} 100%{opacity:0} }
-
-/* tranche des pages (épaisseur) */
-.edge{
-  position:absolute;top:1.2%;bottom:1.2%;width:10px;z-index:0;pointer-events:none;
-  background:repeating-linear-gradient(90deg,#f3ecdd 0 1px,#d9cfbb 1px 2px);
-  transition:opacity .4s;
-}
-.edge.r{ right:-7px; border-radius:0 3px 3px 0; }
-.edge.l{ left:-7px;  border-radius:3px 0 0 3px; }
-.mobile .edge{ display:none; }
-
-/* coins cliquables (corne de page) */
-.corner{
-  position:absolute;bottom:0;width:13%;aspect-ratio:1;z-index:30;cursor:pointer;
-}
-.corner.next{ right:0; }
-.corner.prev{ left:0; }
-.corner::after{
-  content:"";position:absolute;bottom:0;width:0;height:0;transition:width .25s,height .25s;
-  box-shadow:-2px -2px 6px rgba(0,0,0,.18);
-}
-.corner.next::after{ right:0; background:linear-gradient(135deg, var(--paper-2) 50%, transparent 50%); border-top-left-radius:4px; }
-.corner.prev::after{ left:0;  background:linear-gradient(225deg, var(--paper-2) 50%, transparent 50%); border-top-right-radius:4px; box-shadow:2px -2px 6px rgba(0,0,0,.18); }
-.corner:hover::after{ width:55%; height:55%; }
+/* coins */
+.corner{position:absolute;bottom:0;width:14%;aspect-ratio:1;z-index:30;cursor:pointer}
+.corner.next{right:0}.corner.prev{left:0}
+.corner::after{content:"";position:absolute;bottom:0;width:0;height:0;transition:width .25s,height .25s}
+.corner.next::after{right:0;background:linear-gradient(135deg,#d9d6cf 50%,transparent 50%);box-shadow:-3px -3px 8px rgba(0,0,0,.25)}
+.corner.prev::after{left:0;background:linear-gradient(225deg,#d9d6cf 50%,transparent 50%);box-shadow:3px -3px 8px rgba(0,0,0,.25)}
+.corner:hover::after{width:50%;height:50%}
 
 /* =========================================================
-   Faces (contenu des pages)
+   Pages : base
    ========================================================= */
 .face{
-  position:absolute;inset:0;
-  font-size:calc(var(--pw) / 34);
-  line-height:1.45;
-  padding:3.2em 3em 3.4em;
+  position:absolute;inset:0;color:var(--ink);
+  font-size:calc(var(--pw) / 36);line-height:1.5;
+  padding:4.2em 3.2em 3.6em;
 }
-.mobile .face{ font-size:calc(var(--pw) / 31); padding:2.6em 2.4em 3em; }
-.face.paper{
-  background-color:var(--paper);
-  background-image:
-    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.7), transparent 60%),
-    radial-gradient(ellipse at 90% 95%, rgba(190,170,130,.18), transparent 55%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .25 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
-}
-.face.board{
-  color:#e9eef6;
-  background-color:var(--board);
-  background-image:
-    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.08), transparent 60%),
-    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 4px),
-    repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 2px, transparent 2px 4px);
-}
-.face.endpaper{
-  background-color:#dfe7f1;
-  background-image:
-    radial-gradient(circle at 25% 25%, rgba(74,106,148,.22) 0 .18em, transparent .2em),
-    radial-gradient(circle at 75% 75%, rgba(74,106,148,.22) 0 .18em, transparent .2em);
-  background-size:2.2em 2.2em;
-}
-.face.blank{ background:var(--paper); }
-.pnum{
-  position:absolute;bottom:1.4em;font-family:var(--type);font-size:.75em;color:var(--ink-soft);z-index:5;
-}
-.side.front .pnum{ right:2.2em; }
-.side.back  .pnum{ left:2.2em; }
-.mobile .side .pnum{ right:2.2em; left:auto; }
+.mobile .face{font-size:calc(var(--pw) / 32);padding:3.8em 2.6em 3.4em}
+.face.dark{background:var(--black);color:#f2f0eb}
+.face.red{background:var(--red);color:#fff}
+.face.bleed{padding:0}
 
-/* ---------- Typo ---------- */
-.script{ font-family:var(--script); font-weight:400; line-height:1; }
-.hand{ font-family:var(--hand); }
-.type{ font-family:var(--type); }
-h2.title{
-  font-family:var(--script);font-weight:400;font-size:3.6em;line-height:1.05;color:var(--accent);
-  text-shadow:2px 3px 0 rgba(74,106,148,.12);margin:.1em 0 .25em;
-}
-.kicker{ font-family:var(--type);font-size:.8em;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft); }
-.brk::before{content:"( "} .brk::after{content:" )"}
-p{ margin:0 0 .7em; text-align:justify; hyphens:auto; }
-p.lead{ font-size:1.12em; font-style:italic; }
-.tags{ display:flex;flex-wrap:wrap;gap:.35em;margin:.2em 0 1em; }
-.tag{
-  font-family:var(--type);font-size:.72em;padding:.25em .6em;border:1px dashed var(--accent);color:var(--accent);
-  border-radius:2em;background:rgba(255,255,255,.4);
-}
+/* folio : en-tête et numéro de page */
+.folio{position:absolute;left:3.2em;right:3.2em;top:1.6em;display:flex;justify-content:space-between;
+  font-size:.62em;letter-spacing:.16em;text-transform:uppercase;font-weight:600;z-index:15;opacity:.75}
+.pnum{position:absolute;bottom:1.5em;font-size:.68em;font-weight:600;letter-spacing:.1em;z-index:15;opacity:.75}
+.side.front .pnum{right:3.2em}.side.back .pnum{left:3.2em}
+.mobile .side .pnum{right:2.6em;left:auto}
+.mobile .folio{left:2.6em;right:2.6em}
+.bleed .folio,.bleed .pnum{color:#fff;opacity:.9;text-shadow:0 1px 6px rgba(0,0,0,.4)}
 
-/* ---------- Éléments scrapbook ---------- */
-.abs{ position:absolute; }
-.tape{
-  position:absolute;width:6em;height:1.6em;z-index:6;opacity:.88;
-  background:repeating-linear-gradient(90deg, rgba(255,255,255,.35) 0 .4em, transparent .4em .8em), var(--sky);
-  clip-path:polygon(2% 0,98% 4%,100% 50%,97% 100%,3% 96%,0 50%);
-  box-shadow:0 1px 2px rgba(0,0,0,.08);
-}
-.tape.rose{ background:repeating-linear-gradient(45deg, rgba(255,255,255,.4) 0 .3em, transparent .3em .6em), var(--rose); }
-.tape.kraft{ background:var(--kraft); opacity:.8; }
-.tape.sage{ background:radial-gradient(circle, rgba(255,255,255,.6) 0 .12em, transparent .14em) 0 0/.6em .6em, var(--sage); }
-
-.polaroid{
-  position:absolute;background:#fff;padding:.55em .55em 2.2em;z-index:4;
-  box-shadow:0 .25em .7em rgba(30,40,60,.22), 0 0 0 1px rgba(0,0,0,.03);
-  transform:rotate(var(--r,0deg));
-}
-.polaroid img{ display:block;width:100%;height:100%;object-fit:cover;background:#e6e1d6; }
-.polaroid figcaption{
-  position:absolute;left:0;right:0;bottom:.35em;text-align:center;
-  font-family:var(--hand);font-size:1.25em;color:var(--ink);
-}
-.frame-video{
-  position:absolute;background:#1d2533;padding:.45em;z-index:4;border-radius:2px;
-  box-shadow:0 .3em .9em rgba(20,30,50,.35);transform:rotate(var(--r,0deg));
-}
-.frame-video video{ display:block;width:100%;height:auto;background:#000; }
-.frame-video .label{
-  position:absolute;bottom:-2.1em;left:.2em;font-family:var(--hand);font-size:1.25em;color:var(--ink);
-}
-
-.stamp{
-  position:absolute;z-index:7;width:6.4em;height:6.4em;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;text-align:center;
-  font-family:var(--type);font-size:.8em;line-height:1.15;color:#a8454a;
-  border:.18em double #a8454a;transform:rotate(var(--r,-12deg));opacity:.82;
-  mix-blend-mode:multiply;padding:.6em;
-}
-.ticket{
-  position:absolute;z-index:5;background:var(--paper-2);padding:.6em 1em;font-family:var(--type);font-size:.8em;
-  border-left:.15em dashed rgba(0,0,0,.25);transform:rotate(var(--r,0deg));
-  box-shadow:0 .15em .4em rgba(0,0,0,.12);
-  -webkit-mask:radial-gradient(circle at 0 50%, transparent .45em, #000 .47em) left/51% 100% no-repeat,
-               radial-gradient(circle at 100% 50%, transparent .45em, #000 .47em) right/51% 100% no-repeat;
-          mask:radial-gradient(circle at 0 50%, transparent .45em, #000 .47em) left/51% 100% no-repeat,
-               radial-gradient(circle at 100% 50%, transparent .45em, #000 .47em) right/51% 100% no-repeat;
-}
-.note{
-  position:absolute;z-index:5;padding:1em 1.1em;transform:rotate(var(--r,0deg));
-  background:#fffdf6;
-  background-image:repeating-linear-gradient(transparent 0 1.45em, rgba(74,106,148,.18) 1.45em calc(1.45em + 1px));
-  box-shadow:0 .2em .6em rgba(0,0,0,.14);font-family:var(--hand);font-size:1.2em;line-height:1.2;
-}
-.torn{
-  position:absolute;z-index:3;background:#fff;padding:1.2em 1.3em;
-  clip-path:polygon(0 3%,6% 0,12% 2%,19% 0,27% 3%,35% 1%,44% 3%,52% 0,61% 2%,70% 0,78% 3%,86% 1%,93% 3%,100% 0,100% 97%,94% 100%,87% 97%,79% 100%,71% 98%,62% 100%,54% 97%,45% 100%,37% 98%,28% 100%,20% 97%,12% 100%,5% 98%,0 100%);
-  transform:rotate(var(--r,0deg));
-}
-.clip{ position:absolute;z-index:8;width:1.6em; }
-.doodle{ position:absolute;z-index:6;pointer-events:none;color:var(--accent); }
-.sticker{
-  position:absolute;z-index:7;font-family:var(--hand);font-size:1.15em;padding:.3em .8em;border-radius:2em;
-  background:#fff;box-shadow:0 .1em .3em rgba(0,0,0,.15);transform:rotate(var(--r,0deg));
-  border:.12em solid #fff;outline:1px solid rgba(0,0,0,.06);
-}
-.chip{
-  display:inline-block;font-family:var(--hand);font-size:1.15em;padding:.05em .6em;margin:.15em .1em;
-  background:#fff;border-radius:.3em;box-shadow:0 .08em .25em rgba(0,0,0,.12);transform:rotate(var(--r,0deg));
-}
-
-/* ---------- Couverture ---------- */
-.cover-inner{ position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center; }
-.cover-plate{
-  background:var(--paper);color:var(--ink);padding:2em 2.2em 1.8em;width:78%;
-  box-shadow:inset 0 0 0 .35em var(--paper), inset 0 0 0 .45em var(--accent), 0 .3em 1em rgba(0,0,0,.35);
-  transform:rotate(-1.2deg);position:relative;
-}
-.cover-plate .script{ font-size:5.2em;color:var(--accent);margin:.05em 0 .1em; }
-.cover-plate .name{ font-family:var(--hand);font-size:2em; }
-.cover-foot{ position:absolute;bottom:2.4em;font-family:var(--type);font-size:.85em;letter-spacing:.2em;opacity:.8; }
-.back-mark{ position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6em;opacity:.85; }
-
-/* ---------- Sommaire ---------- */
-.toc{ list-style:none;margin-top:.6em; }
-.toc li{ display:flex;align-items:baseline;gap:.5em;padding:.28em 0; }
-.toc button{ text-align:left;font-family:var(--serif);font-size:1.15em;color:var(--ink);transition:color .2s, transform .2s; }
-.toc button:hover{ color:var(--accent);transform:translateX(.25em); }
-.toc .dots{ flex:1;border-bottom:1px dotted rgba(39,54,74,.4);transform:translateY(-.3em); }
-.toc .n{ font-family:var(--type);font-size:.85em;color:var(--ink-soft); }
-.toc .sec{ font-family:var(--hand);font-size:1.35em;color:var(--accent);padding-top:.6em; }
-
-/* ---------- Parcours ---------- */
-.timeline{ position:relative;margin-left:.4em;padding-left:1.3em;border-left:1px dashed rgba(74,106,148,.5); }
-.timeline .it{ position:relative;margin-bottom:.85em; }
-.timeline .it::before{
-  content:"";position:absolute;left:-1.72em;top:.35em;width:.75em;height:.75em;border-radius:50%;
-  background:var(--paper);border:.15em solid var(--accent);
-}
-.timeline .d{ font-family:var(--type);font-size:.78em;color:var(--accent); }
-.timeline .t{ font-weight:600;font-size:1.05em;line-height:1.25; }
-.timeline .s{ font-style:italic;color:var(--ink-soft);font-size:.95em; }
-h3.hd{ font-family:var(--hand);font-size:1.7em;color:var(--accent);font-weight:600;margin:.5em 0 .35em; }
-
-/* ---------- Contact ---------- */
-.envelope{
-  position:absolute;left:9%;right:9%;top:44%;height:32%;z-index:3;
-  background:#cdbb98;box-shadow:0 .3em 1em rgba(0,0,0,.18);transform:rotate(-2deg);
-}
-.envelope .letter{
-  position:absolute;left:7%;right:7%;bottom:18%;top:-52%;background:#fffdf7;padding:1em 1.3em;
-  box-shadow:0 .15em .4em rgba(0,0,0,.12);z-index:1;transform:rotate(2.5deg);
-  font-family:var(--hand);font-size:1.25em;line-height:1.3;
-}
-.envelope .pocket{
-  position:absolute;inset:0;z-index:2;background:#e9dcc3;
-  clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);
-}
-.envelope .seal{
-  position:absolute;z-index:3;left:50%;top:52%;width:2.6em;height:2.6em;margin:-1.3em 0 0 -1.3em;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%, #c6545b, #8c2e35);box-shadow:0 .1em .3em rgba(0,0,0,.3);
-  display:flex;align-items:center;justify-content:center;color:#f3d7d7;font-family:var(--script);font-size:1.5em;
-}
-.btn-link{
-  display:inline-flex;align-items:center;gap:.4em;font-family:var(--type);font-size:.85em;
-  padding:.55em 1em;border:1px solid var(--ink);background:rgba(255,255,255,.5);text-decoration:none;
-  transition:background .2s,color .2s;
-}
-.btn-link:hover{ background:var(--ink);color:var(--paper); }
+/* typo */
+.disp{font-family:var(--display);font-weight:400;line-height:.88;text-transform:uppercase;letter-spacing:-.005em}
+.k{font-size:.66em;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.k.red,.red-t{color:var(--red)}
+.serif{font-family:var(--serif);font-weight:400}
+.it{font-style:italic}
+p{margin:0 0 .75em;hyphens:auto;text-align:justify}
+.small{font-size:.86em;line-height:1.5}
+.lead{font-family:var(--serif);font-size:1.55em;line-height:1.15;text-align:left;margin-bottom:.8em}
+.cols{column-count:2;column-gap:1.6em}
+.cols p{text-align:justify}
+.rule{height:1px;background:currentColor;opacity:.25;margin:1em 0}
+.abs{position:absolute}
+.img{position:absolute;overflow:hidden;background:#222}
+.img img{display:block;width:100%;height:100%;object-fit:cover}
+.img.full{inset:0}
+.shade-b::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.75))}
+.shade-t::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.55))}
+.vert{writing-mode:vertical-rl;transform:rotate(180deg)}
+.tagline{display:flex;flex-wrap:wrap;gap:.4em .9em;font-size:.66em;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.tagline span::before{content:"— ";color:var(--red)}
+.box{background:var(--red);color:#fff;padding:.25em .6em;display:inline-block}
+.video{position:absolute;background:#000;z-index:5}
+.video video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.video .cap{position:absolute;left:0;bottom:-2em;font-size:.62em;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
 
 /* =========================================================
-   Contrôles
+   Pages : spécifiques
    ========================================================= */
-.controls{
-  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;
-  display:flex;align-items:center;gap:14px;color:#fff;font-family:var(--type);font-size:13px;
-}
-.controls button{
-  width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
-  display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s;
-}
-.controls button:hover{ background:rgba(255,255,255,.15); }
-.controls button:disabled{ opacity:.3;cursor:default; }
-.controls .ind{ min-width:120px;text-align:center;letter-spacing:.06em; }
+/* couverture */
+.cover .img img{filter:grayscale(1) contrast(1.1)}
+.cover .mast{position:absolute;left:.12em;right:.12em;top:.32em;color:#fff;font-size:8.3em;text-align:center;z-index:4;mix-blend-mode:difference}
+.mobile .cover .mast{font-size:7.2em}
+.cover .top{position:absolute;left:2.2em;right:2.2em;top:1.3em;display:flex;justify-content:space-between;color:#fff;z-index:5}
+.cover .lines{position:absolute;left:2.2em;bottom:6.5em;z-index:5;color:#fff;width:46%}
+.cover .lines div{margin-bottom:1em}
+.cover .lines b{display:block;font-family:var(--display);font-weight:400;font-size:1.7em;line-height:.95;text-transform:uppercase}
+.cover .lines small{font-size:.75em;opacity:.85}
+.cover .name{position:absolute;right:2.2em;bottom:2.2em;text-align:right;color:#fff;z-index:5}
+.cover .name .disp{font-size:3.6em}
+.cover .barcode{position:absolute;left:2.2em;bottom:2.2em;z-index:5;background:#fff;padding:.4em .5em .25em;color:#000;font-size:.5em;letter-spacing:.2em;text-align:center}
+.cover .barcode i{display:block;width:9em;height:2.6em;margin-bottom:.3em;
+  background:repeating-linear-gradient(90deg,#000 0 2px,transparent 2px 3px,#000 3px 4px,transparent 4px 7px,#000 7px 10px,transparent 10px 11px)}
+.cover .badge{position:absolute;right:2.2em;top:40%;z-index:5;width:6.5em;height:6.5em;border-radius:50%;background:var(--red);color:#fff;
+  display:flex;align-items:center;justify-content:center;text-align:center;font-size:.8em;font-weight:800;line-height:1.05;letter-spacing:.04em;text-transform:uppercase;transform:rotate(-10deg)}
 
-.tabs{
-  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:6px;
-}
-.tabs button{
-  font-family:var(--hand);font-size:19px;color:var(--ink);padding:6px 16px 6px 14px;border-radius:8px 0 0 8px;
-  background:var(--paper);box-shadow:-2px 2px 6px rgba(0,0,0,.15);transform:translateX(8px);transition:transform .2s;
-  text-align:left;
-}
-.tabs button:nth-child(2){ background:var(--sky); }
-.tabs button:nth-child(3){ background:var(--rose); }
-.tabs button:nth-child(4){ background:var(--sage); }
-.tabs button:hover,.tabs button.on{ transform:translateX(0); }
-@media (max-width: 1100px){ .tabs{ display:none; } }
+/* sommaire */
+.toc{list-style:none;margin-top:1em;border-top:1px solid rgba(0,0,0,.85)}
+.toc li{border-bottom:1px solid rgba(0,0,0,.18)}
+.toc button{display:grid;grid-template-columns:2.6em 1fr auto;align-items:baseline;width:100%;text-align:left;padding:.42em 0;transition:padding .25s,color .2s}
+.toc button:hover{padding-left:.5em;color:var(--red)}
+.toc .n{font-family:var(--display);font-size:1.25em;color:var(--red)}
+.toc .t{font-weight:600;font-size:1.02em}
+.toc .t small{display:inline;margin-left:.6em;font-weight:400;font-size:.8em;opacity:.55}
+.toc .p{font-size:.75em;font-weight:600;letter-spacing:.1em}
 
-.hint{
-  position:fixed;top:52px;left:50%;transform:translateX(-50%);color:#fff;font-family:var(--hand);font-size:20px;
-  opacity:.9;transition:opacity .6s;pointer-events:none;z-index:40;white-space:nowrap;
-}
-.hint.hide{ opacity:0; }
-.sr-only{ position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0); }
+/* parcours */
+.tl .row{display:grid;grid-template-columns:6.4em 1fr;gap:1em;padding:.7em 0;border-bottom:1px solid rgba(0,0,0,.15)}
+.tl .d{font-size:.7em;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--red);padding-top:.25em}
+.tl .t{font-weight:600;line-height:1.25}
+.tl .s{font-size:.86em;opacity:.65}
+.tl-h{font-family:var(--display);font-size:1.6em;text-transform:uppercase;margin:1.1em 0 .2em;line-height:1}
+
+/* compétences */
+.skills{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #fff}
+.skills div{padding:.6em 0;border-bottom:1px solid rgba(255,255,255,.18);font-weight:500;display:flex;justify-content:space-between}
+.skills div span{opacity:.5;font-size:.8em}
+.skills div:nth-child(odd){padding-right:1em}
+
+/* boutons */
+.btn{display:inline-flex;align-items:center;gap:.6em;font-size:.72em;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  padding:1em 1.4em;border:1px solid currentColor;text-decoration:none;transition:background .2s,color .2s}
+.dark .btn:hover{background:#fff;color:#000}
+.face:not(.dark) .btn:hover{background:#000;color:#fff}
+.btn.fill{background:var(--red);border-color:var(--red);color:#fff}
+.btn.fill:hover{background:#fff!important;color:#000!important;border-color:#fff}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <a href="/portfolio/">← iolite.team</a>
-  <span class="who">Albane Riou</span>
-  <a href="https://albaneriou.fr/photo/cvportfolio.pdf" target="_blank" rel="noopener">CV (pdf) ↓</a>
+  <span class="mast">ALBANE RIOU</span>
+  <nav aria-label="Rubriques">
+    <button data-goto="2">Sommaire</button>
+    <button data-goto="3">Édito</button>
+    <button data-goto="7">Projets</button>
+    <button data-goto="19">Contact</button>
+  </nav>
 </header>
 
-<main class="stage" aria-label="Portfolio d'Albane Riou sous forme de carnet">
+<main class="stage" aria-label="Portfolio d'Albane Riou au format magazine">
   <div class="book-wrap"><div class="book" id="book"></div></div>
 </main>
 
-<nav class="tabs" aria-label="Chapitres">
-  <button data-goto="3">À propos</button>
-  <button data-goto="5">Parcours</button>
-  <button data-goto="7">Projets</button>
-  <button data-goto="19">Contact</button>
-</nav>
-
-<div class="hint" id="hint">cliquez sur le coin de la page ou utilisez ← →</div>
-
+<div class="hint" id="hint">Cliquez sur le coin de la page, ou utilisez les flèches ← →</div>
 <div class="controls">
-  <button id="prev" aria-label="Page précédente"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button id="prev" aria-label="Page précédente"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
   <span class="ind" id="ind" aria-live="polite">Couverture</span>
-  <button id="next" aria-label="Page suivante"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
+  <button id="next" aria-label="Page suivante"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
 </div>
+<div class="progress" id="progress"></div>
 
 <!-- =========================================================
-     PAGES DU CARNET
+     PAGES DU MAGAZINE
      Une <section class="face"> = une page.
-     Ordre : 0 couverture, puis les pages en vis-à-vis (impair à gauche, pair à droite),
-     dernière = 4e de couverture. Garder un nombre PAIR de pages.
+     0 = couverture ; ensuite les doubles pages (impaire à gauche, paire à droite) ; dernière = 4e de couverture.
+     Garder un nombre PAIR de pages.
+     Classes de fond : (aucune) papier · dark · red · bleed (image pleine page, sans marges).
+     data-nofolio : pas d'en-tête ni de numéro de page.
      Images : data-asset="chemin" (résolu avec ASSET_BASE, voir le script en bas).
      ========================================================= -->
 <template id="pages">
 
   <!-- 0 · COUVERTURE -->
-  <section class="face board" data-label="Couverture">
-    <div class="cover-inner">
-      <div class="cover-plate">
-        <span class="tape rose" style="top:-.7em;left:-1.6em;transform:rotate(-28deg)"></span>
-        <span class="tape" style="bottom:-.6em;right:-1.8em;transform:rotate(-24deg)"></span>
-        <div class="kicker brk">design · portfolio</div>
-        <div class="script">Portfolio</div>
-        <div class="name">Albane Riou</div>
-      </div>
-      <svg class="doodle" style="right:12%;top:12%;width:3em;color:#e9eef6" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 3l4.5 11.5L37 16l-9.5 8 3 12.5L20 30l-10.5 6.5 3-12.5L3 16l12.5-1.5z"/></svg>
-      <div class="cover-foot">BUT MMI · IUT DE ROUEN</div>
+  <section class="face bleed cover" data-label="Couverture" data-nofolio>
+    <div class="img full shade-b"><img data-asset="photo/moi.png" alt="Portrait d'Albane Riou"></div>
+    <div class="top k"><span>N°01 — Édition 2026</span><span>BUT MMI · Rouen</span></div>
+    <div class="mast disp">Portfolio</div>
+    <div class="badge">Prix<br>Green<br>Awards<br>2025</div>
+    <div class="lines">
+      <div><b>Portraits</b><small>Une série dessinée sur tablette graphique</small></div>
+      <div><b>Seconde Chance</b><small>Un court métrage contre la fast fashion</small></div>
+      <div><b>Casque de F1</b><small>De la modélisation au rendu 3D</small></div>
     </div>
+    <div class="name"><div class="k" style="margin-bottom:.4em">Design · Audiovisuel · 3D</div><div class="disp">Albane<br>Riou</div></div>
   </section>
 
-  <!-- 1 · PAGE DE GARDE (gauche) -->
-  <section class="face endpaper" data-label="Page de garde">
-    <div class="note" style="--r:-3deg;left:12%;right:14%;top:22%">
-      <div style="font-size:.85em;color:var(--ink-soft)">Ce carnet appartient à :</div>
-      <div style="font-size:2em;color:var(--accent);margin:.15em 0 .3em">Albane Riou</div>
-      Étudiante en BUT Métiers du Multimédia et de l'Internet, à Rouen.<br>
-      Dessin, vidéo, 3D, communication… tout est là-dedans.
+  <!-- 1 · 2E DE COUVERTURE (gauche) -->
+  <section class="face dark" data-label="Ours">
+    <div class="disp" style="font-size:11em;line-height:.8;margin-top:.15em">N°<br>01</div>
+    <div class="abs" style="left:3.2em;right:3.2em;bottom:4.2em">
+      <div class="rule" style="opacity:.5"></div>
+      <div class="small" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em">
+        <div><div class="k red">Direction artistique</div>Albane Riou</div>
+        <div><div class="k red">Formation</div>BUT MMI, IUT de Rouen</div>
+        <div><div class="k red">Disciplines</div>Illustration, vidéo, 3D, web, communication</div>
+        <div><div class="k red">Publié sur</div>iolite.team</div>
+      </div>
     </div>
-    <span class="tape kraft" style="top:20%;left:44%;transform:rotate(4deg)"></span>
-    <div class="hand abs" style="bottom:16%;right:14%;font-size:1.5em;color:var(--accent);transform:rotate(-4deg)">tournez la page →</div>
-    <svg class="doodle" style="bottom:22%;right:16%;width:4em" viewBox="0 0 80 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 30c14-18 34-22 58-14"/><path d="M54 8l10 8-12 4"/></svg>
   </section>
 
   <!-- 2 · SOMMAIRE (droite) -->
-  <section class="face paper" data-label="Sommaire">
-    <span class="tape sage" style="top:1.2em;right:2.6em;transform:rotate(8deg)"></span>
-    <div class="kicker brk">sommaire</div>
-    <h2 class="title">Sommaire</h2>
+  <section class="face" data-label="Sommaire">
+    <div class="disp" style="font-size:5.8em">Som&#8209;<br>maire</div>
     <ul class="toc">
-      <li><button data-goto="3">À propos</button><span class="dots"></span><span class="n">03</span></li>
-      <li><button data-goto="5">Parcours</button><span class="dots"></span><span class="n">05</span></li>
-      <li><button data-goto="6">Compétences</button><span class="dots"></span><span class="n">06</span></li>
-      <li class="sec">Projets</li>
-      <li><button data-goto="7">Portraits numériques</button><span class="dots"></span><span class="n">07</span></li>
-      <li><button data-goto="9">Seconde Chance</button><span class="dots"></span><span class="n">09</span></li>
-      <li><button data-goto="11">Casque de F1</button><span class="dots"></span><span class="n">11</span></li>
-      <li><button data-goto="13">Village</button><span class="dots"></span><span class="n">13</span></li>
-      <li><button data-goto="15">BDE La Bête</button><span class="dots"></span><span class="n">15</span></li>
-      <li><button data-goto="17">Dernière Enquête</button><span class="dots"></span><span class="n">17</span></li>
-      <li class="sec">&nbsp;</li>
-      <li><button data-goto="19">Contact</button><span class="dots"></span><span class="n">19</span></li>
+      <li><button data-goto="3"><span class="n">—</span><span class="t">Édito<small>Qui suis-je ?</small></span><span class="p">03</span></button></li>
+      <li><button data-goto="5"><span class="n">—</span><span class="t">Parcours &amp; outils<small>Formation, expériences, compétences</small></span><span class="p">05</span></button></li>
+      <li><button data-goto="7"><span class="n">01</span><span class="t">Portraits<small>Illustration numérique</small></span><span class="p">07</span></button></li>
+      <li><button data-goto="9"><span class="n">02</span><span class="t">Seconde Chance<small>Court métrage</small></span><span class="p">09</span></button></li>
+      <li><button data-goto="11"><span class="n">03</span><span class="t">Casque de F1<small>Modélisation 3D</small></span><span class="p">11</span></button></li>
+      <li><button data-goto="13"><span class="n">04</span><span class="t">Village<small>Vidéo</small></span><span class="p">13</span></button></li>
+      <li><button data-goto="15"><span class="n">05</span><span class="t">BDE La Bête<small>Communication</small></span><span class="p">15</span></button></li>
+      <li><button data-goto="17"><span class="n">06</span><span class="t">Dernière Enquête<small>Vidéo</small></span><span class="p">17</span></button></li>
+      <li><button data-goto="19"><span class="n">—</span><span class="t">Contact</span><span class="p">19</span></button></li>
     </ul>
   </section>
 
-  <!-- 3 · À PROPOS (gauche) -->
-  <section class="face paper" data-label="À propos">
-    <div class="kicker brk">about me</div>
-    <h2 class="title">Bonjour !</h2>
+  <!-- 3 · ÉDITO (gauche) -->
+  <section class="face" data-label="Édito">
+    <div class="k red">Édito</div>
+    <div class="disp" style="font-size:7.2em;margin:.12em 0 .25em">Bonjour.</div>
     <p class="lead">Moi c'est Albane, étudiante en BUT Métiers du Multimédia et de l'Internet à l'IUT de Rouen.</p>
-    <p>Depuis toute petite, le dessin occupe une place essentielle dans ma vie : un terrain de jeu, un espace d'expression, parfois même un refuge. Aujourd'hui, j'aime raconter des histoires avec toutes sortes d'outils : le crayon et la tablette graphique, la caméra, la 3D ou le code.</p>
-    <p>Ce carnet rassemble des projets personnels et des projets réalisés pendant ma formation : illustration, court métrage, modélisation 3D et communication associative.</p>
-    <p>En dehors des écrans, je sculpte, je danse et je fais de la boxe anglaise.</p>
-    <div class="hand abs" style="bottom:2.6em;right:3em;font-size:2.4em;color:var(--accent);transform:rotate(-6deg)">Albane</div>
+    <div class="cols small">
+      <p>Depuis toute petite, le dessin occupe une place essentielle dans ma vie : un terrain de jeu, un espace d'expression, parfois même un refuge.</p>
+      <p>Aujourd'hui, j'aime raconter des histoires avec toutes sortes d'outils : le crayon et la tablette graphique, la caméra, la 3D ou le code.</p>
+      <p>Ce magazine rassemble des projets personnels et des projets réalisés pendant ma formation : illustration, court métrage, modélisation 3D et communication associative.</p>
+      <p>En dehors des écrans, je sculpte, je danse et je fais de la boxe anglaise.</p>
+    </div>
+    <div class="serif it abs" style="right:3.2em;bottom:3.4em;font-size:2.4em">— Albane</div>
   </section>
 
-  <!-- 4 · À PROPOS, VISUEL (droite) -->
-  <section class="face paper" data-label="À propos">
-    <figure class="polaroid" style="--r:4deg;left:16%;top:9%;width:60%;height:58%">
-      <span class="tape" style="top:-.8em;left:35%;transform:rotate(-6deg)"></span>
-      <img data-asset="photo/moi.png" alt="Portrait d'Albane Riou">
-      <figcaption>c'est moi !</figcaption>
-    </figure>
-    <div class="ticket" style="--r:-7deg;left:7%;top:62%">ROUEN ⟶ NORMANDIE</div>
-    <div class="note" style="--r:3deg;right:8%;bottom:9%;width:52%">
-      J'aime :<br>✎ le dessin<br>✎ la sculpture<br>✎ la danse<br>✎ la boxe anglaise
+  <!-- 4 · ÉDITO, PHOTO (droite) -->
+  <section class="face bleed" data-label="Édito">
+    <div class="img full shade-b"><img data-asset="photo/moi.png" alt="Albane Riou"></div>
+    <div class="abs" style="left:2.4em;right:2.4em;bottom:3.6em;color:#fff;z-index:4">
+      <div class="k" style="margin-bottom:.8em"><span class="box">Manifeste</span></div>
+      <div class="disp" style="font-size:5.6em">Dessiner.<br>Filmer.<br>Modéliser.</div>
     </div>
-    <div class="stamp" style="--r:-14deg;left:10%;bottom:8%">BUT<br>MMI<br>ROUEN</div>
   </section>
 
   <!-- 5 · PARCOURS (gauche) -->
-  <section class="face paper" data-label="Parcours">
-    <div class="kicker brk">parcours</div>
-    <h2 class="title">Parcours</h2>
-    <h3 class="hd">Formation</h3>
-    <div class="timeline">
-      <div class="it"><div class="d">depuis 2024</div><div class="t">BUT Métiers du Multimédia et de l'Internet</div><div class="s">IUT de Rouen</div></div>
-      <div class="it"><div class="d">2020 — 2024</div><div class="t">Baccalauréat général, mention assez bien</div><div class="s">Institution de Lisieux</div></div>
+  <section class="face" data-label="Parcours">
+    <div class="disp vert abs" style="left:1.2em;top:4.2em;bottom:3.6em;font-size:5.2em;text-align:right">Parcours</div>
+    <div style="margin-left:8.4em">
+      <div class="tl-h" style="margin-top:0">Formation</div>
+      <div class="tl">
+        <div class="row"><div class="d">Depuis 2024</div><div><div class="t">BUT Métiers du Multimédia et de l'Internet</div><div class="s">IUT de Rouen</div></div></div>
+        <div class="row"><div class="d">2020–2024</div><div><div class="t">Baccalauréat général, mention assez bien</div><div class="s">Institution de Lisieux</div></div></div>
+      </div>
+      <div class="tl-h">Expériences</div>
+      <div class="tl">
+        <div class="row"><div class="d">Saison d'été</div><div><div class="t">Réceptionniste</div><div class="s">Hôtel Amirauté, Deauville</div></div></div>
+        <div class="row"><div class="d">2024</div><div><div class="t">Contrat étudiant, mise en rayon</div><div class="s">E.Leclerc, Lisieux</div></div></div>
+        <div class="row"><div class="d">Saisonnier</div><div><div class="t">Mise en rayon</div><div class="s">Intermarché, Lisieux</div></div></div>
+      </div>
+      <div class="tl-h">Engagements</div>
+      <div class="tl">
+        <div class="row"><div class="d">Depuis 2025</div><div><div class="t">BDE La Bête, pôle communication</div></div></div>
+        <div class="row"><div class="d">2021–2023</div><div><div class="t">Conseillère municipale des jeunes</div><div class="s">Ville de Lisieux</div></div></div>
+      </div>
     </div>
-    <h3 class="hd">Expériences</h3>
-    <div class="timeline">
-      <div class="it"><div class="d">saison d'été</div><div class="t">Réceptionniste</div><div class="s">Hôtel Amirauté, Deauville</div></div>
-      <div class="it"><div class="d">2024</div><div class="t">Contrat étudiant, mise en rayon</div><div class="s">E.Leclerc, Lisieux</div></div>
-      <div class="it"><div class="d">saisonnier</div><div class="t">Mise en rayon</div><div class="s">Intermarché, Lisieux</div></div>
-    </div>
-    <div class="sticker" style="--r:-5deg;right:2.6em;bottom:3.4em">permis B ✓</div>
   </section>
 
   <!-- 6 · COMPÉTENCES (droite) -->
-  <section class="face paper" data-label="Compétences">
-    <span class="tape rose" style="top:1.3em;left:2.4em;transform:rotate(-10deg)"></span>
-    <div class="kicker brk">boîte à outils</div>
-    <h2 class="title">Compétences</h2>
-    <h3 class="hd">Création</h3>
-    <div>
-      <span class="chip" style="--r:-2deg">Photoshop</span>
-      <span class="chip" style="--r:1.5deg">Illustrator</span>
-      <span class="chip" style="--r:-1deg">Blender</span>
-      <span class="chip" style="--r:2deg">Artstudio</span>
-      <span class="chip" style="--r:-1.5deg">montage vidéo</span>
+  <section class="face dark" data-label="Compétences">
+    <div class="k red">Boîte à outils</div>
+    <div class="disp" style="font-size:9em;margin:.1em 0 .1em">08<span class="red-t">+</span></div>
+    <div class="disp" style="font-size:2.4em;margin-bottom:1em">outils maîtrisés</div>
+    <div class="skills">
+      <div>Photoshop <span>Création</span></div><div>Illustrator <span>Création</span></div>
+      <div>Blender <span>3D</span></div><div>Artstudio <span>Illustration</span></div>
+      <div>HTML <span>Web</span></div><div>CSS <span>Web</span></div>
+      <div>PHP <span>Web</span></div><div>MySQL <span>Web</span></div>
     </div>
-    <h3 class="hd">Web</h3>
-    <div>
-      <span class="chip" style="--r:1deg">HTML</span>
-      <span class="chip" style="--r:-2deg">CSS</span>
-      <span class="chip" style="--r:1.5deg">PHP</span>
-      <span class="chip" style="--r:-1deg">MySQL</span>
-    </div>
-    <h3 class="hd">Langues</h3>
-    <div class="timeline" style="border:0;padding-left:0;margin-left:0">
-      <div class="it" style="margin-bottom:.3em"><span class="t">Français</span> <span class="s">· langue maternelle</span></div>
-      <div class="it" style="margin-bottom:.3em"><span class="t">Anglais</span> <span class="s">· diplôme de Cambridge</span></div>
-      <div class="it" style="margin-bottom:.3em"><span class="t">Allemand</span> <span class="s">· certification</span></div>
-    </div>
-    <h3 class="hd">Engagements</h3>
-    <div class="timeline">
-      <div class="it"><div class="d">depuis mars 2025</div><div class="t">BDE La Bête, pôle communication</div></div>
-      <div class="it"><div class="d">2021 — 2023</div><div class="t">Conseillère municipale des jeunes</div><div class="s">Ville de Lisieux</div></div>
-    </div>
+    <div class="tl-h" style="font-size:1.6em">Langues</div>
+    <div class="small" style="opacity:.85">Français · Anglais (diplôme de Cambridge) · Allemand (certification)</div>
+    <div class="small abs" style="left:3.2em;bottom:3.6em;opacity:.6">Permis B</div>
   </section>
 
-  <!-- 7 · PROJET 01 TEXTE (gauche) -->
-  <section class="face paper" data-label="Portraits numériques">
-    <div class="kicker">projet 01 — illustration</div>
-    <h2 class="title">Portraits</h2>
-    <div class="tags"><span class="tag">projet personnel</span><span class="tag">tablette graphique</span><span class="tag">Artstudio</span></div>
-    <p class="lead">J'ai toujours été attirée par les visages : leur complexité, leur douceur, les émotions qu'ils renferment.</p>
-    <p>Pour ce projet personnel, j'ai réalisé une série de portraits entièrement sur tablette graphique, avec le logiciel Artstudio. Le numérique m'a offert une liberté nouvelle : on superpose, on efface, on recommence, on explore encore.</p>
-    <p>Chaque portrait est né d'une impulsion : tester une ambiance, un angle, une émotion. Rien n'était vraiment planifié ; ce sont des esquisses spontanées où la recherche artistique se mêle à l'instant présent.</p>
-    <p>Cette série m'a permis d'affiner mon geste et de sortir de ma zone de confort, entre réalisme délicat et traits plus bruts. Mon objectif : mieux comprendre le visage humain en jouant avec les formes, les volumes, la lumière et les textures.</p>
+  <!-- 7 · PROJET 01 OUVERTURE (gauche) -->
+  <section class="face bleed" data-label="Portraits">
+    <div class="img full shade-t"><img data-asset="photo/fille.png" alt="Portrait numérique dessiné par Albane Riou"></div>
+    <div class="disp abs" style="right:.2em;bottom:-.08em;font-size:15em;color:var(--red);z-index:4;line-height:.8">01</div>
   </section>
 
-  <!-- 8 · PROJET 01 VISUEL (droite) -->
-  <section class="face paper" data-label="Portraits numériques">
-    <figure class="polaroid" style="--r:-3deg;left:12%;top:8%;width:70%;height:66%">
-      <span class="tape rose" style="top:-.8em;right:-1.4em;transform:rotate(30deg)"></span>
-      <span class="tape rose" style="bottom:1.2em;left:-1.6em;transform:rotate(30deg)"></span>
-      <img data-asset="photo/fille.png" alt="Portrait numérique dessiné par Albane Riou">
-      <figcaption>série de portraits ✎</figcaption>
-    </figure>
-    <div class="torn" style="--r:2deg;right:9%;bottom:8%;width:58%;font-family:var(--hand);font-size:1.25em;line-height:1.25">
-      « Chaque portrait est une petite exploration : une rencontre entre technique et sensibilité. »
+  <!-- 8 · PROJET 01 TEXTE (droite) -->
+  <section class="face" data-label="Portraits">
+    <div class="tagline"><span>Illustration</span><span>Projet personnel</span><span>Artstudio</span></div>
+    <div class="disp" style="font-size:7.6em;margin:.18em 0 .3em">Por&#8209;<br>traits</div>
+    <p class="lead">« J'ai toujours été attirée par les visages : leur complexité, leur douceur, les émotions qu'ils renferment. »</p>
+    <div class="cols small">
+      <p>Pour ce projet personnel, j'ai réalisé une série de portraits entièrement sur tablette graphique, avec le logiciel Artstudio. Le numérique m'a offert une liberté nouvelle : on superpose, on efface, on recommence, on explore encore.</p>
+      <p>Chaque portrait est né d'une impulsion : tester une ambiance, un angle, une émotion. Ce sont des esquisses spontanées où la recherche artistique se mêle à l'instant présent.</p>
+      <p>Cette série m'a permis d'affiner mon geste et de sortir de ma zone de confort, entre réalisme délicat et traits plus bruts, pour mieux comprendre le visage humain : formes, volumes, lumière et textures.</p>
     </div>
   </section>
 
   <!-- 9 · PROJET 02 TEXTE (gauche) -->
-  <section class="face paper" data-label="Seconde Chance">
-    <div class="kicker">projet 02 — audiovisuel</div>
-    <h2 class="title">Seconde Chance</h2>
-    <div class="tags"><span class="tag">court métrage</span><span class="tag">2025</span><span class="tag">travail d'équipe</span></div>
-    <p class="lead">Un court métrage engagé pour sensibiliser aux effets de la fast fashion sur l'environnement et sur l'humain.</p>
-    <p>Le film explore les conséquences de la production textile de masse (gaspillage de l'eau, pollution, conditions de travail précaires) et interroge notre rapport au vêtement jetable. Il suggère, de manière poétique, que donner une seconde chance à nos vêtements est aussi un acte de responsabilité collective.</p>
-    <p>Au sein de l'équipe, j'ai pris part à la <strong>scénarisation</strong>, à la <strong>direction artistique</strong> (lumières, décors, contraste entre la beauté des matières et la dureté de la production), à la <strong>gestion de production</strong> et au <strong>montage</strong>.</p>
-    <p>En 2025, le film a été récompensé aux <strong>Green Awards</strong>.</p>
+  <section class="face dark" data-label="Seconde Chance">
+    <div class="tagline"><span>Court métrage</span><span>2025</span><span>En équipe</span></div>
+    <div class="disp" style="font-size:6.8em;margin:.18em 0 .3em">Seconde<br><span class="red-t">Chance</span></div>
+    <p class="lead">Un film engagé pour sensibiliser aux effets de la fast fashion sur l'environnement et sur l'humain.</p>
+    <div class="cols small">
+      <p>Le film explore les conséquences de la production textile de masse (gaspillage de l'eau, pollution, conditions de travail précaires) et interroge notre rapport au vêtement jetable. Il suggère, de manière poétique, que donner une seconde chance à nos vêtements est aussi un acte de responsabilité collective.</p>
+      <p>Au sein de l'équipe, j'ai pris part à la scénarisation, à la direction artistique (lumières, décors, contraste entre la beauté des matières et la dureté de la production), à la gestion de production et au montage.</p>
+    </div>
   </section>
 
   <!-- 10 · PROJET 02 VISUEL (droite) -->
-  <section class="face paper" data-label="Seconde Chance">
-    <div class="frame-video" style="--r:-1.5deg;left:9%;right:9%;top:10%">
-      <span class="tape" style="top:-.8em;left:-1.2em;transform:rotate(-30deg)"></span>
-      <span class="tape" style="top:-.8em;right:-1.2em;transform:rotate(30deg)"></span>
+  <section class="face" data-label="Seconde Chance">
+    <div class="video" style="left:0;right:0;top:0;height:46%">
       <video controls preload="none" playsinline data-asset-poster="photo/loane2.png" data-asset="videos%20/secondchance.MP4"></video>
-      <span class="label">▶ le film</span>
     </div>
-    <figure class="polaroid" style="--r:5deg;right:10%;bottom:9%;width:44%;height:36%">
-      <img data-asset="photo/loane2.png" alt="Image du court métrage Seconde Chance">
-      <figcaption>sur le tournage</figcaption>
-    </figure>
-    <div class="stamp" style="--r:-16deg;left:12%;bottom:14%">GREEN<br>AWARDS<br>2025</div>
+    <div class="img" style="left:3.2em;top:50%;width:46%;height:34%"><img data-asset="photo/loane2.png" alt="Image du court métrage Seconde Chance"></div>
+    <div class="abs" style="left:calc(46% + 4.4em);right:3.2em;top:50%">
+      <div class="k">▶ Le film</div>
+      <div class="rule"></div>
+      <div class="disp" style="font-size:3.4em;line-height:.9">Primé aux<br><span class="red-t">Green<br>Awards</span><br>2025</div>
+    </div>
+    <div class="abs small" style="left:3.2em;right:3.2em;bottom:3.4em;opacity:.7">Lancez la vidéo ci-dessus pour voir le film.</div>
   </section>
 
   <!-- 11 · PROJET 03 TEXTE (gauche) -->
-  <section class="face paper" data-label="Casque de F1">
-    <div class="kicker">projet 03 — modélisation 3D</div>
-    <h2 class="title">Casque de F1</h2>
-    <div class="tags"><span class="tag">Blender</span><span class="tag">hard surface</span><span class="tag">PBR</span></div>
+  <section class="face" data-label="Casque de F1">
+    <div class="tagline"><span>Modélisation 3D</span><span>Blender</span><span>En équipe</span></div>
+    <div class="disp" style="font-size:6.8em;margin:.18em 0 .3em">Casque<br>de F1</div>
     <p class="lead">Modéliser en détail un casque de Formule 1 pour acquérir une vraie maîtrise des outils 3D.</p>
-    <p>Le sujet n'a pas été choisi au hasard : sa géométrie combine des courbes aérodynamiques fluides et des éléments techniques rigides (mécanisme de visière, fixations) qui demandent une grande précision.</p>
-    <p>Le défi : articuler <strong>hard surface modeling</strong> pour les pièces mécaniques et modélisation de surfaces lisses pour la coque, avec le modificateur Subdivision Surface et des boucles de polygones propres pour éviter les artefacts au lissage.</p>
-    <p>Le texturing avec les Shading Nodes de Blender (rendu physiquement réaliste) a donné des matériaux crédibles : peinture brillante, fibre de carbone, visière en plexiglas réfléchissant. Une expérience complète, du maillage au rendu final.</p>
-  </section>
-
-  <!-- 12 · PROJET 03 VISUEL (droite) -->
-  <section class="face paper" data-label="Casque de F1">
-    <figure class="polaroid" style="--r:3deg;left:10%;top:9%;width:74%;height:60%">
-      <svg class="clip" style="top:-1.3em;left:18%" viewBox="0 0 24 60" fill="none" stroke="#8b96a6" stroke-width="2.2" stroke-linecap="round"><path d="M8 20V48a6 6 0 0012 0V12a9 9 0 00-18 0v38"/></svg>
-      <img data-asset="photo/casque1.png" alt="Rendu 3D du casque de Formule 1">
-      <figcaption>rendu final · Blender</figcaption>
-    </figure>
-    <div class="ticket" style="--r:-4deg;left:9%;bottom:15%">MAILLAGE → TEXTURES → RENDU</div>
-    <div class="sticker" style="--r:8deg;right:10%;bottom:9%">vroum vroum !</div>
-  </section>
-
-  <!-- 13 · PROJET 04 TEXTE (gauche) -->
-  <!-- TODO : compléter le titre et la description du projet (le texte de l'ancien site était dans une image) -->
-  <section class="face paper" data-label="Village">
-    <div class="kicker">projet 04 — audiovisuel</div>
-    <h2 class="title">Village</h2>
-    <div class="tags"><span class="tag">vidéo</span><span class="tag">tournage</span><span class="tag">montage</span></div>
-    <p class="lead">Un projet vidéo à découvrir ci-contre.</p>
-    <p>Lancez la vidéo sur la page de droite pour voir le résultat.</p>
-    <div class="note" style="--r:-2deg;left:3em;right:3em;bottom:4em">
-      notes de projet : intention, rôle, outils utilisés…
+    <div class="cols small">
+      <p>Sa géométrie combine des courbes aérodynamiques fluides et des éléments techniques rigides (mécanisme de visière, fixations) qui demandent une grande précision.</p>
+      <p>Le défi : articuler hard surface modeling pour les pièces mécaniques et modélisation de surfaces lisses pour la coque, avec le modificateur Subdivision Surface et des boucles de polygones propres pour éviter les artefacts.</p>
+      <p>Le texturing avec les Shading Nodes de Blender (rendu physiquement réaliste) a donné des matériaux crédibles : peinture brillante, fibre de carbone, visière en plexiglas. Une expérience complète, du maillage au rendu final.</p>
     </div>
   </section>
 
-  <!-- 14 · PROJET 04 VISUEL (droite) -->
-  <section class="face paper" data-label="Village">
-    <figure class="polaroid" style="--r:-4deg;left:9%;top:7%;width:56%;height:40%">
-      <span class="tape kraft" style="top:-.8em;left:30%;transform:rotate(3deg)"></span>
-      <img data-asset="photo/photovillage.png" alt="Image du projet Village">
-      <figcaption>repérages</figcaption>
-    </figure>
-    <div class="frame-video" style="--r:2deg;left:12%;right:8%;top:52%">
+  <!-- 12 · PROJET 03 VISUEL (droite) -->
+  <section class="face bleed dark" data-label="Casque de F1">
+    <div class="img full"><img data-asset="photo/casque1.png" alt="Rendu 3D du casque de Formule 1"></div>
+    <div class="disp abs" style="left:.15em;top:.5em;font-size:15em;color:var(--red);z-index:4;line-height:.8">03</div>
+    <div class="abs k" style="left:2.4em;bottom:3.4em;z-index:4;color:#fff">Rendu final — Blender</div>
+  </section>
+
+  <!-- 13 · PROJET 04 OUVERTURE (gauche) -->
+  <!-- TODO : compléter le titre et la description (le texte de l'ancien site était dans une image) -->
+  <section class="face bleed" data-label="Village">
+    <div class="img full shade-b"><img data-asset="photo/photovillage.png" alt="Image du projet Village"></div>
+    <div class="abs" style="left:2.4em;right:2.4em;bottom:3.6em;color:#fff;z-index:4">
+      <div class="disp" style="font-size:3em;color:var(--red)">04</div>
+      <div class="disp" style="font-size:8em">Village</div>
+    </div>
+  </section>
+
+  <!-- 14 · PROJET 04 VIDÉO (droite) -->
+  <section class="face" data-label="Village">
+    <div class="tagline"><span>Vidéo</span><span>Tournage</span><span>Montage</span></div>
+    <div class="video" style="left:3.2em;right:3.2em;top:7em;aspect-ratio:16/9">
       <video controls preload="none" playsinline data-asset-poster="photo/photovillage.png" data-asset="videos%20/ca2.mp4"></video>
-      <span class="label">▶ la vidéo</span>
+      <span class="cap">▶ La vidéo</span>
+    </div>
+    <div class="abs" style="left:3.2em;right:3.2em;bottom:4em">
+      <p class="lead">Un projet vidéo à découvrir ci-dessus.</p>
     </div>
   </section>
 
   <!-- 15 · PROJET 05 TEXTE (gauche) -->
   <!-- TODO : détailler les réalisations pour le BDE -->
-  <section class="face paper" data-label="BDE La Bête">
-    <div class="kicker">projet 05 — communication</div>
-    <h2 class="title">BDE La Bête</h2>
-    <div class="tags"><span class="tag">associatif</span><span class="tag">depuis mars 2025</span><span class="tag">pôle communication</span></div>
+  <section class="face red" data-label="BDE La Bête">
+    <div class="tagline" style="color:#fff"><span style="--c:#fff">Communication</span><span>Associatif</span><span>Depuis mars 2025</span></div>
+    <div class="disp" style="font-size:9em;margin:.15em 0 .2em;line-height:.92">BDE<br>La<br>Bête</div>
     <p class="lead">Depuis mars 2025, je fais partie du pôle communication du BDE La Bête.</p>
-    <p>Au sein du pôle, je participe à la création des contenus qui font vivre l'association et la vie étudiante.</p>
-    <div class="stamp" style="--r:10deg;right:3em;bottom:4em">LA<br>BÊTE<br>BDE</div>
+    <p class="small">Au sein du pôle, je participe à la création des contenus qui font vivre l'association et la vie étudiante.</p>
+    <div class="disp abs" style="right:.2em;bottom:-.1em;font-size:12em;line-height:.8;color:#fff;opacity:.95">05</div>
   </section>
 
   <!-- 16 · PROJET 05 VISUEL (droite) -->
-  <section class="face paper" data-label="BDE La Bête">
-    <figure class="polaroid" style="--r:2.5deg;left:12%;top:10%;width:72%;height:64%">
-      <span class="tape sage" style="top:-.8em;left:-1.4em;transform:rotate(-32deg)"></span>
-      <span class="tape sage" style="top:-.8em;right:-1.4em;transform:rotate(32deg)"></span>
-      <img data-asset="photo/bdeee.png" alt="Visuel réalisé pour le BDE La Bête">
-      <figcaption>pour le BDE ♡</figcaption>
-    </figure>
+  <section class="face bleed" data-label="BDE La Bête">
+    <div class="img full"><img data-asset="photo/bdeee.png" alt="Visuel réalisé pour le BDE La Bête"></div>
   </section>
 
   <!-- 17 · PROJET 06 TEXTE (gauche) -->
   <!-- TODO : compléter la description du projet -->
-  <section class="face paper" data-label="Dernière Enquête">
-    <div class="kicker">projet 06 — audiovisuel</div>
-    <h2 class="title">Dernière Enquête</h2>
-    <div class="tags"><span class="tag">vidéo</span><span class="tag">réalisation</span></div>
+  <section class="face dark" data-label="Dernière Enquête">
+    <div class="tagline"><span>Vidéo</span><span>Réalisation</span></div>
+    <div class="disp" style="font-size:7.4em;margin:.18em 0 .3em;line-height:.94">Der&#8209;<br>nière<br><span class="red-t">En&#8209;<br>quête</span></div>
     <p class="lead">Un projet vidéo à découvrir ci-contre.</p>
-    <p>Lancez la vidéo sur la page de droite pour voir le résultat.</p>
-    <svg class="doodle" style="left:3em;bottom:4em;width:5em" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="24" cy="24" r="15"/><path d="M35 35l17 17"/></svg>
+    <div class="disp abs" style="right:.2em;bottom:-.1em;font-size:12em;line-height:.8;color:var(--red)">06</div>
   </section>
 
   <!-- 18 · PROJET 06 VISUEL (droite) -->
-  <section class="face paper" data-label="Dernière Enquête">
-    <div class="frame-video" style="--r:-2deg;left:9%;right:9%;top:12%">
-      <span class="tape rose" style="top:-.8em;left:40%;transform:rotate(-4deg)"></span>
+  <section class="face" data-label="Dernière Enquête">
+    <div class="img" style="left:0;right:0;top:0;height:44%"><img data-asset="photo/jules.png" alt="Image du projet Dernière Enquête"></div>
+    <div class="video" style="left:3.2em;right:3.2em;top:48%;aspect-ratio:16/9">
       <video controls preload="none" playsinline data-asset-poster="photo/jules.png" data-asset="videos%20/Derni%C3%A8reEnqu%C3%A8te.mp4"></video>
-      <span class="label">▶ la vidéo</span>
+      <span class="cap">▶ La vidéo</span>
     </div>
-    <figure class="polaroid" style="--r:6deg;right:10%;bottom:8%;width:42%;height:34%">
-      <img data-asset="photo/jules.png" alt="Image du projet Dernière Enquête">
-      <figcaption>indice n°1</figcaption>
-    </figure>
-    <div class="ticket" style="--r:-8deg;left:10%;bottom:16%">DOSSIER CLASSÉ ?</div>
+    <div class="disp abs" style="left:3.2em;bottom:2.6em;font-size:3.6em">Look<span class="red-t">?</span></div>
   </section>
 
   <!-- 19 · CONTACT (gauche) -->
-  <section class="face paper" data-label="Contact">
-    <div class="kicker brk">contact</div>
-    <h2 class="title">Écrivez-moi</h2>
-    <div class="envelope">
-      <div class="letter">
-        Un projet, un stage, une question ?<br>
-        <a href="mailto:ariou917@gmail.com">ariou917@gmail.com</a>
-      </div>
-      <div class="pocket"></div>
-      <div class="seal">A</div>
-    </div>
-    <div class="abs" style="left:3em;right:3em;bottom:4em;display:flex;flex-wrap:wrap;gap:.6em">
-      <a class="btn-link" href="mailto:ariou917@gmail.com">✉ m'écrire</a>
-      <a class="btn-link" href="https://albaneriou.fr/photo/cvportfolio.pdf" target="_blank" rel="noopener">↓ télécharger le CV</a>
+  <section class="face dark" data-label="Contact">
+    <div class="k red">Contact</div>
+    <div class="disp" style="font-size:9.4em;margin:.12em 0 .3em;line-height:.84">Let's<br>work<span class="red-t">.</span></div>
+    <p class="lead">Un projet, un stage, une question ?<br>Écrivez-moi.</p>
+    <div class="rule" style="opacity:.4"></div>
+    <a href="mailto:ariou917@gmail.com" style="font-size:1.25em;font-weight:600;text-decoration:none;border-bottom:2px solid var(--red)">ariou917@gmail.com ↗</a>
+    <div class="abs" style="left:3.2em;right:3.2em;bottom:4em;display:flex;flex-wrap:wrap;gap:.7em">
+      <a class="btn fill" href="mailto:ariou917@gmail.com">M'écrire</a>
+      <a class="btn" href="https://albaneriou.fr/photo/cvportfolio.pdf" target="_blank" rel="noopener">Télécharger le CV ↓</a>
     </div>
   </section>
 
-  <!-- 20 · MERCI (droite) -->
-  <section class="face paper" data-label="Merci">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3em">
-      <span class="tape" style="position:relative;display:block;margin:0 auto 1.2em;transform:rotate(-3deg)"></span>
-      <div class="script" style="font-size:4.4em;color:var(--accent)">Merci</div>
-      <p class="hand" style="font-size:1.5em;text-align:center;margin-top:.4em">d'avoir feuilleté mon carnet !</p>
-      <div style="display:flex;gap:.6em;margin-top:1.6em;flex-wrap:wrap;justify-content:center">
-        <button class="btn-link" data-goto="0">↺ revenir au début</button>
-        <a class="btn-link" href="/portfolio/">l'équipe iolite →</a>
-      </div>
+  <!-- 20 · FIN (droite) -->
+  <section class="face" data-label="Fin">
+    <div class="disp" style="font-size:14em;line-height:.8;margin-top:.1em">Fin<span class="red-t">.</span></div>
+    <p class="lead" style="margin-top:.8em">Merci d'avoir feuilleté ce magazine.</p>
+    <div class="abs" style="left:3.2em;right:3.2em;bottom:4em;display:flex;flex-wrap:wrap;gap:.7em">
+      <button class="btn" data-goto="0">↺ Revenir à la couverture</button>
+      <a class="btn" href="/portfolio/">L'équipe iolite →</a>
     </div>
   </section>
 
   <!-- 21 · 4E DE COUVERTURE -->
-  <section class="face board" data-label="Fin">
-    <div class="back-mark">
-      <div class="script" style="font-size:3em">Albane Riou</div>
-      <div class="type" style="font-size:.8em;letter-spacing:.2em">IOLITE.TEAM</div>
-    </div>
+  <section class="face dark" data-label="4e de couverture" data-nofolio>
+    <div class="disp" style="font-size:5em">Albane<br>Riou<span class="red-t">.</span></div>
+    <div class="k" style="margin-top:1em;opacity:.6">Portfolio — N°01 — 2026</div>
+    <div class="cover" style="position:absolute;inset:0"><div class="barcode" style="bottom:2.6em;left:3.2em"><i></i>IOLITE.TEAM</div></div>
   </section>
 
 </template>
@@ -720,21 +522,22 @@ h3.hd{ font-family:var(--hand);font-size:1.7em;color:var(--accent);font-weight:6
 <script>
 /* ---------------------------------------------------------
    Où se trouvent les images et vidéos.
-   Une fois les fichiers copiés dans /albane-riou/assets/,
+   Une fois les fichiers copiés dans /portfolio/albane-riou/assets/,
    remplacer par :  const ASSET_BASE = 'assets/';
    --------------------------------------------------------- */
 const ASSET_BASE = 'https://albaneriou.fr/';
 
 (() => {
-  const book  = document.getElementById('book');
-  const tpl   = document.getElementById('pages');
-  const ind   = document.getElementById('ind');
+  const book = document.getElementById('book');
+  const tpl = document.getElementById('pages');
+  const ind = document.getElementById('ind');
   const prevB = document.getElementById('prev');
   const nextB = document.getElementById('next');
-  const hint  = document.getElementById('hint');
+  const hint = document.getElementById('hint');
+  const bar = document.getElementById('progress');
   const faces = [...tpl.content.children];
-  const mq    = window.matchMedia('(max-width: 760px)');
-  const FLIP_MS = matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 950;
+  const mq = matchMedia('(max-width: 760px)');
+  const FLIP_MS = matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 1000;
 
   let leaves = [], flipped = 0, mobile = false, queue = null, turnZ = 100;
 
@@ -746,24 +549,25 @@ const ASSET_BASE = 'https://albaneriou.fr/';
     root.querySelectorAll('[data-asset-poster]').forEach(el => el.poster = ASSET_BASE + el.dataset.assetPoster);
   }
 
-  function makeSide(cls, faceIdx){
+  function makeSide(cls, fi){
     const side = document.createElement('div');
     side.className = 'side ' + cls;
-    if (faceIdx == null) {
-      side.innerHTML = '<section class="face blank"></section>';
-    } else {
-      const f = faces[faceIdx].cloneNode(true);
+    if (fi == null) side.innerHTML = '<section class="face"></section>';
+    else {
+      const f = faces[fi].cloneNode(true);
       side.appendChild(f);
-      const isCover = faceIdx === 0 || faceIdx === faces.length - 1;
-      if (!isCover && f.classList.contains('paper')) {
+      if (!f.hasAttribute('data-nofolio')) {
+        const fo = document.createElement('div');
+        fo.className = 'folio';
+        fo.innerHTML = '<span>Albane Riou — Portfolio</span><span>' + (f.dataset.label || '') + '</span>';
+        f.appendChild(fo);
         const n = document.createElement('span');
-        n.className = 'pnum'; n.textContent = String(faceIdx).padStart(2, '0');
+        n.className = 'pnum'; n.textContent = String(fi).padStart(2, '0');
         f.appendChild(n);
       }
     }
-    // coins pour tourner
     if (cls === 'front') addCorner(side, 'next');
-    if (cls === 'back' || (mobile && cls === 'front' && faceIdx !== 0)) addCorner(side, 'prev');
+    if (cls === 'back' || (mobile && cls === 'front' && fi !== 0)) addCorner(side, 'prev');
     return side;
   }
   function addCorner(side, dir){
@@ -774,36 +578,31 @@ const ASSET_BASE = 'https://albaneriou.fr/';
     side.appendChild(c);
   }
 
-  function build(keepFace){
+  function build(keep){
     mobile = mq.matches;
     document.body.classList.toggle('mobile', mobile);
-    book.innerHTML = '';
-    leaves = [];
+    book.innerHTML = ''; leaves = [];
     const n = mobile ? faces.length : Math.ceil(faces.length / 2);
     for (let i = 0; i < n; i++) {
       const leaf = document.createElement('div');
       leaf.className = 'leaf';
-      const fFront = mobile ? i : 2 * i;
-      const fBack  = mobile ? null : (2 * i + 1 < faces.length ? 2 * i + 1 : null);
-      leaf.appendChild(makeSide('front', fFront));
-      leaf.appendChild(makeSide('back', fBack));
+      const fF = mobile ? i : 2 * i;
+      const fB = mobile ? null : (2 * i + 1 < faces.length ? 2 * i + 1 : null);
+      leaf.appendChild(makeSide('front', fF));
+      leaf.appendChild(makeSide('back', fB));
       leaf.addEventListener('transitionend', e => {
         if (e.target === leaf && e.propertyName === 'transform') { leaf.classList.remove('turning'); setZ(); }
       });
-      book.appendChild(leaf);
-      leaves.push(leaf);
+      book.appendChild(leaf); leaves.push(leaf);
     }
-    // tranches
     ['l','r'].forEach(s => { const e = document.createElement('div'); e.className = 'edge ' + s; book.appendChild(e); });
     resolveAssets(book);
     book.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); goTo(+b.dataset.goto); }));
     book.style.transition = 'none';
-    flipped = targetFor(keepFace || 0);
+    flipped = targetFor(keep || 0);
     leaves.forEach((l, i) => { l.style.transition = 'none'; l.classList.toggle('flipped', i < flipped); });
     setZ(); update();
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      book.style.transition = ''; leaves.forEach(l => l.style.transition = '');
-    }));
+    requestAnimationFrame(() => requestAnimationFrame(() => { book.style.transition = ''; leaves.forEach(l => l.style.transition = ''); }));
   }
 
   function setZ(){
@@ -812,29 +611,23 @@ const ASSET_BASE = 'https://albaneriou.fr/';
       l.style.zIndex = l.classList.contains('flipped') ? i + 1 : leaves.length - i;
     });
   }
-
-  // nombre de feuilles tournées pour afficher la page f
-  function targetFor(f){ return mobile ? f : Math.ceil(f / 2); }
-  // page « principale » visible
-  function currentFace(){ return mobile ? flipped : (flipped === 0 ? 0 : 2 * flipped - 1); }
+  const targetFor = f => mobile ? f : Math.ceil(f / 2);
+  const currentFace = () => mobile ? flipped : (flipped === 0 ? 0 : 2 * flipped - 1);
 
   function flipOne(dir){
-    const i = dir > 0 ? flipped : flipped - 1;
-    const leaf = leaves[i];
-    if (!leaf) return false;
-    pauseVideos();
+    const leaf = leaves[dir > 0 ? flipped : flipped - 1];
+    if (!leaf) return;
+    book.querySelectorAll('video').forEach(v => { if (!v.paused) v.pause(); });
     leaf.classList.add('turning');
     leaf.style.zIndex = ++turnZ;
     leaf.classList.toggle('flipped', dir > 0);
     flipped += dir;
     update();
     hint.classList.add('hide');
-    return true;
   }
+  const cancelQueue = () => { if (queue) { clearInterval(queue); queue = null; } };
   function next(){ cancelQueue(); flipOne(1); }
   function prev(){ cancelQueue(); flipOne(-1); }
-  function cancelQueue(){ if (queue) { clearInterval(queue); queue = null; } }
-
   function goTo(f){
     cancelQueue();
     const target = Math.max(0, Math.min(leaves.length, targetFor(f)));
@@ -842,10 +635,7 @@ const ASSET_BASE = 'https://albaneriou.fr/';
     const step = target > flipped ? 1 : -1;
     flipOne(step);
     if (flipped === target) return;
-    queue = setInterval(() => {
-      flipOne(step);
-      if (flipped === target) cancelQueue();
-    }, Math.min(160, FLIP_MS));
+    queue = setInterval(() => { flipOne(step); if (flipped === target) cancelQueue(); }, Math.min(170, FLIP_MS));
   }
 
   function update(){
@@ -853,38 +643,35 @@ const ASSET_BASE = 'https://albaneriou.fr/';
     book.classList.toggle('at-end', flipped === leaves.length);
     prevB.disabled = flipped === 0;
     nextB.disabled = flipped === leaves.length;
-    const edgeL = book.querySelector('.edge.l'), edgeR = book.querySelector('.edge.r');
-    if (edgeL) edgeL.style.opacity = flipped > 0 ? 1 : 0;
-    if (edgeR) edgeR.style.opacity = flipped < leaves.length ? 1 : 0;
+    const el = book.querySelector('.edge.l'), er = book.querySelector('.edge.r');
+    if (el) el.style.opacity = flipped > 0 ? 1 : 0;
+    if (er) er.style.opacity = flipped < leaves.length ? 1 : 0;
+    bar.style.width = (flipped / leaves.length * 100) + '%';
 
     const cf = currentFace();
     let label;
     if (flipped === 0) label = 'Couverture';
     else if (flipped === leaves.length && !mobile) label = '4e de couverture';
-    else if (mobile) label = (faces[cf] ? faces[cf].dataset.label : '') + ' · ' + cf;
-    else {
-      const r = 2 * flipped; label = (faces[r] ? faces[r].dataset.label : faces[cf].dataset.label) + ' · ' + cf + '–' + Math.min(r, faces.length - 1);
-    }
+    else if (mobile) label = (faces[cf].dataset.label || '') + ' · ' + String(cf).padStart(2, '0');
+    else { const r = Math.min(2 * flipped, faces.length - 1); label = (faces[r].dataset.label || '') + ' · ' + String(cf).padStart(2,'0') + '–' + String(r).padStart(2,'0'); }
     ind.textContent = label;
     history.replaceState(null, '', cf ? '#p' + cf : location.pathname + location.search);
-    document.querySelectorAll('.tabs button').forEach(b => {
-      const g = +b.dataset.goto, nextTab = b.nextElementSibling ? +b.nextElementSibling.dataset.goto : 99;
-      b.classList.toggle('on', cf >= g - 1 && cf < nextTab - 1);
+    const navs = [...document.querySelectorAll('.topbar nav button')];
+    navs.forEach((b, i) => {
+      const g = +b.dataset.goto, nx = navs[i + 1] ? +navs[i + 1].dataset.goto : 99;
+      b.classList.toggle('on', cf >= g - 1 && cf < nx - 1);
     });
   }
 
-  function pauseVideos(){ book.querySelectorAll('video').forEach(v => { if (!v.paused) v.pause(); }); }
-
-  // --- évènements ---
   prevB.addEventListener('click', prev);
   nextB.addEventListener('click', next);
-  document.querySelectorAll('.tabs [data-goto]').forEach(b => b.addEventListener('click', () => goTo(+b.dataset.goto)));
+  document.querySelectorAll('.topbar [data-goto]').forEach(b => b.addEventListener('click', () => goTo(+b.dataset.goto)));
   document.addEventListener('keydown', e => {
     if (e.target.closest('video, input, textarea')) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
-    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   { e.preventDefault(); prev(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
     if (e.key === 'Home') goTo(0);
-    if (e.key === 'End')  goTo(faces.length - 1);
+    if (e.key === 'End') goTo(faces.length - 1);
   });
   let tx = null, ty = null;
   book.addEventListener('touchstart', e => {
