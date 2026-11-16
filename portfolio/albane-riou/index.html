@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Albane Riou — Portfolio · iolite.team</title>
+<meta name="description" content="Portfolio d'Albane Riou, étudiante en BUT Métiers du Multimédia et de l'Internet à l'IUT de Rouen : illustration, audiovisuel, 3D et communication.">
+<meta name="theme-color" content="#7f9cc0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/portfolio/assets/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   Variables
+   ========================================================= */
+:root{
+  --bg:#7f9cc0;
+  --bg-dark:#6585ad;
+  --paper:#f7f2e8;
+  --paper-2:#efe7d6;
+  --ink:#27364a;
+  --ink-soft:#5a6a80;
+  --accent:#4a6a94;
+  --board:#2f4562;
+  --board-2:#253852;
+  --kraft:#c9a97c;
+  --rose:#e8b9b5;
+  --sky:#b9cfe6;
+  --sage:#bfd0b4;
+  --script:'Pinyon Script', cursive;
+  --hand:'Caveat', cursive;
+  --serif:'Cormorant Garamond', Georgia, serif;
+  --type:'Special Elite', 'Courier New', monospace;
+  /* taille d'une page (portrait) */
+  --pw: min(41vw, calc((100svh - 150px) * .72));
+  --ph: calc(var(--pw) / .72);
+  --flip: .95s;
+}
+@media (max-width: 760px){
+  :root{ --pw: min(92vw, calc((100svh - 130px) * .72)); }
+}
+@media (prefers-reduced-motion: reduce){ :root{ --flip:.01s; } }
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--serif);
+  color:var(--ink);
+  background:
+    radial-gradient(ellipse at 50% 40%, #9cb4d2 0%, var(--bg) 45%, var(--bg-dark) 100%);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* grain léger sur le fond */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* =========================================================
+   Barre du haut
+   ========================================================= */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;color:#fff;font-family:var(--type);font-size:13px;letter-spacing:.04em;
+}
+.topbar a{text-decoration:none;opacity:.85;transition:opacity .2s}
+.topbar a:hover{opacity:1}
+.topbar .who{font-family:var(--script);font-size:26px;letter-spacing:0;opacity:.95}
+
+/* =========================================================
+   Scène & livre
+   ========================================================= */
+.stage{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding-top:20px;
+}
+.book-wrap{ position:relative; width:calc(var(--pw) * 2); height:var(--ph); }
+.book{
+  position:absolute;inset:0;
+  perspective:2800px; perspective-origin:50% 40%;
+  transition:transform var(--flip) cubic-bezier(.645,.045,.355,1);
+}
+.book.at-start{ transform:translateX(-25%); }
+.book.at-end{ transform:translateX(25%); }
+
+/* Mode mobile : une seule page, la reliure est sur le bord gauche */
+.mobile .book-wrap{ width:var(--pw); overflow:hidden; border-radius:4px 10px 10px 4px; }
+.mobile .book{ left:calc(var(--pw) * -1); right:auto; width:calc(var(--pw) * 2); }
+.mobile .book.at-start,.mobile .book.at-end{ transform:none; }
+
+.leaf{
+  position:absolute;top:0;left:50%;width:50%;height:100%;
+  transform-origin:left center;
+  transform-style:preserve-3d;
+  transition:transform var(--flip) cubic-bezier(.645,.045,.355,1);
+}
+.leaf.flipped{ transform:rotateY(-180deg); }
+.side{
+  position:absolute;inset:0;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.side.back{ transform:rotateY(180deg); }
+.side.front{ border-radius:0 6px 6px 0; box-shadow: 6px 8px 22px rgba(20,35,60,.28); }
+.side.back { border-radius:6px 0 0 6px; box-shadow:-6px 8px 22px rgba(20,35,60,.28); }
+
+/* ombre de reliure */
+.side::before{
+  content:"";position:absolute;top:0;bottom:0;width:14%;pointer-events:none;z-index:20;
+}
+.side.front::before{ left:0; background:linear-gradient(90deg, rgba(40,50,70,.22), rgba(40,50,70,0)); }
+.side.back::before { right:0; background:linear-gradient(-90deg, rgba(40,50,70,.22), rgba(40,50,70,0)); }
+/* reflet pendant que la page tourne */
+.side::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:21;opacity:0;
+  background:linear-gradient(90deg, rgba(0,0,0,.18), rgba(255,255,255,.25) 40%, rgba(0,0,0,0) 70%);
+}
+.leaf.turning .side::after{ animation:sheen var(--flip) ease-in-out; }
+@keyframes sheen{ 0%{opacity:0} 45%{opacity:1} 100%{opacity:0} }
+
+/* tranche des pages (épaisseur) */
+.edge{
+  position:absolute;top:1.2%;bottom:1.2%;width:10px;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,#f3ecdd 0 1px,#d9cfbb 1px 2px);
+  transition:opacity .4s;
+}
+.edge.r{ right:-7px; border-radius:0 3px 3px 0; }
+.edge.l{ left:-7px;  border-radius:3px 0 0 3px; }
+.mobile .edge{ display:none; }
+
+/* coins cliquables (corne de page) */
+.corner{
+  position:absolute;bottom:0;width:13%;aspect-ratio:1;z-index:30;cursor:pointer;
+}
+.corner.next{ right:0; }
+.corner.prev{ left:0; }
+.corner::after{
+  content:"";position:absolute;bottom:0;width:0;height:0;transition:width .25s,height .25s;
+  box-shadow:-2px -2px 6px rgba(0,0,0,.18);
+}
+.corner.next::after{ right:0; background:linear-gradient(135deg, var(--paper-2) 50%, transparent 50%); border-top-left-radius:4px; }
+.corner.prev::after{ left:0;  background:linear-gradient(225deg, var(--paper-2) 50%, transparent 50%); border-top-right-radius:4px; box-shadow:2px -2px 6px rgba(0,0,0,.18); }
+.corner:hover::after{ width:55%; height:55%; }
+
+/* =========================================================
+   Faces (contenu des pages)
+   ========================================================= */
+.face{
+  position:absolute;inset:0;
+  font-size:calc(var(--pw) / 34);
+  line-height:1.45;
+  padding:3.2em 3em 3.4em;
+}
+.mobile .face{ font-size:calc(var(--pw) / 31); padding:2.6em 2.4em 3em; }
+.face.paper{
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.7), transparent 60%),
+    radial-gradient(ellipse at 90% 95%, rgba(190,170,130,.18), transparent 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .25 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+.face.board{
+  color:#e9eef6;
+  background-color:var(--board);
+  background-image:
+    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.08), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 2px, transparent 2px 4px);
+}
+.face.endpaper{
+  background-color:#dfe7f1;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(74,106,148,.22) 0 .18em, transparent .2em),
+    radial-gradient(circle at 75% 75%, rgba(74,106,148,.22) 0 .18em, transparent .2em);
+  background-size:2.2em 2.2em;
+}
+.face.blank{ background:var(--paper); }
+.pnum{
+  position:absolute;bottom:1.4em;font-family:var(--type);font-size:.75em;color:var(--ink-soft);z-index:5;
+}
+.side.front .pnum{ right:2.2em; }
+.side.back  .pnum{ left:2.2em; }
+.mobile .side .pnum{ right:2.2em; left:auto; }
+
+/* ---------- Typo ---------- */
+.script{ font-family:var(--script); font-weight:400; line-height:1; }
+.hand{ font-family:var(--hand); }
+.type{ font-family:var(--type); }
+h2.title{
+  font-family:var(--script);font-weight:400;font-size:3.6em;line-height:1.05;color:var(--accent);
+  text-shadow:2px 3px 0 rgba(74,106,148,.12);margin:.1em 0 .25em;
+}
+.kicker{ font-family:var(--type);font-size:.8em;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft); }
+.brk::before{content:"( "} .brk::after{content:" )"}
+p{ margin:0 0 .7em; text-align:justify; hyphens:auto; }
+p.lead{ font-size:1.12em; font-style:italic; }
+.tags{ display:flex;flex-wrap:wrap;gap:.35em;margin:.2em 0 1em; }
+.tag{
+  font-family:var(--type);font-size:.72em;padding:.25em .6em;border:1px dashed var(--accent);color:var(--accent);
+  border-radius:2em;background:rgba(255,255,255,.4);
+}
+
+/* ---------- Éléments scrapbook ---------- */
+.abs{ position:absolute; }
+.tape{
+  position:absolute;width:6em;height:1.6em;z-index:6;opacity:.88;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.35) 0 .4em, transparent .4em .8em), var(--sky);
+  clip-path:polygon(2% 0,98% 4%,100% 50%,97% 100%,3% 96%,0 50%);
+  box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.tape.rose{ background:repeating-linear-gradient(45deg, rgba(255,255,255,.4) 0 .3em, transparent .3em .6em), var(--rose); }
+.tape.kraft{ background:var(--kraft); opacity:.8; }
+.tape.sage{ background:radial-gradient(circle, rgba(255,255,255,.6) 0 .12em, transparent .14em) 0 0/.6em .6em, var(--sage); }
+
+.polaroid{
+  position:absolute;background:#fff;padding:.55em .55em 2.2em;z-index:4;
+  box-shadow:0 .25em .7em rgba(30,40,60,.22), 0 0 0 1px rgba(0,0,0,.03);
+  transform:rotate(var(--r,0deg));
+}
+.polaroid img{ display:block;width:100%;height:100%;object-fit:cover;background:#e6e1d6; }
+.polaroid figcaption{
+  position:absolute;left:0;right:0;bottom:.35em;text-align:center;
+  font-family:var(--hand);font-size:1.25em;color:var(--ink);
+}
+.frame-video{
+  position:absolute;background:#1d2533;padding:.45em;z-index:4;border-radius:2px;
+  box-shadow:0 .3em .9em rgba(20,30,50,.35);transform:rotate(var(--r,0deg));
+}
+.frame-video video{ display:block;width:100%;height:auto;background:#000; }
+.frame-video .label{
+  position:absolute;bottom:-2.1em;left:.2em;font-family:var(--hand);font-size:1.25em;color:var(--ink);
+}
+
+.stamp{
+  position:absolute;z-index:7;width:6.4em;height:6.4em;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--type);font-size:.8em;line-height:1.15;color:#a8454a;
+  border:.18em double #a8454a;transform:rotate(var(--r,-12deg));opacity:.82;
+  mix-blend-mode:multiply;padding:.6em;
+}
+.ticket{
+  position:absolute;z-index:5;background:var(--paper-2);padding:.6em 1em;font-family:var(--type);font-size:.8em;
+  border-left:.15em dashed rgba(0,0,0,.25);transform:rotate(var(--r,0deg));
+  box-shadow:0 .15em .4em rgba(0,0,0,.12);
+  -webkit-mask:radial-gradient(circle at 0 50%, transparent .45em, #000 .47em) left/51% 100% no-repeat,
+               radial-gradient(circle at 100% 50%, transparent .45em, #000 .47em) right/51% 100% no-repeat;
+          mask:radial-gradient(circle at 0 50%, transparent .45em, #000 .47em) left/51% 100% no-repeat,
+               radial-gradient(circle at 100% 50%, transparent .45em, #000 .47em) right/51% 100% no-repeat;
+}
+.note{
+  position:absolute;z-index:5;padding:1em 1.1em;transform:rotate(var(--r,0deg));
+  background:#fffdf6;
+  background-image:repeating-linear-gradient(transparent 0 1.45em, rgba(74,106,148,.18) 1.45em calc(1.45em + 1px));
+  box-shadow:0 .2em .6em rgba(0,0,0,.14);font-family:var(--hand);font-size:1.2em;line-height:1.2;
+}
+.torn{
+  position:absolute;z-index:3;background:#fff;padding:1.2em 1.3em;
+  clip-path:polygon(0 3%,6% 0,12% 2%,19% 0,27% 3%,35% 1%,44% 3%,52% 0,61% 2%,70% 0,78% 3%,86% 1%,93% 3%,100% 0,100% 97%,94% 100%,87% 97%,79% 100%,71% 98%,62% 100%,54% 97%,45% 100%,37% 98%,28% 100%,20% 97%,12% 100%,5% 98%,0 100%);
+  transform:rotate(var(--r,0deg));
+}
+.clip{ position:absolute;z-index:8;width:1.6em; }
+.doodle{ position:absolute;z-index:6;pointer-events:none;color:var(--accent); }
+.sticker{
+  position:absolute;z-index:7;font-family:var(--hand);font-size:1.15em;padding:.3em .8em;border-radius:2em;
+  background:#fff;box-shadow:0 .1em .3em rgba(0,0,0,.15);transform:rotate(var(--r,0deg));
+  border:.12em solid #fff;outline:1px solid rgba(0,0,0,.06);
+}
+.chip{
+  display:inline-block;font-family:var(--hand);font-size:1.15em;padding:.05em .6em;margin:.15em .1em;
+  background:#fff;border-radius:.3em;box-shadow:0 .08em .25em rgba(0,0,0,.12);transform:rotate(var(--r,0deg));
+}
+
+/* ---------- Couverture ---------- */
+.cover-inner{ position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center; }
+.cover-plate{
+  background:var(--paper);color:var(--ink);padding:2em 2.2em 1.8em;width:78%;
+  box-shadow:inset 0 0 0 .35em var(--paper), inset 0 0 0 .45em var(--accent), 0 .3em 1em rgba(0,0,0,.35);
+  transform:rotate(-1.2deg);position:relative;
+}
+.cover-plate .script{ font-size:5.2em;color:var(--accent);margin:.05em 0 .1em; }
+.cover-plate .name{ font-family:var(--hand);font-size:2em; }
+.cover-foot{ position:absolute;bottom:2.4em;font-family:var(--type);font-size:.85em;letter-spacing:.2em;opacity:.8; }
+.back-mark{ position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6em;opacity:.85; }
+
+/* ---------- Sommaire ---------- */
+.toc{ list-style:none;margin-top:.6em; }
+.toc li{ display:flex;align-items:baseline;gap:.5em;padding:.28em 0; }
+.toc button{ text-align:left;font-family:var(--serif);font-size:1.15em;color:var(--ink);transition:color .2s, transform .2s; }
+.toc button:hover{ color:var(--accent);transform:translateX(.25em); }
+.toc .dots{ flex:1;border-bottom:1px dotted rgba(39,54,74,.4);transform:translateY(-.3em); }
+.toc .n{ font-family:var(--type);font-size:.85em;color:var(--ink-soft); }
+.toc .sec{ font-family:var(--hand);font-size:1.35em;color:var(--accent);padding-top:.6em; }
+
+/* ---------- Parcours ---------- */
+.timeline{ position:relative;margin-left:.4em;padding-left:1.3em;border-left:1px dashed rgba(74,106,148,.5); }
+.timeline .it{ position:relative;margin-bottom:.85em; }
+.timeline .it::before{
+  content:"";position:absolute;left:-1.72em;top:.35em;width:.75em;height:.75em;border-radius:50%;
+  background:var(--paper);border:.15em solid var(--accent);
+}
+.timeline .d{ font-family:var(--type);font-size:.78em;color:var(--accent); }
+.timeline .t{ font-weight:600;font-size:1.05em;line-height:1.25; }
+.timeline .s{ font-style:italic;color:var(--ink-soft);font-size:.95em; }
+h3.hd{ font-family:var(--hand);font-size:1.7em;color:var(--accent);font-weight:600;margin:.5em 0 .35em; }
+
+/* ---------- Contact ---------- */
+.envelope{
+  position:absolute;left:9%;right:9%;top:44%;height:32%;z-index:3;
+  background:#cdbb98;box-shadow:0 .3em 1em rgba(0,0,0,.18);transform:rotate(-2deg);
+}
+.envelope .letter{
+  position:absolute;left:7%;right:7%;bottom:18%;top:-52%;background:#fffdf7;padding:1em 1.3em;
+  box-shadow:0 .15em .4em rgba(0,0,0,.12);z-index:1;transform:rotate(2.5deg);
+  font-family:var(--hand);font-size:1.25em;line-height:1.3;
+}
+.envelope .pocket{
+  position:absolute;inset:0;z-index:2;background:#e9dcc3;
+  clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);
+}
+.envelope .seal{
+  position:absolute;z-index:3;left:50%;top:52%;width:2.6em;height:2.6em;margin:-1.3em 0 0 -1.3em;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #c6545b, #8c2e35);box-shadow:0 .1em .3em rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;color:#f3d7d7;font-family:var(--script);font-size:1.5em;
+}
+.btn-link{
+  display:inline-flex;align-items:center;gap:.4em;font-family:var(--type);font-size:.85em;
+  padding:.55em 1em;border:1px solid var(--ink);background:rgba(255,255,255,.5);text-decoration:none;
+  transition:background .2s,color .2s;
+}
+.btn-link:hover{ background:var(--ink);color:var(--paper); }
+
+/* =========================================================
+   Contrôles
+   ========================================================= */
+.controls{
+  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;
+  display:flex;align-items:center;gap:14px;color:#fff;font-family:var(--type);font-size:13px;
+}
+.controls button{
+  width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
+  display:flex;align-items:center;justify-content:center;transition:background .2s,opacity .2s;
+}
+.controls button:hover{ background:rgba(255,255,255,.15); }
+.controls button:disabled{ opacity:.3;cursor:default; }
+.controls .ind{ min-width:120px;text-align:center;letter-spacing:.06em; }
+
+.tabs{
+  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:6px;
+}
+.tabs button{
+  font-family:var(--hand);font-size:19px;color:var(--ink);padding:6px 16px 6px 14px;border-radius:8px 0 0 8px;
+  background:var(--paper);box-shadow:-2px 2px 6px rgba(0,0,0,.15);transform:translateX(8px);transition:transform .2s;
+  text-align:left;
+}
+.tabs button:nth-child(2){ background:var(--sky); }
+.tabs button:nth-child(3){ background:var(--rose); }
+.tabs button:nth-child(4){ background:var(--sage); }
+.tabs button:hover,.tabs button.on{ transform:translateX(0); }
+@media (max-width: 1100px){ .tabs{ display:none; } }
+
+.hint{
+  position:fixed;top:52px;left:50%;transform:translateX(-50%);color:#fff;font-family:var(--hand);font-size:20px;
+  opacity:.9;transition:opacity .6s;pointer-events:none;z-index:40;white-space:nowrap;
+}
+.hint.hide{ opacity:0; }
+.sr-only{ position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/portfolio/">← iolite.team</a>
+  <span class="who">Albane Riou</span>
+  <a href="https://albaneriou.fr/photo/cvportfolio.pdf" target="_blank" rel="noopener">CV (pdf) ↓</a>
+</header>
+
+<main class="stage" aria-label="Portfolio d'Albane Riou sous forme de carnet">
+  <div class="book-wrap"><div class="book" id="book"></div></div>
+</main>
+
+<nav class="tabs" aria-label="Chapitres">
+  <button data-goto="3">À propos</button>
+  <button data-goto="5">Parcours</button>
+  <button data-goto="7">Projets</button>
+  <button data-goto="19">Contact</button>
+</nav>
+
+<div class="hint" id="hint">cliquez sur le coin de la page ou utilisez ← →</div>
+
+<div class="controls">
+  <button id="prev" aria-label="Page précédente"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <span class="ind" id="ind" aria-live="polite">Couverture</span>
+  <button id="next" aria-label="Page suivante"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
+
+<!-- =========================================================
+     PAGES DU CARNET
+     Une <section class="face"> = une page.
+     Ordre : 0 couverture, puis les pages en vis-à-vis (impair à gauche, pair à droite),
+     dernière = 4e de couverture. Garder un nombre PAIR de pages.
+     Images : data-asset="chemin" (résolu avec ASSET_BASE, voir le script en bas).
+     ========================================================= -->
+<template id="pages">
+
+  <!-- 0 · COUVERTURE -->
+  <section class="face board" data-label="Couverture">
+    <div class="cover-inner">
+      <div class="cover-plate">
+        <span class="tape rose" style="top:-.7em;left:-1.6em;transform:rotate(-28deg)"></span>
+        <span class="tape" style="bottom:-.6em;right:-1.8em;transform:rotate(-24deg)"></span>
+        <div class="kicker brk">design · portfolio</div>
+        <div class="script">Portfolio</div>
+        <div class="name">Albane Riou</div>
+      </div>
+      <svg class="doodle" style="right:12%;top:12%;width:3em;color:#e9eef6" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 3l4.5 11.5L37 16l-9.5 8 3 12.5L20 30l-10.5 6.5 3-12.5L3 16l12.5-1.5z"/></svg>
+      <div class="cover-foot">BUT MMI · IUT DE ROUEN</div>
+    </div>
+  </section>
+
+  <!-- 1 · PAGE DE GARDE (gauche) -->
+  <section class="face endpaper" data-label="Page de garde">
+    <div class="note" style="--r:-3deg;left:12%;right:14%;top:22%">
+      <div style="font-size:.85em;color:var(--ink-soft)">Ce carnet appartient à :</div>
+      <div style="font-size:2em;color:var(--accent);margin:.15em 0 .3em">Albane Riou</div>
+      Étudiante en BUT Métiers du Multimédia et de l'Internet, à Rouen.<br>
+      Dessin, vidéo, 3D, communication… tout est là-dedans.
+    </div>
+    <span class="tape kraft" style="top:20%;left:44%;transform:rotate(4deg)"></span>
+    <div class="hand abs" style="bottom:16%;right:14%;font-size:1.5em;color:var(--accent);transform:rotate(-4deg)">tournez la page →</div>
+    <svg class="doodle" style="bottom:22%;right:16%;width:4em" viewBox="0 0 80 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 30c14-18 34-22 58-14"/><path d="M54 8l10 8-12 4"/></svg>
+  </section>
+
+  <!-- 2 · SOMMAIRE (droite) -->
+  <section class="face paper" data-label="Sommaire">
+    <span class="tape sage" style="top:1.2em;right:2.6em;transform:rotate(8deg)"></span>
+    <div class="kicker brk">sommaire</div>
+    <h2 class="title">Sommaire</h2>
+    <ul class="toc">
+      <li><button data-goto="3">À propos</button><span class="dots"></span><span class="n">03</span></li>
+      <li><button data-goto="5">Parcours</button><span class="dots"></span><span class="n">05</span></li>
+      <li><button data-goto="6">Compétences</button><span class="dots"></span><span class="n">06</span></li>
+      <li class="sec">Projets</li>
+      <li><button data-goto="7">Portraits numériques</button><span class="dots"></span><span class="n">07</span></li>
+      <li><button data-goto="9">Seconde Chance</button><span class="dots"></span><span class="n">09</span></li>
+      <li><button data-goto="11">Casque de F1</button><span class="dots"></span><span class="n">11</span></li>
+      <li><button data-goto="13">Village</button><span class="dots"></span><span class="n">13</span></li>
+      <li><button data-goto="15">BDE La Bête</button><span class="dots"></span><span class="n">15</span></li>
+      <li><button data-goto="17">Dernière Enquête</button><span class="dots"></span><span class="n">17</span></li>
+      <li class="sec">&nbsp;</li>
+      <li><button data-goto="19">Contact</button><span class="dots"></span><span class="n">19</span></li>
+    </ul>
+  </section>
+
+  <!-- 3 · À PROPOS (gauche) -->
+  <section class="face paper" data-label="À propos">
+    <div class="kicker brk">about me</div>
+    <h2 class="title">Bonjour !</h2>
+    <p class="lead">Moi c'est Albane, étudiante en BUT Métiers du Multimédia et de l'Internet à l'IUT de Rouen.</p>
+    <p>Depuis toute petite, le dessin occupe une place essentielle dans ma vie : un terrain de jeu, un espace d'expression, parfois même un refuge. Aujourd'hui, j'aime raconter des histoires avec toutes sortes d'outils : le crayon et la tablette graphique, la caméra, la 3D ou le code.</p>
+    <p>Ce carnet rassemble des projets personnels et des projets réalisés pendant ma formation : illustration, court métrage, modélisation 3D et communication associative.</p>
+    <p>En dehors des écrans, je sculpte, je danse et je fais de la boxe anglaise.</p>
+    <div class="hand abs" style="bottom:2.6em;right:3em;font-size:2.4em;color:var(--accent);transform:rotate(-6deg)">Albane</div>
+  </section>
+
+  <!-- 4 · À PROPOS, VISUEL (droite) -->
+  <section class="face paper" data-label="À propos">
+    <figure class="polaroid" style="--r:4deg;left:16%;top:9%;width:60%;height:58%">
+      <span class="tape" style="top:-.8em;left:35%;transform:rotate(-6deg)"></span>
+      <img data-asset="photo/moi.png" alt="Portrait d'Albane Riou">
+      <figcaption>c'est moi !</figcaption>
+    </figure>
+    <div class="ticket" style="--r:-7deg;left:7%;top:62%">ROUEN ⟶ NORMANDIE</div>
+    <div class="note" style="--r:3deg;right:8%;bottom:9%;width:52%">
+      J'aime :<br>✎ le dessin<br>✎ la sculpture<br>✎ la danse<br>✎ la boxe anglaise
+    </div>
+    <div class="stamp" style="--r:-14deg;left:10%;bottom:8%">BUT<br>MMI<br>ROUEN</div>
+  </section>
+
+  <!-- 5 · PARCOURS (gauche) -->
+  <section class="face paper" data-label="Parcours">
+    <div class="kicker brk">parcours</div>
+    <h2 class="title">Parcours</h2>
+    <h3 class="hd">Formation</h3>
+    <div class="timeline">
+      <div class="it"><div class="d">depuis 2024</div><div class="t">BUT Métiers du Multimédia et de l'Internet</div><div class="s">IUT de Rouen</div></div>
+      <div class="it"><div class="d">2020 — 2024</div><div class="t">Baccalauréat général, mention assez bien</div><div class="s">Institution de Lisieux</div></div>
+    </div>
+    <h3 class="hd">Expériences</h3>
+    <div class="timeline">
+      <div class="it"><div class="d">saison d'été</div><div class="t">Réceptionniste</div><div class="s">Hôtel Amirauté, Deauville</div></div>
+      <div class="it"><div class="d">2024</div><div class="t">Contrat étudiant, mise en rayon</div><div class="s">E.Leclerc, Lisieux</div></div>
+      <div class="it"><div class="d">saisonnier</div><div class="t">Mise en rayon</div><div class="s">Intermarché, Lisieux</div></div>
+    </div>
+    <div class="sticker" style="--r:-5deg;right:2.6em;bottom:3.4em">permis B ✓</div>
+  </section>
+
+  <!-- 6 · COMPÉTENCES (droite) -->
+  <section class="face paper" data-label="Compétences">
+    <span class="tape rose" style="top:1.3em;left:2.4em;transform:rotate(-10deg)"></span>
+    <div class="kicker brk">boîte à outils</div>
+    <h2 class="title">Compétences</h2>
+    <h3 class="hd">Création</h3>
+    <div>
+      <span class="chip" style="--r:-2deg">Photoshop</span>
+      <span class="chip" style="--r:1.5deg">Illustrator</span>
+      <span class="chip" style="--r:-1deg">Blender</span>
+      <span class="chip" style="--r:2deg">Artstudio</span>
+      <span class="chip" style="--r:-1.5deg">montage vidéo</span>
+    </div>
+    <h3 class="hd">Web</h3>
+    <div>
+      <span class="chip" style="--r:1deg">HTML</span>
+      <span class="chip" style="--r:-2deg">CSS</span>
+      <span class="chip" style="--r:1.5deg">PHP</span>
+      <span class="chip" style="--r:-1deg">MySQL</span>
+    </div>
+    <h3 class="hd">Langues</h3>
+    <div class="timeline" style="border:0;padding-left:0;margin-left:0">
+      <div class="it" style="margin-bottom:.3em"><span class="t">Français</span> <span class="s">· langue maternelle</span></div>
+      <div class="it" style="margin-bottom:.3em"><span class="t">Anglais</span> <span class="s">· diplôme de Cambridge</span></div>
+      <div class="it" style="margin-bottom:.3em"><span class="t">Allemand</span> <span class="s">· certification</span></div>
+    </div>
+    <h3 class="hd">Engagements</h3>
+    <div class="timeline">
+      <div class="it"><div class="d">depuis mars 2025</div><div class="t">BDE La Bête, pôle communication</div></div>
+      <div class="it"><div class="d">2021 — 2023</div><div class="t">Conseillère municipale des jeunes</div><div class="s">Ville de Lisieux</div></div>
+    </div>
+  </section>
+
+  <!-- 7 · PROJET 01 TEXTE (gauche) -->
+  <section class="face paper" data-label="Portraits numériques">
+    <div class="kicker">projet 01 — illustration</div>
+    <h2 class="title">Portraits</h2>
+    <div class="tags"><span class="tag">projet personnel</span><span class="tag">tablette graphique</span><span class="tag">Artstudio</span></div>
+    <p class="lead">J'ai toujours été attirée par les visages : leur complexité, leur douceur, les émotions qu'ils renferment.</p>
+    <p>Pour ce projet personnel, j'ai réalisé une série de portraits entièrement sur tablette graphique, avec le logiciel Artstudio. Le numérique m'a offert une liberté nouvelle : on superpose, on efface, on recommence, on explore encore.</p>
+    <p>Chaque portrait est né d'une impulsion : tester une ambiance, un angle, une émotion. Rien n'était vraiment planifié ; ce sont des esquisses spontanées où la recherche artistique se mêle à l'instant présent.</p>
+    <p>Cette série m'a permis d'affiner mon geste et de sortir de ma zone de confort, entre réalisme délicat et traits plus bruts. Mon objectif : mieux comprendre le visage humain en jouant avec les formes, les volumes, la lumière et les textures.</p>
+  </section>
+
+  <!-- 8 · PROJET 01 VISUEL (droite) -->
+  <section class="face paper" data-label="Portraits numériques">
+    <figure class="polaroid" style="--r:-3deg;left:12%;top:8%;width:70%;height:66%">
+      <span class="tape rose" style="top:-.8em;right:-1.4em;transform:rotate(30deg)"></span>
+      <span class="tape rose" style="bottom:1.2em;left:-1.6em;transform:rotate(30deg)"></span>
+      <img data-asset="photo/fille.png" alt="Portrait numérique dessiné par Albane Riou">
+      <figcaption>série de portraits ✎</figcaption>
+    </figure>
+    <div class="torn" style="--r:2deg;right:9%;bottom:8%;width:58%;font-family:var(--hand);font-size:1.25em;line-height:1.25">
+      « Chaque portrait est une petite exploration : une rencontre entre technique et sensibilité. »
+    </div>
+  </section>
+
+  <!-- 9 · PROJET 02 TEXTE (gauche) -->
+  <section class="face paper" data-label="Seconde Chance">
+    <div class="kicker">projet 02 — audiovisuel</div>
+    <h2 class="title">Seconde Chance</h2>
+    <div class="tags"><span class="tag">court métrage</span><span class="tag">2025</span><span class="tag">travail d'équipe</span></div>
+    <p class="lead">Un court métrage engagé pour sensibiliser aux effets de la fast fashion sur l'environnement et sur l'humain.</p>
+    <p>Le film explore les conséquences de la production textile de masse (gaspillage de l'eau, pollution, conditions de travail précaires) et interroge notre rapport au vêtement jetable. Il suggère, de manière poétique, que donner une seconde chance à nos vêtements est aussi un acte de responsabilité collective.</p>
+    <p>Au sein de l'équipe, j'ai pris part à la <strong>scénarisation</strong>, à la <strong>direction artistique</strong> (lumières, décors, contraste entre la beauté des matières et la dureté de la production), à la <strong>gestion de production</strong> et au <strong>montage</strong>.</p>
+    <p>En 2025, le film a été récompensé aux <strong>Green Awards</strong>.</p>
+  </section>
+
+  <!-- 10 · PROJET 02 VISUEL (droite) -->
+  <section class="face paper" data-label="Seconde Chance">
+    <div class="frame-video" style="--r:-1.5deg;left:9%;right:9%;top:10%">
+      <span class="tape" style="top:-.8em;left:-1.2em;transform:rotate(-30deg)"></span>
+      <span class="tape" style="top:-.8em;right:-1.2em;transform:rotate(30deg)"></span>
+      <video controls preload="none" playsinline data-asset-poster="photo/loane2.png" data-asset="videos%20/secondchance.MP4"></video>
+      <span class="label">▶ le film</span>
+    </div>
+    <figure class="polaroid" style="--r:5deg;right:10%;bottom:9%;width:44%;height:36%">
+      <img data-asset="photo/loane2.png" alt="Image du court métrage Seconde Chance">
+      <figcaption>sur le tournage</figcaption>
+    </figure>
+    <div class="stamp" style="--r:-16deg;left:12%;bottom:14%">GREEN<br>AWARDS<br>2025</div>
+  </section>
+
+  <!-- 11 · PROJET 03 TEXTE (gauche) -->
+  <section class="face paper" data-label="Casque de F1">
+    <div class="kicker">projet 03 — modélisation 3D</div>
+    <h2 class="title">Casque de F1</h2>
+    <div class="tags"><span class="tag">Blender</span><span class="tag">hard surface</span><span class="tag">PBR</span></div>
+    <p class="lead">Modéliser en détail un casque de Formule 1 pour acquérir une vraie maîtrise des outils 3D.</p>
+    <p>Le sujet n'a pas été choisi au hasard : sa géométrie combine des courbes aérodynamiques fluides et des éléments techniques rigides (mécanisme de visière, fixations) qui demandent une grande précision.</p>
+    <p>Le défi : articuler <strong>hard surface modeling</strong> pour les pièces mécaniques et modélisation de surfaces lisses pour la coque, avec le modificateur Subdivision Surface et des boucles de polygones propres pour éviter les artefacts au lissage.</p>
+    <p>Le texturing avec les Shading Nodes de Blender (rendu physiquement réaliste) a donné des matériaux crédibles : peinture brillante, fibre de carbone, visière en plexiglas réfléchissant. Une expérience complète, du maillage au rendu final.</p>
+  </section>
+
+  <!-- 12 · PROJET 03 VISUEL (droite) -->
+  <section class="face paper" data-label="Casque de F1">
+    <figure class="polaroid" style="--r:3deg;left:10%;top:9%;width:74%;height:60%">
+      <svg class="clip" style="top:-1.3em;left:18%" viewBox="0 0 24 60" fill="none" stroke="#8b96a6" stroke-width="2.2" stroke-linecap="round"><path d="M8 20V48a6 6 0 0012 0V12a9 9 0 00-18 0v38"/></svg>
+      <img data-asset="photo/casque1.png" alt="Rendu 3D du casque de Formule 1">
+      <figcaption>rendu final · Blender</figcaption>
+    </figure>
+    <div class="ticket" style="--r:-4deg;left:9%;bottom:15%">MAILLAGE → TEXTURES → RENDU</div>
+    <div class="sticker" style="--r:8deg;right:10%;bottom:9%">vroum vroum !</div>
+  </section>
+
+  <!-- 13 · PROJET 04 TEXTE (gauche) -->
+  <!-- TODO : compléter le titre et la description du projet (le texte de l'ancien site était dans une image) -->
+  <section class="face paper" data-label="Village">
+    <div class="kicker">projet 04 — audiovisuel</div>
+    <h2 class="title">Village</h2>
+    <div class="tags"><span class="tag">vidéo</span><span class="tag">tournage</span><span class="tag">montage</span></div>
+    <p class="lead">Un projet vidéo à découvrir ci-contre.</p>
+    <p>Lancez la vidéo sur la page de droite pour voir le résultat.</p>
+    <div class="note" style="--r:-2deg;left:3em;right:3em;bottom:4em">
+      notes de projet : intention, rôle, outils utilisés…
+    </div>
+  </section>
+
+  <!-- 14 · PROJET 04 VISUEL (droite) -->
+  <section class="face paper" data-label="Village">
+    <figure class="polaroid" style="--r:-4deg;left:9%;top:7%;width:56%;height:40%">
+      <span class="tape kraft" style="top:-.8em;left:30%;transform:rotate(3deg)"></span>
+      <img data-asset="photo/photovillage.png" alt="Image du projet Village">
+      <figcaption>repérages</figcaption>
+    </figure>
+    <div class="frame-video" style="--r:2deg;left:12%;right:8%;top:52%">
+      <video controls preload="none" playsinline data-asset-poster="photo/photovillage.png" data-asset="videos%20/ca2.mp4"></video>
+      <span class="label">▶ la vidéo</span>
+    </div>
+  </section>
+
+  <!-- 15 · PROJET 05 TEXTE (gauche) -->
+  <!-- TODO : détailler les réalisations pour le BDE -->
+  <section class="face paper" data-label="BDE La Bête">
+    <div class="kicker">projet 05 — communication</div>
+    <h2 class="title">BDE La Bête</h2>
+    <div class="tags"><span class="tag">associatif</span><span class="tag">depuis mars 2025</span><span class="tag">pôle communication</span></div>
+    <p class="lead">Depuis mars 2025, je fais partie du pôle communication du BDE La Bête.</p>
+    <p>Au sein du pôle, je participe à la création des contenus qui font vivre l'association et la vie étudiante.</p>
+    <div class="stamp" style="--r:10deg;right:3em;bottom:4em">LA<br>BÊTE<br>BDE</div>
+  </section>
+
+  <!-- 16 · PROJET 05 VISUEL (droite) -->
+  <section class="face paper" data-label="BDE La Bête">
+    <figure class="polaroid" style="--r:2.5deg;left:12%;top:10%;width:72%;height:64%">
+      <span class="tape sage" style="top:-.8em;left:-1.4em;transform:rotate(-32deg)"></span>
+      <span class="tape sage" style="top:-.8em;right:-1.4em;transform:rotate(32deg)"></span>
+      <img data-asset="photo/bdeee.png" alt="Visuel réalisé pour le BDE La Bête">
+      <figcaption>pour le BDE ♡</figcaption>
+    </figure>
+  </section>
+
+  <!-- 17 · PROJET 06 TEXTE (gauche) -->
+  <!-- TODO : compléter la description du projet -->
+  <section class="face paper" data-label="Dernière Enquête">
+    <div class="kicker">projet 06 — audiovisuel</div>
+    <h2 class="title">Dernière Enquête</h2>
+    <div class="tags"><span class="tag">vidéo</span><span class="tag">réalisation</span></div>
+    <p class="lead">Un projet vidéo à découvrir ci-contre.</p>
+    <p>Lancez la vidéo sur la page de droite pour voir le résultat.</p>
+    <svg class="doodle" style="left:3em;bottom:4em;width:5em" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="24" cy="24" r="15"/><path d="M35 35l17 17"/></svg>
+  </section>
+
+  <!-- 18 · PROJET 06 VISUEL (droite) -->
+  <section class="face paper" data-label="Dernière Enquête">
+    <div class="frame-video" style="--r:-2deg;left:9%;right:9%;top:12%">
+      <span class="tape rose" style="top:-.8em;left:40%;transform:rotate(-4deg)"></span>
+      <video controls preload="none" playsinline data-asset-poster="photo/jules.png" data-asset="videos%20/Derni%C3%A8reEnqu%C3%A8te.mp4"></video>
+      <span class="label">▶ la vidéo</span>
+    </div>
+    <figure class="polaroid" style="--r:6deg;right:10%;bottom:8%;width:42%;height:34%">
+      <img data-asset="photo/jules.png" alt="Image du projet Dernière Enquête">
+      <figcaption>indice n°1</figcaption>
+    </figure>
+    <div class="ticket" style="--r:-8deg;left:10%;bottom:16%">DOSSIER CLASSÉ ?</div>
+  </section>
+
+  <!-- 19 · CONTACT (gauche) -->
+  <section class="face paper" data-label="Contact">
+    <div class="kicker brk">contact</div>
+    <h2 class="title">Écrivez-moi</h2>
+    <div class="envelope">
+      <div class="letter">
+        Un projet, un stage, une question ?<br>
+        <a href="mailto:ariou917@gmail.com">ariou917@gmail.com</a>
+      </div>
+      <div class="pocket"></div>
+      <div class="seal">A</div>
+    </div>
+    <div class="abs" style="left:3em;right:3em;bottom:4em;display:flex;flex-wrap:wrap;gap:.6em">
+      <a class="btn-link" href="mailto:ariou917@gmail.com">✉ m'écrire</a>
+      <a class="btn-link" href="https://albaneriou.fr/photo/cvportfolio.pdf" target="_blank" rel="noopener">↓ télécharger le CV</a>
+    </div>
+  </section>
+
+  <!-- 20 · MERCI (droite) -->
+  <section class="face paper" data-label="Merci">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3em">
+      <span class="tape" style="position:relative;display:block;margin:0 auto 1.2em;transform:rotate(-3deg)"></span>
+      <div class="script" style="font-size:4.4em;color:var(--accent)">Merci</div>
+      <p class="hand" style="font-size:1.5em;text-align:center;margin-top:.4em">d'avoir feuilleté mon carnet !</p>
+      <div style="display:flex;gap:.6em;margin-top:1.6em;flex-wrap:wrap;justify-content:center">
+        <button class="btn-link" data-goto="0">↺ revenir au début</button>
+        <a class="btn-link" href="/portfolio/">l'équipe iolite →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 · 4E DE COUVERTURE -->
+  <section class="face board" data-label="Fin">
+    <div class="back-mark">
+      <div class="script" style="font-size:3em">Albane Riou</div>
+      <div class="type" style="font-size:.8em;letter-spacing:.2em">IOLITE.TEAM</div>
+    </div>
+  </section>
+
+</template>
+
+<script>
+/* ---------------------------------------------------------
+   Où se trouvent les images et vidéos.
+   Une fois les fichiers copiés dans /albane-riou/assets/,
+   remplacer par :  const ASSET_BASE = 'assets/';
+   --------------------------------------------------------- */
+const ASSET_BASE = 'https://albaneriou.fr/';
+
+(() => {
+  const book  = document.getElementById('book');
+  const tpl   = document.getElementById('pages');
+  const ind   = document.getElementById('ind');
+  const prevB = document.getElementById('prev');
+  const nextB = document.getElementById('next');
+  const hint  = document.getElementById('hint');
+  const faces = [...tpl.content.children];
+  const mq    = window.matchMedia('(max-width: 760px)');
+  const FLIP_MS = matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 950;
+
+  let leaves = [], flipped = 0, mobile = false, queue = null, turnZ = 100;
+
+  function resolveAssets(root){
+    root.querySelectorAll('[data-asset]').forEach(el => {
+      el.src = ASSET_BASE + el.dataset.asset;
+      if (el.tagName === 'IMG') { el.loading = 'lazy'; el.decoding = 'async'; }
+    });
+    root.querySelectorAll('[data-asset-poster]').forEach(el => el.poster = ASSET_BASE + el.dataset.assetPoster);
+  }
+
+  function makeSide(cls, faceIdx){
+    const side = document.createElement('div');
+    side.className = 'side ' + cls;
+    if (faceIdx == null) {
+      side.innerHTML = '<section class="face blank"></section>';
+    } else {
+      const f = faces[faceIdx].cloneNode(true);
+      side.appendChild(f);
+      const isCover = faceIdx === 0 || faceIdx === faces.length - 1;
+      if (!isCover && f.classList.contains('paper')) {
+        const n = document.createElement('span');
+        n.className = 'pnum'; n.textContent = String(faceIdx).padStart(2, '0');
+        f.appendChild(n);
+      }
+    }
+    // coins pour tourner
+    if (cls === 'front') addCorner(side, 'next');
+    if (cls === 'back' || (mobile && cls === 'front' && faceIdx !== 0)) addCorner(side, 'prev');
+    return side;
+  }
+  function addCorner(side, dir){
+    const c = document.createElement('button');
+    c.className = 'corner ' + dir;
+    c.setAttribute('aria-label', dir === 'next' ? 'Page suivante' : 'Page précédente');
+    c.addEventListener('click', e => { e.stopPropagation(); dir === 'next' ? next() : prev(); });
+    side.appendChild(c);
+  }
+
+  function build(keepFace){
+    mobile = mq.matches;
+    document.body.classList.toggle('mobile', mobile);
+    book.innerHTML = '';
+    leaves = [];
+    const n = mobile ? faces.length : Math.ceil(faces.length / 2);
+    for (let i = 0; i < n; i++) {
+      const leaf = document.createElement('div');
+      leaf.className = 'leaf';
+      const fFront = mobile ? i : 2 * i;
+      const fBack  = mobile ? null : (2 * i + 1 < faces.length ? 2 * i + 1 : null);
+      leaf.appendChild(makeSide('front', fFront));
+      leaf.appendChild(makeSide('back', fBack));
+      leaf.addEventListener('transitionend', e => {
+        if (e.target === leaf && e.propertyName === 'transform') { leaf.classList.remove('turning'); setZ(); }
+      });
+      book.appendChild(leaf);
+      leaves.push(leaf);
+    }
+    // tranches
+    ['l','r'].forEach(s => { const e = document.createElement('div'); e.className = 'edge ' + s; book.appendChild(e); });
+    resolveAssets(book);
+    book.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); goTo(+b.dataset.goto); }));
+    book.style.transition = 'none';
+    flipped = targetFor(keepFace || 0);
+    leaves.forEach((l, i) => { l.style.transition = 'none'; l.classList.toggle('flipped', i < flipped); });
+    setZ(); update();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      book.style.transition = ''; leaves.forEach(l => l.style.transition = '');
+    }));
+  }
+
+  function setZ(){
+    leaves.forEach((l, i) => {
+      if (l.classList.contains('turning')) return;
+      l.style.zIndex = l.classList.contains('flipped') ? i + 1 : leaves.length - i;
+    });
+  }
+
+  // nombre de feuilles tournées pour afficher la page f
+  function targetFor(f){ return mobile ? f : Math.ceil(f / 2); }
+  // page « principale » visible
+  function currentFace(){ return mobile ? flipped : (flipped === 0 ? 0 : 2 * flipped - 1); }
+
+  function flipOne(dir){
+    const i = dir > 0 ? flipped : flipped - 1;
+    const leaf = leaves[i];
+    if (!leaf) return false;
+    pauseVideos();
+    leaf.classList.add('turning');
+    leaf.style.zIndex = ++turnZ;
+    leaf.classList.toggle('flipped', dir > 0);
+    flipped += dir;
+    update();
+    hint.classList.add('hide');
+    return true;
+  }
+  function next(){ cancelQueue(); flipOne(1); }
+  function prev(){ cancelQueue(); flipOne(-1); }
+  function cancelQueue(){ if (queue) { clearInterval(queue); queue = null; } }
+
+  function goTo(f){
+    cancelQueue();
+    const target = Math.max(0, Math.min(leaves.length, targetFor(f)));
+    if (target === flipped) return;
+    const step = target > flipped ? 1 : -1;
+    flipOne(step);
+    if (flipped === target) return;
+    queue = setInterval(() => {
+      flipOne(step);
+      if (flipped === target) cancelQueue();
+    }, Math.min(160, FLIP_MS));
+  }
+
+  function update(){
+    book.classList.toggle('at-start', flipped === 0);
+    book.classList.toggle('at-end', flipped === leaves.length);
+    prevB.disabled = flipped === 0;
+    nextB.disabled = flipped === leaves.length;
+    const edgeL = book.querySelector('.edge.l'), edgeR = book.querySelector('.edge.r');
+    if (edgeL) edgeL.style.opacity = flipped > 0 ? 1 : 0;
+    if (edgeR) edgeR.style.opacity = flipped < leaves.length ? 1 : 0;
+
+    const cf = currentFace();
+    let label;
+    if (flipped === 0) label = 'Couverture';
+    else if (flipped === leaves.length && !mobile) label = '4e de couverture';
+    else if (mobile) label = (faces[cf] ? faces[cf].dataset.label : '') + ' · ' + cf;
+    else {
+      const r = 2 * flipped; label = (faces[r] ? faces[r].dataset.label : faces[cf].dataset.label) + ' · ' + cf + '–' + Math.min(r, faces.length - 1);
+    }
+    ind.textContent = label;
+    history.replaceState(null, '', cf ? '#p' + cf : location.pathname + location.search);
+    document.querySelectorAll('.tabs button').forEach(b => {
+      const g = +b.dataset.goto, nextTab = b.nextElementSibling ? +b.nextElementSibling.dataset.goto : 99;
+      b.classList.toggle('on', cf >= g - 1 && cf < nextTab - 1);
+    });
+  }
+
+  function pauseVideos(){ book.querySelectorAll('video').forEach(v => { if (!v.paused) v.pause(); }); }
+
+  // --- évènements ---
+  prevB.addEventListener('click', prev);
+  nextB.addEventListener('click', next);
+  document.querySelectorAll('.tabs [data-goto]').forEach(b => b.addEventListener('click', () => goTo(+b.dataset.goto)));
+  document.addEventListener('keydown', e => {
+    if (e.target.closest('video, input, textarea')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   { e.preventDefault(); prev(); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(faces.length - 1);
+  });
+  let tx = null, ty = null;
+  book.addEventListener('touchstart', e => {
+    if (e.target.closest('video')) { tx = null; return; }
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  book.addEventListener('touchend', e => {
+    if (tx == null) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? next() : prev();
+    tx = null;
+  });
+  mq.addEventListener('change', () => build(currentFace()));
+
+  const start = parseInt((location.hash.match(/^#p(\d+)$/) || [])[1] || '0', 10);
+  build(Math.min(start, faces.length - 1));
+  setTimeout(() => hint.classList.add('hide'), 6000);
+})();
+</script>
+</body>
+</html>
