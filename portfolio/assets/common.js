@@ -109,7 +109,7 @@
   /* ---------- navigation ---------- */
   /* barre de navigation : Accueil · Projets (Audiovisuel, Graphisme, Développement) · Contact */
   function homeNav(active = 'accueil') {
-    const base = 'relative px-3.5 md:px-5 py-2 text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300';
+    const base = 'relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300';
     const pill = (on) => `<span class="nav-pill absolute inset-0 bg-emerald-500 rounded-full transition-opacity duration-300 ${on ? 'opacity-100' : 'opacity-0'}"></span>`;
     const label = (on, txt) => `<span class="nav-label relative z-10 inline-flex items-center gap-1 ${on ? 'text-white' : 'text-white/70 hover:text-white'}">${txt}</span>`;
     const sub = Object.values(CATEGORIES).map((c) => `
@@ -119,6 +119,7 @@
         <nav aria-label="Navigation principale" class="pointer-events-auto max-w-full animate-fade-in">
           <div class="flex items-center gap-0.5 md:gap-1 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-1.5 md:px-2 py-1.5 md:py-2">
             <button type="button" data-goto="accueil" data-nav="accueil" class="nav-btn ${base}">${pill(active === 'accueil')}${label(active === 'accueil', 'Accueil')}</button>
+            <a href="profil" data-nav="profil" class="nav-btn ${base}">${pill(active === 'profil')}${label(active === 'profil', 'Mon profil')}</a>
             <div class="relative" id="menu-projets">
               <button type="button" data-nav="categories" aria-haspopup="true" aria-expanded="false" class="nav-btn ${base}">${pill(active === 'categories')}${label(active === 'categories', `Projets<svg class="chev w-3.5 h-3.5 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`)}</button>
               <div role="menu" class="menu-panel absolute left-1/2 top-full pt-3 -translate-x-1/2 opacity-0 pointer-events-none translate-y-1 transition-all duration-200">

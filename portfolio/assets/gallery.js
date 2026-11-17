@@ -15,7 +15,7 @@
       /* vignette affichée tout de suite, puis la vidéo YouTube muette en boucle (sans interaction) dès qu'elle est à l'écran */
       return `<div class="relative aspect-video bg-black overflow-hidden">
         <img src="${posterOf(p)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover">
-        <iframe data-yt="${ytId(p.media_url)}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.2] opacity-0 transition-opacity duration-700" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
+        <iframe data-yt="${ytId(p.media_url)}" src="${ytLoopSrc(ytId(p.media_url))}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.2] opacity-0 transition-opacity duration-700" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
       </div>`;
     }
     if (k === 'video') {
@@ -146,6 +146,7 @@
       if (v.preload === 'none') v.preload = 'metadata';
       waits.push(v.readyState >= 2 ? Promise.resolve() : new Promise((r) => { v.addEventListener('loadeddata', r, { once: true }); v.addEventListener('error', r, { once: true }); }));
     });
+    waits.push(...ytReady);
     const bar = document.getElementById('loader-bar');
     let done = 0; const total = waits.length || 1;
     waits.forEach((w) => w.then(() => { done++; if (bar) bar.style.width = `${Math.max(8, Math.round((done / total) * 100))}%`; }));
@@ -153,7 +154,7 @@
   }
   setTimeout(finishLoader, 9000); /* sécurité : jamais bloqué sur l'écran de chargement */
 
-  let byId = {}, items = [], cols = 0;
+  let byId = {}, items = [], cols = 0, ytReady = [];
   const colCount = () => (innerWidth >= 1024 ? 3 : innerWidth >= 640 ? 2 : 1);
   function layout() {
     const n = colCount(); if (n === cols || !items.length) return; cols = n;
@@ -178,20 +179,22 @@
     grid.querySelectorAll('[data-pagescroll]').forEach(pageTour);
     requestAnimationFrame(waitForMedia);
     grid.querySelectorAll('video').forEach(watchVideo);
-    grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
+    ytReady = [...grid.querySelectorAll('iframe.yt')].map(revealYt);
   }
 
-  /* YouTube : chargé quand visible, déchargé quand il sort largement de l'écran (fluidité) */
-  const ytObs = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach(({ target: f, isIntersecting }) => {
-    if (isIntersecting) {
-      if (!f.src) { f.src = ytLoopSrc(f.dataset.yt); clearTimeout(f._t); f._t = setTimeout(() => f.src && f.classList.remove('opacity-0'), 4500); /* on attend que l'habillage YouTube de démarrage disparaisse */ }
-    } else if (f.src) { clearTimeout(f._t); f.removeAttribute('src'); f.classList.add('opacity-0'); }
-  }), { rootMargin: '300px 0px' }) : null;
-
+  /* YouTube : lecture lancée dès l'arrivée ; la vidéo apparaît une seconde après son chargement (le temps que l'habillage YouTube s'efface) */
+  function revealYt(f) {
+    return new Promise((resolve) => {
+      let shown = false;
+      const show = () => { if (shown) return; shown = true; f.classList.remove('opacity-0'); resolve(); };
+      f.addEventListener('load', () => setTimeout(show, 1000), { once: true });
+      setTimeout(show, 6000);
+    });
+  }
   /* diaporamas : avancent toutes les 3 s, uniquement quand ils sont à l'écran */
   const visible = new Set();
   const slideObs = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target))), { threshold: 0.2 }) : null;
-  new MutationObserver(() => grid.querySelectorAll('[data-slides]').forEach((el) => (slideObs ? slideObs.observe(el) : visible.add(el)))).observe(grid, { childList: true });
+  new MutationObserver(() => grid.querySelectorAll('[data-slides]').forEach((el) => (slideObs ? slideObs.observe(el) : visible.add(el)))).observe(grid, { childList: true, subtree: true });
   setInterval(() => {
     if (document.hidden) return;
     visible.forEach((el) => {
