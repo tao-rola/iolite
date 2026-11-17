@@ -110,14 +110,15 @@
   /* barre de navigation : Accueil · Projets (Audiovisuel, Graphisme, Développement) · Contact */
   function homeNav(active = 'accueil') {
     const base = 'relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300';
-    const pill = (on) => `<span class="nav-pill absolute inset-0 bg-emerald-500 rounded-full transition-opacity duration-300 ${on ? 'opacity-100' : 'opacity-0'}"></span>`;
+    const pill = () => '';
     const label = (on, txt) => `<span class="nav-label relative z-10 inline-flex items-center gap-1 ${on ? 'text-white' : 'text-white/70 hover:text-white'}">${txt}</span>`;
     const sub = Object.values(CATEGORIES).map((c) => `
       <a href="${c.href}" role="menuitem" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors whitespace-nowrap">${icon(c.icon, 'w-4 h-4 text-emerald-500')}${c.label}</a>`).join('');
     return `
       <div class="fixed top-0 inset-x-0 z-50 flex justify-center pt-safe md:pt-6 px-2 pointer-events-none">
         <nav aria-label="Navigation principale" class="pointer-events-auto max-w-full animate-fade-in">
-          <div class="flex items-center gap-0.5 md:gap-1 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-1.5 md:px-2 py-1.5 md:py-2">
+          <div id="nav-track" class="relative flex items-center gap-0.5 md:gap-1 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-1.5 md:px-2 py-1.5 md:py-2">
+            <span id="nav-blob" class="absolute top-1.5 md:top-2 bottom-1.5 md:bottom-2 left-0 w-0 rounded-full bg-emerald-500 opacity-0 pointer-events-none" aria-hidden="true"></span>
             <button type="button" data-goto="accueil" data-nav="accueil" class="nav-btn ${base}">${pill(active === 'accueil')}${label(active === 'accueil', 'Accueil')}</button>
             <a href="profil" data-nav="profil" class="nav-btn ${base}">${pill(active === 'profil')}${label(active === 'profil', 'Mon profil')}</a>
             <div class="relative" id="menu-projets">
@@ -131,6 +132,38 @@
         </nav>
       </div>`;
   }
+  /* indicateur « goutte d'eau » : s'étire vers l'onglet visé puis s'y rétracte avec un léger rebond */
+  let blobKey = null;
+  function navTo(key) {
+    const track = document.getElementById('nav-track'), blob = document.getElementById('nav-blob');
+    if (!track || !blob || key === blobKey) return;
+    track.querySelectorAll('.nav-btn').forEach((b) => {
+      const l = b.querySelector('.nav-label'); const on = b.dataset.nav === key;
+      if (l) { l.classList.toggle('text-white', on); l.classList.toggle('text-white/70', !on); }
+    });
+    const btn = key && track.querySelector(`.nav-btn[data-nav="${key}"]`);
+    if (!btn) { blob.animate([{ opacity: getComputedStyle(blob).opacity }, { opacity: 0 }], { duration: 250, fill: 'forwards' }); blobKey = null; return; }
+    const to = { x: btn.offsetLeft, w: btn.offsetWidth };
+    const r = blob.getBoundingClientRect(), tr = track.getBoundingClientRect();
+    const from = blobKey ? { x: r.left - tr.left, w: r.width } : { x: to.x + to.w / 2 - 6, w: 12 };
+    blob.getAnimations().forEach((a) => a.cancel());
+    const left = Math.min(from.x, to.x), right = Math.max(from.x + from.w, to.x + to.w);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    blob.style.opacity = '1';
+    blob.animate(reduce ? [
+      { transform: `translateX(${to.x}px)`, width: `${to.w}px` },
+    ] : [
+      { transform: `translateX(${from.x}px) scaleY(1)`, width: `${from.w}px`, opacity: blobKey ? 1 : 0, offset: 0 },
+      { transform: `translateX(${left}px) scaleY(.82)`, width: `${right - left}px`, opacity: 1, offset: 0.45 },
+      { transform: `translateX(${to.x}px) scaleY(1.06)`, width: `${to.w}px`, opacity: 1, offset: 0.8 },
+      { transform: `translateX(${to.x}px) scaleY(1)`, width: `${to.w}px`, opacity: 1, offset: 1 },
+    ], { duration: reduce ? 1 : 620, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+    blobKey = key;
+  }
+  const renav = () => { if (blobKey) { const k = blobKey; blobKey = null; navTo(k); } };
+  addEventListener('resize', renav);
+  if (document.fonts) document.fonts.ready.then(renav);
+
   /* menu déroulant « Projets » : survol à la souris, appui sur mobile, fermeture au clic ailleurs ou Échap */
   function initNavMenu() {
     const box = document.getElementById('menu-projets'); if (!box) return;
@@ -158,13 +191,13 @@
     const link = (href, label, cls = '') => `<li><a href="${href}" class="text-white/60 hover:text-white text-sm transition-colors duration-300 ${cls}">${label}</a></li>`;
     const contact = (href, ic, label, ext) => `<li><a href="${href}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors duration-300 break-all">${icon(ic)}${label}</a></li>`;
     return `
-      <footer class="relative bg-black border-t border-white/10 py-12 md:py-16 px-6 md:px-12">
+      <footer class="relative bg-black/30 backdrop-blur-[2px] border-t border-white/10 py-12 md:py-16 px-6 md:px-12">
         <div class="max-w-7xl mx-auto">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12 mb-10 md:mb-12">
             <div class="sm:col-span-2 md:col-span-1">
-              <h3 class="text-2xl font-semibold text-white mb-4">Tao ROLA</h3>
+              <h3 class="display text-5xl text-white mb-4">Tao ROLA</h3>
               <p class="text-white/60 text-sm leading-relaxed max-w-sm">Professionnel de l'événementiel et passionné d'image, je vous accompagne pour faire de chaque instant un moment d'exception.</p>
-              <a href="admin" class="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-white/30 text-xs font-medium transition-all duration-300">${icon('lock', 'w-3.5 h-3.5')}Administration</a>
+              <a href="admin" class="inline-block mt-4 text-white/40 hover:text-white text-sm transition-colors duration-300">Administration</a>
             </div>
             <div>
               <h4 class="text-lg font-semibold text-white mb-4">Liens Rapides</h4>
@@ -288,7 +321,7 @@
     openModal(`
       ${media}
       <div class="p-5 sm:p-8">
-        <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3 pr-10">${esc(p.title)}</h2>
+        <h2 class="display text-5xl sm:text-6xl text-white mb-4 pr-10">${esc(p.title)}</h2>
         ${(p.tags || []).length ? `<div class="flex flex-wrap gap-1.5 mb-5">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
         ${p.description ? `<p class="text-white/70 leading-relaxed whitespace-pre-line text-[15px]">${esc(p.description)}</p>` : ''}
         ${link ? `<div class="mt-6">${link}</div>` : ''}
@@ -326,6 +359,6 @@
   }, { rootMargin: '100px' }) : null;
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
-  window.TR = { initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
+  window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
   document.addEventListener('DOMContentLoaded', () => { initBackdrop(); initCursor(); });
 })();

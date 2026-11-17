@@ -1,6 +1,6 @@
 /* Portfolio Tao ROLA : page d'accueil */
 (function () {
-  const { icon, esc, CATEGORIES, CONTACT, withProjects, kindOf, ytId, posterOf, homeNav, footer, devPlaceholder } = window.TR;
+  const { icon, esc, CATEGORIES, CONTACT, withProjects, withSettings, kindOf, ytId, posterOf, homeNav, footer, devPlaceholder } = window.TR;
   const snap = document.getElementById('snap');
 
   document.getElementById('nav').innerHTML = homeNav('accueil');
@@ -51,12 +51,7 @@
       d.style.height = on ? '28px' : '8px'; d.style.background = on ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.4)';
     });
     const navOn = ['accueil', 'categories', 'contact'].includes(id) ? id : null;
-    document.querySelectorAll('#nav .nav-btn').forEach((b) => {
-      const on = b.dataset.nav === navOn;
-      b.querySelector('.nav-pill').classList.toggle('opacity-100', on); b.querySelector('.nav-pill').classList.toggle('opacity-0', !on);
-      const l = b.querySelector('.nav-label');
-      l.classList.toggle('text-white', on); l.classList.toggle('text-white/70', !on);
-    });
+    window.TR.navTo(navOn);
     dots.style.opacity = id === 'pied' ? '0' : '1';
   }
   const secObs = new IntersectionObserver((es) => es.forEach((e) => {
@@ -77,7 +72,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
         <div class="relative z-10 h-full flex flex-col justify-between p-5 sm:p-6 lg:p-8">
           <div>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white">${c.label}</h2>
+            <h2 class="display text-5xl sm:text-6xl lg:text-6xl xl:text-7xl text-white">${c.label}</h2>
             <p class="text-white/50 text-sm sm:text-base lg:text-lg mt-1.5 lg:mt-3">${c.sub}</p>
           </div>
           <span class="self-start inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-white/30 text-white text-xs sm:text-sm font-medium group-hover:bg-white/10 transition-all duration-300">${icon(c.icon)}${c.cta}</span>
@@ -163,3 +158,10 @@
     if (el && snap) snap.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
   });
 })();
+
+/* section Contact : bouton « Télécharger le CV » si un PDF est enregistré dans l'admin */
+window.TR.withSettings((st) => {
+  const b = document.getElementById('c-cv'); if (!b || !st.cv_pdf_url) return;
+  b.href = st.cv_pdf_url; b.setAttribute('download', 'CV_Tao_ROLA.pdf'); b.target = '_blank'; b.rel = 'noopener';
+  b.innerHTML = 'Télécharger le CV <span aria-hidden="true">↓</span>';
+});

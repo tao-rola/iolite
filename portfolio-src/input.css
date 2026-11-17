@@ -19,6 +19,8 @@
 }
 
 @layer components {
+  /* titres : grotesque condensée, très grasse, serrée (style brut) */
+  .display { font-family: 'Bricolage Grotesque', 'Inter', sans-serif; font-weight: 800; font-variation-settings: 'wdth' 75, 'opsz' 96; letter-spacing: -0.045em; line-height: .86; }
   .h-screen-d { height: 100vh; height: 100svh; }
   @supports (height: 100dvh) { .h-screen-d { height: 100dvh; } }
   .pt-safe { padding-top: max(1rem, env(safe-area-inset-top)); }
