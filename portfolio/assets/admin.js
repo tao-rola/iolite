@@ -23,14 +23,46 @@
           <div><label class="text-sm text-white/70 mb-2 block" for="l-pass">Mot de passe</label><input id="l-pass" type="password" class="field" required autocomplete="current-password"></div>
           ${err ? `<p class="text-sm text-red-400">${esc(err)}</p>` : ''}
           <button class="btn-primary w-full" type="submit">Se connecter</button>
+          <button type="button" id="forgot" class="w-full text-sm text-emerald-400 hover:text-emerald-300 pt-1">Première connexion ou mot de passe oublié ?</button>
         </form>
       </div>`;
+    document.getElementById('forgot').onclick = async () => {
+      const email = document.getElementById('l-email').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast("Saisissez d'abord votre adresse e-mail.", 'error');
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/portfolio/admin' });
+      if (error) return toast("L'e-mail n'a pas pu être envoyé : " + error.message, 'error');
+      toast('Un lien pour choisir votre mot de passe vient de vous être envoyé par e-mail.');
+    };
     document.getElementById('login').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Connexion…';
       const { error } = await sb.auth.signInWithPassword({ email: document.getElementById('l-email').value.trim(), password: document.getElementById('l-pass').value });
       if (error) renderLogin("E-mail ou mot de passe incorrect.");
     });
+  }
+
+  function renderNewPassword() {
+    app.innerHTML = `
+      <div class="max-w-md mx-auto mt-6 sm:mt-12 bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 animate-fade-up">
+        <h2 class="text-2xl font-bold text-white mb-1">Nouveau mot de passe</h2>
+        <p class="text-white/50 text-sm mb-6">Choisissez le mot de passe de votre espace administrateur (8 caractères minimum).</p>
+        <form id="np" class="space-y-4">
+          <input id="np1" type="password" class="field" required minlength="8" autocomplete="new-password" placeholder="Nouveau mot de passe">
+          <input id="np2" type="password" class="field" required minlength="8" autocomplete="new-password" placeholder="Confirmer le mot de passe">
+          <button class="btn-primary w-full" type="submit">Enregistrer</button>
+        </form>
+      </div>`;
+    document.getElementById('np').onsubmit = async (e) => {
+      e.preventDefault();
+      const a = document.getElementById('np1').value, b = document.getElementById('np2').value;
+      if (a.length < 8) return toast('8 caractères minimum.', 'error');
+      if (a !== b) return toast('Les deux mots de passe ne correspondent pas.', 'error');
+      const { error } = await sb.auth.updateUser({ password: a });
+      if (error) return toast(error.message, 'error');
+      toast('Mot de passe enregistré.');
+      history.replaceState(null, '', location.pathname);
+      const { data } = await sb.auth.getSession(); start(data.session);
+    };
   }
 
   function renderDenied() {
@@ -397,8 +429,10 @@
   }
 
   /* ---------- démarrage ---------- */
+  let recovering = /type=recovery/.test(location.hash);
   async function start(session) {
     user = session?.user || null;
+    if (recovering && user) { recovering = false; return renderNewPassword(); }
     if (!user) return renderLogin();
     const { data: admin } = await sb.rpc('portfolio_is_admin');
     if (!admin) return renderDenied();
@@ -407,6 +441,7 @@
   let started = false;
   sb.auth.onAuthStateChange((evt, session) => {
     if (evt === 'TOKEN_REFRESHED' || evt === 'USER_UPDATED') return;
+    if (evt === 'PASSWORD_RECOVERY') { started = true; recovering = false; return setTimeout(renderNewPassword, 0); }
     if (evt === 'INITIAL_SESSION') { started = true; return setTimeout(() => start(session), 0); }
     if (started) setTimeout(() => start(session), 0);
   });

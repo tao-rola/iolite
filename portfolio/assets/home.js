@@ -4,6 +4,7 @@
   const snap = document.getElementById('snap');
 
   document.getElementById('nav').innerHTML = homeNav('accueil');
+  window.TR.initNavMenu();
   document.getElementById('pied').innerHTML = footer();
   document.getElementById('socials').innerHTML = [
     [CONTACT.instagram, 'instagram', 'Instagram'], [CONTACT.linkedin, 'linkedin', 'LinkedIn'], ['mailto:' + CONTACT.email, 'mail', 'E-mail'],
@@ -49,9 +50,9 @@
       const on = b.dataset.goto === id, d = b.querySelector('.dot');
       d.style.height = on ? '28px' : '8px'; d.style.background = on ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.4)';
     });
-    const navOn = id === 'accueil' ? 'accueil' : cat || null;
+    const navOn = id === 'accueil' ? 'accueil' : id === 'categories' ? 'categories' : null;
     document.querySelectorAll('#nav .nav-btn').forEach((b) => {
-      const on = b.dataset.goto === navOn;
+      const on = b.dataset.nav === navOn;
       b.querySelector('.nav-pill').classList.toggle('opacity-100', on); b.querySelector('.nav-pill').classList.toggle('opacity-0', !on);
       const l = b.querySelector('.nav-label');
       l.classList.toggle('text-white', on); l.classList.toggle('text-white/70', !on);

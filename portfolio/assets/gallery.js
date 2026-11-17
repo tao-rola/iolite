@@ -121,6 +121,38 @@
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) play();
   }
 
+  /* écran de chargement : attend que les aperçus du haut de page soient prêts (7 s maximum) */
+  let loaderDone = false;
+  function finishLoader() {
+    if (loaderDone) return; loaderDone = true;
+    const l = document.getElementById('loader'); if (!l) return;
+    const bar = document.getElementById('loader-bar'); if (bar) bar.style.width = '100%';
+    setTimeout(() => { l.style.opacity = '0'; l.style.pointerEvents = 'none'; setTimeout(() => l.remove(), 550); }, 200);
+  }
+  function waitForMedia() {
+    if (loaderDone) return;
+    const limit = innerHeight * 1.6;
+    const near = (el) => el.getBoundingClientRect().top < limit;
+    const waits = [];
+    const imgReady = (img) => (img.complete ? Promise.resolve() : new Promise((r) => { img.addEventListener('load', r, { once: true }); img.addEventListener('error', r, { once: true }); }));
+    grid.querySelectorAll('img').forEach((img) => {
+      if (!near(img.closest('article') || img)) return;
+      img.loading = 'eager';
+      waits.push(imgReady(img).then(() => (img.decode ? img.decode().catch(() => {}) : null)));
+    });
+    grid.querySelectorAll('video').forEach((v) => {
+      if (!near(v)) return;
+      if (v.poster) { const im = new Image(); im.src = v.poster; waits.push(imgReady(im)); return; }
+      if (v.preload === 'none') v.preload = 'metadata';
+      waits.push(v.readyState >= 2 ? Promise.resolve() : new Promise((r) => { v.addEventListener('loadeddata', r, { once: true }); v.addEventListener('error', r, { once: true }); }));
+    });
+    const bar = document.getElementById('loader-bar');
+    let done = 0; const total = waits.length || 1;
+    waits.forEach((w) => w.then(() => { done++; if (bar) bar.style.width = `${Math.max(8, Math.round((done / total) * 100))}%`; }));
+    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 7000))]).then(finishLoader);
+  }
+  setTimeout(finishLoader, 9000); /* sécurité : jamais bloqué sur l'écran de chargement */
+
   let byId = {}, items = [], cols = 0;
   const colCount = () => (innerWidth >= 1024 ? 3 : innerWidth >= 640 ? 2 : 1);
   function layout() {
@@ -133,6 +165,7 @@
   addEventListener('resize', layout);
   function render(projects) {
     if (!projects.length) {
+      finishLoader();
       grid.innerHTML = `<div class="text-center py-24"><div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">${icon('layers', 'w-6 h-6')}</div><p class="text-white/60">Les projets arrivent bientôt.</p></div>`;
       return;
     }
@@ -143,6 +176,7 @@
     cols = 0; layout();
     grid.lastElementChild.remove();
     grid.querySelectorAll('[data-pagescroll]').forEach(pageTour);
+    requestAnimationFrame(waitForMedia);
     grid.querySelectorAll('video').forEach(watchVideo);
     grid.querySelectorAll('iframe.yt').forEach((f) => ytObs && ytObs.observe(f));
   }

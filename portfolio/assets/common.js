@@ -107,29 +107,42 @@
   const hostOf = (url) => { try { return new URL(url).host; } catch { return ''; } };
 
   /* ---------- navigation ---------- */
+  /* barre de navigation : Accueil · Projets (Audiovisuel, Graphisme, Développement) · Contact */
   function homeNav(active = 'accueil') {
-    const items = [
-      ['accueil', 'Accueil', 'Accueil'],
-      ['audiovisuel', 'Audiovisuel', 'Audio&shy;visuel'],
-      ['graphisme', 'Graphisme', 'Graphisme'],
-      ['developpement', 'Développement', 'Dév.'],
-    ];
-    /* Accueil remonte en haut ; les catégories ouvrent directement leur page */
-    const btn = ([id, full, short]) => id === 'accueil' ? `
-      <button type="button" data-goto="${id}" class="nav-btn relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-[11px] min-[400px]:text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300">
-        <span class="nav-pill absolute inset-0 bg-emerald-500 rounded-full transition-opacity duration-300 ${id === active ? 'opacity-100' : 'opacity-0'}"></span>
-        <span class="nav-label relative z-10 ${id === active ? 'text-white' : 'text-white/70 hover:text-white'}"><span class="sm:hidden">${short}</span><span class="hidden sm:inline">${full}</span></span>
-      </button>` : `
-      <a href="${CATEGORIES[id].href}" class="relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-[11px] min-[400px]:text-xs md:text-sm font-medium rounded-full whitespace-nowrap text-white/70 hover:text-white transition-colors duration-300"><span class="sm:hidden">${short}</span><span class="hidden sm:inline">${full}</span></a>`;
+    const base = 'relative px-3.5 md:px-5 py-2 text-xs md:text-sm font-medium rounded-full whitespace-nowrap transition-colors duration-300';
+    const pill = (on) => `<span class="nav-pill absolute inset-0 bg-emerald-500 rounded-full transition-opacity duration-300 ${on ? 'opacity-100' : 'opacity-0'}"></span>`;
+    const label = (on, txt) => `<span class="nav-label relative z-10 inline-flex items-center gap-1 ${on ? 'text-white' : 'text-white/70 hover:text-white'}">${txt}</span>`;
+    const sub = Object.values(CATEGORIES).map((c) => `
+      <a href="${c.href}" role="menuitem" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors whitespace-nowrap">${icon(c.icon, 'w-4 h-4 text-emerald-500')}${c.label}</a>`).join('');
     return `
       <div class="fixed top-0 inset-x-0 z-50 flex justify-center pt-safe md:pt-6 px-2 pointer-events-none">
         <nav aria-label="Navigation principale" class="pointer-events-auto max-w-full animate-fade-in">
           <div class="flex items-center gap-0.5 md:gap-1 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-1.5 md:px-2 py-1.5 md:py-2">
-            ${items.map(btn).join('')}
-            <a href="contact" class="relative px-2.5 min-[400px]:px-3 md:px-5 py-2 text-[11px] min-[400px]:text-xs md:text-sm font-medium rounded-full whitespace-nowrap text-white/70 hover:text-white transition-colors duration-300">Contact</a>
+            <button type="button" data-goto="accueil" data-nav="accueil" class="nav-btn ${base}">${pill(active === 'accueil')}${label(active === 'accueil', 'Accueil')}</button>
+            <div class="relative" id="menu-projets">
+              <button type="button" data-nav="categories" aria-haspopup="true" aria-expanded="false" class="nav-btn ${base}">${pill(active === 'categories')}${label(active === 'categories', `Projets<svg class="chev w-3.5 h-3.5 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`)}</button>
+              <div role="menu" class="menu-panel absolute left-1/2 top-full pt-3 -translate-x-1/2 opacity-0 pointer-events-none translate-y-1 transition-all duration-200">
+                <div class="min-w-[200px] p-1.5 rounded-2xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl">${sub}</div>
+              </div>
+            </div>
+            <a href="contact" data-nav="contact" class="nav-btn ${base}">${pill(active === 'contact')}${label(active === 'contact', 'Contact')}</a>
           </div>
         </nav>
       </div>`;
+  }
+  /* menu déroulant « Projets » : survol à la souris, appui sur mobile, fermeture au clic ailleurs ou Échap */
+  function initNavMenu() {
+    const box = document.getElementById('menu-projets'); if (!box) return;
+    const btn = box.querySelector('button'), panel = box.querySelector('.menu-panel'), chev = box.querySelector('.chev');
+    const set = (open) => {
+      panel.classList.toggle('opacity-0', !open); panel.classList.toggle('pointer-events-none', !open); panel.classList.toggle('translate-y-1', !open);
+      btn.setAttribute('aria-expanded', open); chev.style.transform = open ? 'rotate(180deg)' : '';
+    };
+    const hover = matchMedia('(hover: hover)').matches;
+    if (hover) { box.addEventListener('mouseenter', () => set(true)); box.addEventListener('mouseleave', () => set(false)); }
+    btn.addEventListener('click', (e) => { e.stopPropagation(); set(btn.getAttribute('aria-expanded') !== 'true'); });
+    document.addEventListener('click', (e) => { if (!box.contains(e.target)) set(false); });
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
   }
 
   /* pages internes : simple bouton « Retour » arrondi en haut à gauche (le titre est passé en paramètre pour compatibilité) */
@@ -290,6 +303,6 @@
   }, { rootMargin: '100px' }) : null;
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
-  window.TR = { sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
+  window.TR = { initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
   document.addEventListener('DOMContentLoaded', initCursor);
 })();

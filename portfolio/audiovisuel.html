@@ -16,9 +16,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="assets/app.css?v=62cdbf68">
+  <link rel="stylesheet" href="assets/app.css?v=6736cf30">
 </head>
 <body class="bg-[#0a0a0a] min-h-screen" data-category="audiovisuel" data-title="Audiovisuel">
+  <!-- écran de chargement : masqué quand les aperçus visibles sont prêts -->
+  <div id="loader" role="status" aria-live="polite" style="position:fixed;inset:0;z-index:80;background:#0a0a0a" class="flex flex-col items-center justify-center gap-6 transition-opacity duration-500">
+    <div class="glow animate-float w-[260px] h-[260px]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.35"></div>
+    <p class="relative text-4xl font-bold text-white tracking-tight">Tao ROLA</p>
+    <div class="relative w-44 h-1 rounded-full bg-white/10 overflow-hidden"><div id="loader-bar" class="h-full w-[8%] bg-emerald-500 rounded-full transition-[width] duration-300"></div></div>
+    <p class="relative text-white/40 text-sm" id="loader-txt">Chargement des projets…</p>
+  </div>
   <div id="top"></div>
   <main class="pt-20 sm:pt-24 pb-12 px-4 sm:px-6 min-h-[70vh]">
     <div class="max-w-7xl mx-auto">
@@ -30,7 +37,7 @@
     </div>
   </main>
   <div id="pied"></div>
-  <script defer src="assets/common.js?v=8ebc71c9"></script>
-  <script defer src="assets/gallery.js?v=8bc9b555"></script>
+  <script defer src="assets/common.js?v=e456789f"></script>
+  <script defer src="assets/gallery.js?v=53ebd22b"></script>
 </body>
 </html>
