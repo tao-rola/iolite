@@ -66,23 +66,15 @@
         <article class="group relative bg-white/5 rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300">
           <div role="button" tabindex="0" data-open="${p.id}" class="block w-full text-left cursor-pointer" aria-label="Ouvrir ${esc(p.title)}">
             ${media(p)}
-            <!-- souris : informations au survol, comme sur le site d'origine -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden [@media(hover:hover)]:block">
-              <div class="absolute bottom-0 inset-x-0 p-4">
+            <!-- informations par-dessus l'aperçu : au survol à la souris, toujours visibles sur écran tactile -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/0 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div class="absolute bottom-0 inset-x-0 p-4 pointer-events-auto">
                 <h3 class="text-white font-semibold mb-1">${esc(p.title)}</h3>
                 ${p.description ? `<p class="text-white/70 text-sm mb-2 line-clamp-2">${esc(p.description)}</p>` : ''}
                 ${tags ? `<div class="flex flex-wrap gap-1 mb-2">${tags}</div>` : ''}
                 ${projectLink(p) ? `<a href="${esc(projectLink(p))}" target="_blank" rel="noopener noreferrer" data-ext class="inline-flex items-center gap-1 text-emerald-400 text-sm hover:text-emerald-300">${icon('externalLink')}Voir le projet</a>` : `<span class="inline-flex items-center gap-1 text-emerald-400 text-sm">${icon('externalLink')}Détails</span>`}
               </div>
             </div>
-          </div>
-          <!-- écran tactile : titre toujours visible sous le média -->
-          <div class="[@media(hover:hover)]:hidden px-4 py-3 border-t border-white/10">
-            <div class="flex items-center justify-between gap-3">
-              <h3 class="text-white font-semibold text-[15px] leading-snug">${esc(p.title)}</h3>
-              ${projectLink(p) ? `<a href="${esc(projectLink(p))}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-emerald-400 text-sm font-medium">Voir le projet</a>` : `<button type="button" data-open="${p.id}" class="shrink-0 text-emerald-400 text-sm font-medium">Détails</button>`}
-            </div>
-            ${tags ? `<div class="flex gap-1 mt-2 overflow-x-auto no-scrollbar whitespace-nowrap -mx-1 px-1">${tags}</div>` : ''}
           </div>
         </article>
       </div>`;
