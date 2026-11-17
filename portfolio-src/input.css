@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-  html, body { background: #0a0a0a; color: #fff; -webkit-tap-highlight-color: transparent; }
+  html { background: #0a0a0a; }
+  html, body { color: #fff; -webkit-tap-highlight-color: transparent; }
+  body { background: transparent !important; position: relative; z-index: 0; }
   body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   ::selection { background: rgba(16, 185, 129, .3); color: #fff; }
   ::-webkit-scrollbar { width: 0; background: transparent; }
@@ -36,4 +38,4 @@
 
 /* aperçus de projets : page qui défile (sites) et écrans qui glissent (applications) */
 @keyframes pagescroll { 0%, 8% { transform: translateY(0); } 46%, 54% { transform: translateY(var(--d, 0)); } 92%, 100% { transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) { [data-pagescroll] img, .animate-marquee { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { [data-pagescroll] img, .animate-marquee, #backdrop .glow { animation: none !important; } }

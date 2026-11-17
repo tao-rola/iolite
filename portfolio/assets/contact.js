@@ -1,8 +1,7 @@
-/* Portfolio Tao ROLA : page Contact (formulaire enregistré dans Supabase + e-mail via FormSubmit) */
+/* Portfolio Tao ROLA : section Contact de l'accueil (formulaire enregistré dans Supabase + e-mail via FormSubmit) */
 (function () {
-  const { rest, icon, CONTACT, topBar, footer, toast } = window.TR;
-  document.getElementById('top').innerHTML = topBar();
-  document.getElementById('pied').innerHTML = footer();
+  const { rest, icon, CONTACT, toast } = window.TR;
+  if (!document.getElementById('form')) return;
   const pill = (href, ic, label, ext) => `<a href="${href}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''} class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/15 bg-white/[.04] text-white/80 hover:text-white hover:border-white/30 text-sm transition-all duration-300">${icon(ic, 'w-4 h-4 text-emerald-500')}${label}</a>`;
   document.getElementById('quick').innerHTML =
     pill('mailto:' + CONTACT.email, 'mail', CONTACT.email) + pill('tel:' + CONTACT.tel, 'phone', CONTACT.phone) +

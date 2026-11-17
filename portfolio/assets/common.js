@@ -126,7 +126,7 @@
                 <div class="min-w-[200px] p-1.5 rounded-2xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl">${sub}</div>
               </div>
             </div>
-            <a href="contact" data-nav="contact" class="nav-btn ${base}">${pill(active === 'contact')}${label(active === 'contact', 'Contact')}</a>
+            <button type="button" data-goto="contact" data-nav="contact" class="nav-btn ${base}">${pill(active === 'contact')}${label(active === 'contact', 'Contact')}</button>
           </div>
         </nav>
       </div>`;
@@ -154,7 +154,8 @@
   }
 
   function footer() {
-    const link = (href, label, ext) => `<li><a href="${href}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''} class="text-white/60 hover:text-white text-sm transition-colors duration-300">${label}</a></li>`;
+    const onHome = !!document.getElementById('snap');
+    const link = (href, label, cls = '') => `<li><a href="${href}" class="text-white/60 hover:text-white text-sm transition-colors duration-300 ${cls}">${label}</a></li>`;
     const contact = (href, ic, label, ext) => `<li><a href="${href}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors duration-300 break-all">${icon(ic)}${label}</a></li>`;
     return `
       <footer class="relative bg-black border-t border-white/10 py-12 md:py-16 px-6 md:px-12">
@@ -163,12 +164,20 @@
             <div class="sm:col-span-2 md:col-span-1">
               <h3 class="text-2xl font-semibold text-white mb-4">Tao ROLA</h3>
               <p class="text-white/60 text-sm leading-relaxed max-w-sm">Professionnel de l'événementiel et passionné d'image, je vous accompagne pour faire de chaque instant un moment d'exception.</p>
+              <a href="admin" class="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full border border-white/15 text-white/60 hover:text-white hover:border-white/30 text-xs font-medium transition-all duration-300">${icon('lock', 'w-3.5 h-3.5')}Administration</a>
             </div>
             <div>
               <h4 class="text-lg font-semibold text-white mb-4">Liens Rapides</h4>
               <ul class="space-y-2">
-                ${link('./', 'Accueil')}${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
-                ${link('profil', 'Mon profil (CV)')}${link('contact', 'Contact')}${link('admin', 'Administration')}
+                ${link(onHome ? '#accueil' : './', 'Accueil')}
+                <li>
+                  <a href="${onHome ? '#categories' : './#categories'}" class="text-white/60 hover:text-white text-sm transition-colors duration-300">Projets</a>
+                  <ul class="mt-2 ml-3 pl-3 border-l border-white/10 space-y-2">
+                    ${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
+                  </ul>
+                </li>
+                ${link('profil', 'Mon profil (CV)')}
+                ${link(onHome ? '#contact' : './#contact', 'Contact')}
               </ul>
             </div>
             <div>
@@ -186,6 +195,19 @@
           </div>
         </div>
       </footer>`;
+  }
+
+  /* ---------- fond animé (dégradés verts) sur toute la page ---------- */
+  function initBackdrop() {
+    if (document.getElementById('backdrop')) return;
+    const b = document.createElement('div');
+    b.id = 'backdrop'; b.setAttribute('aria-hidden', 'true');
+    b.className = 'fixed inset-0 -z-10 overflow-hidden pointer-events-none';
+    b.innerHTML = `
+      <div class="glow animate-drift1 w-[70vw] h-[70vw] max-w-[620px] max-h-[620px] top-[-10%] left-[-15%]" style="background:radial-gradient(circle,#10b981 0%,transparent 68%);opacity:.38"></div>
+      <div class="glow animate-drift2 w-[65vw] h-[65vw] max-w-[560px] max-h-[560px] top-[35%] right-[-15%]" style="background:radial-gradient(circle,#059669 0%,transparent 68%);opacity:.34"></div>
+      <div class="glow animate-drift3 w-[55vw] h-[55vw] max-w-[480px] max-h-[480px] bottom-[-15%] left-[25%]" style="background:radial-gradient(circle,#047857 0%,transparent 68%);opacity:.3"></div>`;
+    document.body.prepend(b);
   }
 
   /* ---------- curseur (souris uniquement) ---------- */
@@ -305,5 +327,5 @@
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
   window.TR = { initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
-  document.addEventListener('DOMContentLoaded', initCursor);
+  document.addEventListener('DOMContentLoaded', () => { initBackdrop(); initCursor(); });
 })();

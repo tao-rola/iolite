@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title>Tao ROLA - Portfolio MMI Rouen | Photographie, Vidéo, Design, Graphisme & Développement</title>
+  <title>Tao ROLA - Portfolio</title>
   <meta name="description" content="Portfolio de Tao ROLA, diplômé d'un BUT MMI à Rouen : audiovisuel, graphisme et développement d'applications et de sites internet.">
   <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="assets/app.css?v=342610fd">
+  <link rel="stylesheet" href="assets/app.css?v=30eb0bc2">
 </head>
 <body class="bg-[#0a0a0a]">
   <div id="nav"></div>
@@ -29,9 +29,8 @@
   <main id="snap" class="h-screen-d overflow-y-auto snap-y snap-mandatory scroll-smooth">
     <!-- Accueil -->
     <div class="snap-start h-screen-d" id="accueil">
-      <section class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6">
-        <div class="glow animate-float w-[260px] h-[260px] md:w-[400px] md:h-[400px] top-[15%] left-[-10%] md:left-[10%]" style="background:radial-gradient(circle,#10b981 0%,transparent 70%)"></div>
-        <div class="glow animate-float w-[240px] h-[240px] md:w-[380px] md:h-[380px] top-[40%] md:top-[20%] right-[-10%] md:right-[10%]" style="background:radial-gradient(circle,#059669 0%,transparent 70%);animation-delay:1s"></div>
+      <section class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden px-6">
+
         <h1 class="relative z-10 text-5xl min-[400px]:text-6xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight text-center animate-fade-up" style="animation-delay:.2s">Tao ROLA</h1>
         <div class="relative z-10 h-12 flex items-center justify-center mt-4">
           <p class="text-xl md:text-2xl text-emerald-400 font-medium"><span id="typed"></span><span class="animate-pulse">|</span></p>
@@ -45,15 +44,41 @@
 
     <!-- les trois catégories côte à côte (remplies par home.js) -->
     <div class="snap-start h-screen-d" id="categories">
-      <section class="relative w-full h-full bg-[#0a0a0a] flex flex-col pt-20 md:pt-28 pb-4 md:pb-10 px-3 sm:px-6 md:px-8 pb-safe">
+      <section class="relative w-full h-full flex flex-col pt-20 md:pt-28 pb-4 md:pb-10 px-3 sm:px-6 md:px-8 pb-safe">
         <div id="cards" class="flex-1 min-h-0 grid grid-cols-1 grid-rows-3 lg:grid-cols-3 lg:grid-rows-1 gap-3 md:gap-5 max-w-[1600px] w-full mx-auto"></div>
+      </section>
+    </div>
+
+    <!-- Contact -->
+    <div class="snap-start min-h-screen-d flex" id="contact">
+      <section class="relative w-full flex flex-col justify-center pt-24 md:pt-28 pb-12 px-5 sm:px-6 md:px-12">
+        <div class="max-w-3xl w-full mx-auto">
+          <div class="mb-8 sm:mb-10">
+            <h2 class="text-4xl sm:text-5xl font-bold text-white">Contact</h2>
+            <p class="text-white/50 text-lg mt-2 sm:mt-3">Un projet, une question ? Écrivez-moi, je vous réponds rapidement.</p>
+          </div>
+          <div class="flex flex-wrap gap-2 sm:gap-3 mb-10" id="quick"></div>
+        <form id="form" class="space-y-5" novalidate>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div><label for="f-name" class="text-sm text-white/60 mb-2 block pl-5">Nom</label><input id="f-name" name="name" class="pill-field" required maxlength="200" autocomplete="name" placeholder="Votre nom"></div>
+            <div><label for="f-email" class="text-sm text-white/60 mb-2 block pl-5">Email</label><input id="f-email" name="email" type="email" class="pill-field" required maxlength="320" autocomplete="email" inputmode="email" placeholder="votre@email.com"></div>
+          </div>
+          <div><label for="f-subject" class="text-sm text-white/60 mb-2 block pl-5">Sujet</label><input id="f-subject" name="subject" class="pill-field" required maxlength="300" placeholder="Objet de votre message"></div>
+          <div><label for="f-message" class="text-sm text-white/60 mb-2 block pl-5">Message</label><textarea id="f-message" name="message" class="pill-field !rounded-3xl !h-auto min-h-[160px] py-4 resize-y" required maxlength="5000" placeholder="Votre message..."></textarea></div>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+          <div class="flex justify-center md:justify-start pt-1">
+            <button class="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none" type="submit" id="f-send"></button>
+          </div>
+        </form>
+        </div>
       </section>
     </div>
 
     <div class="snap-start" id="pied"></div>
   </main>
 
-  <script defer src="assets/common.js?v=5bb1deca"></script>
-  <script defer src="assets/home.js?v=4e6cdedd"></script>
+  <script defer src="assets/common.js?v=9542ea42"></script>
+  <script defer src="assets/contact.js?v=63821625"></script>
+  <script defer src="assets/home.js?v=26c2ebe6"></script>
 </body>
 </html>

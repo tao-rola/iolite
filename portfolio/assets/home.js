@@ -25,7 +25,7 @@
   })();
 
   /* repères à droite + navigation */
-  const SECS = ['accueil', 'categories'];
+  const SECS = ['accueil', 'categories', 'contact'];
   const CATS = ['audiovisuel', 'graphisme', 'developpement'];
   const dots = document.getElementById('dots');
   dots.innerHTML = SECS.map((id) => `<button type="button" data-goto="${id}" class="group relative flex items-center p-1.5 -m-1.5" aria-label="Aller à ${id}"><span class="dot block rounded-full transition-all duration-300" style="width:4px;height:8px;background:rgba(255,255,255,.4)"></span></button>`).join('');
@@ -50,7 +50,7 @@
       const on = b.dataset.goto === id, d = b.querySelector('.dot');
       d.style.height = on ? '28px' : '8px'; d.style.background = on ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.4)';
     });
-    const navOn = id === 'accueil' ? 'accueil' : id === 'categories' ? 'categories' : null;
+    const navOn = ['accueil', 'categories', 'contact'].includes(id) ? id : null;
     document.querySelectorAll('#nav .nav-btn').forEach((b) => {
       const on = b.dataset.nav === navOn;
       b.querySelector('.nav-pill').classList.toggle('opacity-100', on); b.querySelector('.nav-pill').classList.toggle('opacity-0', !on);
@@ -62,7 +62,7 @@
   const secObs = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
     setActive(e.target.id);
-  }), { root: snap, threshold: 0.55 });
+  }), { root: snap, threshold: 0.35 });
   [...SECS, 'pied'].forEach((id) => secObs.observe(document.getElementById(id)));
   setActive('accueil');
 
@@ -146,4 +146,20 @@
   new IntersectionObserver(([e]) => { inCats = e.isIntersecting; setPlaying(inCats); }, { root: snap, threshold: 0.3 }).observe(document.getElementById('categories'));
   withProjects(null, (all) => { CATS.forEach((c) => buildCard(c, all)); setPlaying(inCats); });
   document.addEventListener('visibilitychange', () => setPlaying(inCats));
+})();
+
+/* arrivée avec une ancre (ex. /portfolio/#contact) : aller directement à la section */
+(function () {
+  const go = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id && document.getElementById(id);
+    const snap = document.getElementById('snap');
+    if (el && snap) snap.scrollTo({ top: el.offsetTop, behavior: 'auto' });
+  };
+  if (location.hash) setTimeout(go, 60);
+  addEventListener('hashchange', () => {
+    const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    const snap = document.getElementById('snap');
+    if (el && snap) snap.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+  });
 })();
