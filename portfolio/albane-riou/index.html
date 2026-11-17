@@ -3,693 +3,538 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Albane Riou — Portfolio · iolite.team</title>
-<meta name="description" content="Portfolio d'Albane Riou, étudiante en BUT Métiers du Multimédia et de l'Internet à l'IUT de Rouen : illustration, audiovisuel, 3D et communication.">
-<meta name="theme-color" content="#0a0a0a">
+<title>Albane Riou — Photographie, vidéo & graphisme</title>
+<meta name="description" content="Portfolio d'Albane Riou, étudiante en BUT MMI à Rouen : photographie, vidéo et graphisme.">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f2efe8">
 <link rel="icon" href="/portfolio/assets/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,800;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
-   Variables
+   Base
    ========================================================= */
 :root{
-  --black:#0a0a0a;
-  --ink:#111;
-  --paper:#f3f1ec;
-  --paper-2:#e7e4dd;
-  --grey:#8a8780;
-  --red:#d3231b;
-  --display:'Anton', 'Impact', 'Arial Narrow', sans-serif;
-  --sans:'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
-  --serif:'Instrument Serif', Georgia, serif;
-  --pw: min(40vw, calc((100svh - 150px) * .72));
-  --ph: calc(var(--pw) / .72);
-  --flip: 1s;
+  --paper:#f2efe8;
+  --paper-2:#e8e4da;
+  --ink:#121212;
+  --mute:#6d6a63;
+  --line:rgba(18,18,18,.14);
+  --safe:#ff4a1c;          /* lumière inactinique de la chambre noire */
+  --dark:#0e0e0e;
+  --display:'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  --sans:'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --pad:clamp(20px, 4vw, 56px);
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
-@media (max-width: 760px){ :root{ --pw: min(92vw, calc((100svh - 140px) * .72)); } }
-@media (prefers-reduced-motion: reduce){ :root{ --flip:.01s; } }
-
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  background:var(--black);color:#fff;font-family:var(--sans);overflow:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-body::before{ /* halo très léger sous le magazine */
-  content:"";position:fixed;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 60% 55% at 50% 52%, rgba(255,255,255,.07), transparent 70%);
-}
-a{color:inherit}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.locked{overflow:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--safe);color:#fff}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.wrap{padding-left:var(--pad);padding-right:var(--pad)}
+:focus-visible{outline:2px solid var(--safe);outline-offset:3px}
+
+/* apparition au défilement */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){ .rv{opacity:1;transform:none;transition:none} html{scroll-behavior:auto} }
 
 /* =========================================================
-   En-tête & navigation
+   En-tête
    ========================================================= */
-.topbar{
-  position:fixed;top:0;left:0;right:0;z-index:50;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
-  padding:16px 26px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;
-}
-.topbar a{text-decoration:none;opacity:.7;transition:opacity .2s}
-.topbar a:hover{opacity:1}
-.topbar .mast{font-family:var(--display);font-size:22px;letter-spacing:.02em;opacity:1}
-.topbar nav{display:flex;gap:22px;justify-content:flex-end}
-.topbar nav button{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;transition:opacity .2s,color .2s}
-.topbar nav button:hover,.topbar nav button.on{opacity:1}
-.topbar nav button.on{color:var(--red)}
-@media (max-width: 900px){ .topbar nav{display:none} .topbar{grid-template-columns:1fr auto 1fr} }
-
-.controls{
-  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;
-  display:flex;align-items:center;gap:18px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-}
-.controls button{
-  width:40px;height:40px;border:1px solid rgba(255,255,255,.35);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,opacity .2s;
-}
-.controls button:hover{background:#fff;color:#000;border-color:#fff}
-.controls button:disabled{opacity:.2;pointer-events:none}
-.controls .ind{min-width:170px;text-align:center;opacity:.8}
-.progress{position:fixed;left:0;bottom:0;height:2px;background:var(--red);z-index:41;transition:width var(--flip) cubic-bezier(.645,.045,.355,1)}
-.hint{
-  position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:40;font-family:var(--serif);font-style:italic;
-  font-size:17px;opacity:.75;transition:opacity .6s;pointer-events:none;white-space:nowrap;
-}
-.hint.hide{opacity:0}
+.hd{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:16px var(--pad);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.hd.scrolled{background:rgba(242,239,232,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.02em}
+.logo i{width:10px;height:10px;border-radius:50%;background:var(--safe);box-shadow:0 0 0 4px rgba(255,74,28,.18)}
+.nav{display:flex;gap:28px}
+.nav a{font-size:14px;font-weight:500;position:relative}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease)}
+.nav a:hover::after{transform:scaleX(1);transform-origin:left}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:99px;background:var(--ink);color:var(--paper);font-size:14px;font-weight:500;transition:background .25s}
+.pill:hover{background:var(--safe)}
+.burger{display:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);align-items:center;justify-content:center;position:relative;z-index:61}
+.burger span{display:block;width:16px;height:1.5px;background:currentColor;position:relative}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0;width:16px;height:1.5px;background:currentColor;transition:transform .3s}
+.burger span::before{top:-5px}.burger span::after{top:5px}
+.menu-open .burger span{background:transparent}
+.menu-open .burger span::before{transform:translateY(5px) rotate(45deg)}
+.menu-open .burger span::after{transform:translateY(-5px) rotate(-45deg)}
+.mmenu{position:fixed;inset:0;z-index:55;background:var(--paper);display:flex;flex-direction:column;justify-content:center;gap:6px;padding:var(--pad);
+  opacity:0;pointer-events:none;transition:opacity .35s}
+.mmenu a{font-family:var(--display);font-weight:700;font-size:13vw;line-height:1.05;letter-spacing:-.04em}
+.mmenu a span{color:var(--safe)}
+.menu-open .mmenu{opacity:1;pointer-events:auto}
+@media (max-width: 820px){ .nav,.hd .pill{display:none} .burger{display:flex} }
 
 /* =========================================================
-   Magazine (mécanique de pages)
+   Hero
    ========================================================= */
-.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding-top:14px}
-.book-wrap{position:relative;width:calc(var(--pw) * 2);height:var(--ph)}
-.book{position:absolute;inset:0;perspective:3000px;perspective-origin:50% 45%;transition:transform var(--flip) cubic-bezier(.645,.045,.355,1)}
-.book.at-start{transform:translateX(-25%)}
-.book.at-end{transform:translateX(25%)}
-.mobile .book-wrap{width:var(--pw);overflow:hidden}
-.mobile .book{left:calc(var(--pw) * -1);right:auto;width:calc(var(--pw) * 2)}
-.mobile .book.at-start,.mobile .book.at-end{transform:none}
+.hero{padding-top:clamp(120px, 17vh, 180px)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:clamp(18px,3vw,34px);color:var(--mute)}
+.hero h1{font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 82;font-size:clamp(50px, 11.2vw, 200px);line-height:.88;letter-spacing:-.03em}
+.hero h1 em{font-style:normal;color:var(--safe)}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.04em}
+.hero h1 .ln > span{display:inline-block;transform:translateY(105%);animation:rise 1.1s var(--ease) forwards}
+.hero h1 .ln:nth-child(2) > span{animation-delay:.12s}
+@keyframes rise{to{transform:none}}
+@media (prefers-reduced-motion: reduce){ .hero h1 .ln > span{animation:none;transform:none} }
+.hero-bot{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:clamp(28px,4vw,56px);align-items:end}
+.hero-bot p{font-size:clamp(17px,1.5vw,21px);line-height:1.45;max-width:34ch}
+.disc{border-top:1px solid var(--ink)}
+.disc button{width:100%;display:grid;grid-template-columns:3.4em 1fr auto;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);text-align:left;
+  font-family:var(--display);font-weight:600;font-size:clamp(20px,2vw,28px);letter-spacing:-.02em;transition:padding .35s var(--ease),color .2s}
+.disc button .mono{color:var(--mute)}
+.disc button .arr{transition:transform .35s var(--ease)}
+.disc button:hover{padding-left:12px;color:var(--safe)}
+.disc button:hover .arr{transform:translateX(-6px) rotate(45deg)}
+@media (max-width: 820px){ .hero-bot{grid-template-columns:1fr} }
 
-.leaf{
-  position:absolute;top:0;left:50%;width:50%;height:100%;
-  transform-origin:left center;transform-style:preserve-3d;
-  transition:transform var(--flip) cubic-bezier(.645,.045,.355,1);
-}
-.leaf.flipped{transform:rotateY(-180deg)}
-.side{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper)}
-.side.back{transform:rotateY(180deg)}
-.side.front{box-shadow:10px 14px 40px rgba(0,0,0,.55)}
-.side.back{box-shadow:-10px 14px 40px rgba(0,0,0,.55)}
-/* pli central */
-.side::before{content:"";position:absolute;top:0;bottom:0;width:9%;pointer-events:none;z-index:20}
-.side.front::before{left:0;background:linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,.06) 35%, rgba(0,0,0,0))}
-.side.back::before{right:0;background:linear-gradient(-90deg, rgba(0,0,0,.28), rgba(0,0,0,.06) 35%, rgba(0,0,0,0))}
-.mobile .side.front::before{width:4%}
-/* reflet pendant la rotation */
-.side::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:21;opacity:0;
-  background:linear-gradient(90deg, rgba(0,0,0,.35), rgba(255,255,255,.18) 45%, rgba(0,0,0,0) 75%)}
-.leaf.turning .side::after{animation:sheen var(--flip) ease-in-out}
-@keyframes sheen{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
-/* tranche */
-.edge{position:absolute;top:.6%;bottom:.6%;width:6px;z-index:0;pointer-events:none;transition:opacity .4s;
-  background:repeating-linear-gradient(90deg,#eceae4 0 1px,#bdb9b0 1px 2px)}
-.edge.r{right:-4px}.edge.l{left:-4px}
-.mobile .edge{display:none}
-
-/* coins */
-.corner{position:absolute;bottom:0;width:14%;aspect-ratio:1;z-index:30;cursor:pointer}
-.corner.next{right:0}.corner.prev{left:0}
-.corner::after{content:"";position:absolute;bottom:0;width:0;height:0;transition:width .25s,height .25s}
-.corner.next::after{right:0;background:linear-gradient(135deg,#d9d6cf 50%,transparent 50%);box-shadow:-3px -3px 8px rgba(0,0,0,.25)}
-.corner.prev::after{left:0;background:linear-gradient(225deg,#d9d6cf 50%,transparent 50%);box-shadow:3px -3px 8px rgba(0,0,0,.25)}
-.corner:hover::after{width:50%;height:50%}
+/* bande de film */
+.film{margin-top:clamp(48px,7vw,96px);background:#151311;padding:24px 0 30px;overflow:hidden;position:relative}
+.film::before,.film::after{content:"";position:absolute;left:0;right:0;height:10px;
+  background:radial-gradient(circle at 50% 50%, var(--paper) 0 3.2px, transparent 3.6px) 0 0/22px 10px repeat-x;opacity:.92}
+.film::before{top:7px}.film::after{bottom:7px}
+.film-track{display:flex;gap:14px;width:max-content;animation:roll 70s linear infinite}
+.film:hover .film-track{animation-play-state:paused}
+@keyframes roll{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){ .film-track{animation:none} }
+.frame{position:relative;height:clamp(140px,19vw,250px);flex:none;padding-bottom:16px}
+.frame img{height:100%;width:auto}
+.frame .ed{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:9.5px;color:#f08a3c;letter-spacing:.12em;white-space:nowrap}
 
 /* =========================================================
-   Pages : base
+   Sections
    ========================================================= */
-.face{
-  position:absolute;inset:0;color:var(--ink);
-  font-size:calc(var(--pw) / 36);line-height:1.5;
-  padding:4.2em 3.2em 3.6em;
+section{scroll-margin-top:70px}
+.sec{padding-top:clamp(80px,11vw,160px)}
+.sec-hd{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(28px,4vw,52px)}
+.sec-hd h2{font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 85;font-size:clamp(40px,6.4vw,104px);line-height:.9;letter-spacing:-.025em}
+.sec-hd h2 sup{font-family:var(--mono);font-size:.16em;font-weight:500;letter-spacing:0;vertical-align:top;margin-left:.4em;color:var(--safe)}
+
+/* filtres */
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:9px 16px;border-radius:99px;border:1px solid var(--line);font-size:14px;font-weight:500;transition:background .2s,color .2s,border-color .2s}
+.chip span{font-family:var(--mono);font-size:11px;opacity:.55;margin-left:5px}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* grille de projets */
+.grid{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(18px,3vw,44px);row-gap:clamp(44px,6vw,90px);align-items:start}
+.card{display:block;text-align:left;width:100%}
+.card.shift{margin-top:clamp(0px,9vw,140px)}
+.card.hide{display:none}
+.card .ph{position:relative;overflow:hidden;background:var(--paper-2)}
+.card .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
+.card:hover .ph img{transform:scale(1.045)}
+.card .ph::after{ /* viseur */
+  content:"";position:absolute;inset:14px;pointer-events:none;opacity:0;transition:opacity .35s,inset .45s var(--ease);
+  background:
+    linear-gradient(#fff,#fff) 0 0/22px 1.5px, linear-gradient(#fff,#fff) 0 0/1.5px 22px,
+    linear-gradient(#fff,#fff) 100% 0/22px 1.5px, linear-gradient(#fff,#fff) 100% 0/1.5px 22px,
+    linear-gradient(#fff,#fff) 0 100%/22px 1.5px, linear-gradient(#fff,#fff) 0 100%/1.5px 22px,
+    linear-gradient(#fff,#fff) 100% 100%/22px 1.5px, linear-gradient(#fff,#fff) 100% 100%/1.5px 22px;
+  background-repeat:no-repeat}
+.card:hover .ph::after{opacity:1;inset:22px}
+.card .exif{position:absolute;left:34px;right:34px;bottom:34px;color:#fff;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s var(--ease);text-shadow:0 1px 8px rgba(0,0,0,.6);font-size:11px}
+.card:hover .exif{opacity:1;transform:none}
+.card .rec{position:absolute;top:34px;right:34px;display:flex;align-items:center;gap:6px;color:#fff;font-size:11px;opacity:0;transition:opacity .35s;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.card .rec::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--safe);animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.card:hover .rec{opacity:1}
+.card .meta{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;padding-top:16px}
+.card .meta .n{color:var(--safe)}
+.card .meta h3{font-family:var(--display);font-weight:600;font-size:clamp(20px,2vw,28px);letter-spacing:-.02em;line-height:1.1}
+.card .meta .c{color:var(--mute);white-space:nowrap}
+.card .sub{color:var(--mute);font-size:14px;margin-top:4px;padding-left:calc(14px + 2.4ch)}
+@media (hover: none){ .card .exif,.card .rec{opacity:1;transform:none} }
+@media (max-width: 720px){
+  .grid{grid-template-columns:1fr}
+  .card.shift{margin-top:0}
+  .card .meta{grid-template-columns:auto 1fr}
+  .card .meta .c{grid-column:2}
 }
-.mobile .face{font-size:calc(var(--pw) / 32);padding:3.8em 2.6em 3.4em}
-.face.dark{background:var(--black);color:#f2f0eb}
-.face.red{background:var(--red);color:#fff}
-.face.bleed{padding:0}
-
-/* folio : en-tête et numéro de page */
-.folio{position:absolute;left:3.2em;right:3.2em;top:1.6em;display:flex;justify-content:space-between;
-  font-size:.62em;letter-spacing:.16em;text-transform:uppercase;font-weight:600;z-index:15;opacity:.75}
-.pnum{position:absolute;bottom:1.5em;font-size:.68em;font-weight:600;letter-spacing:.1em;z-index:15;opacity:.75}
-.side.front .pnum{right:3.2em}.side.back .pnum{left:3.2em}
-.mobile .side .pnum{right:2.6em;left:auto}
-.mobile .folio{left:2.6em;right:2.6em}
-.bleed .folio,.bleed .pnum{color:#fff;opacity:.9;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-
-/* typo */
-.disp{font-family:var(--display);font-weight:400;line-height:.88;text-transform:uppercase;letter-spacing:-.005em}
-.k{font-size:.66em;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
-.k.red,.red-t{color:var(--red)}
-.serif{font-family:var(--serif);font-weight:400}
-.it{font-style:italic}
-p{margin:0 0 .75em;hyphens:auto;text-align:justify}
-.small{font-size:.86em;line-height:1.5}
-.lead{font-family:var(--serif);font-size:1.55em;line-height:1.15;text-align:left;margin-bottom:.8em}
-.cols{column-count:2;column-gap:1.6em}
-.cols p{text-align:justify}
-.rule{height:1px;background:currentColor;opacity:.25;margin:1em 0}
-.abs{position:absolute}
-.img{position:absolute;overflow:hidden;background:#222}
-.img img{display:block;width:100%;height:100%;object-fit:cover}
-.img.full{inset:0}
-.shade-b::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.75))}
-.shade-t::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.55))}
-.vert{writing-mode:vertical-rl;transform:rotate(180deg)}
-.tagline{display:flex;flex-wrap:wrap;gap:.4em .9em;font-size:.66em;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
-.tagline span::before{content:"— ";color:var(--red)}
-.box{background:var(--red);color:#fff;padding:.25em .6em;display:inline-block}
-.video{position:absolute;background:#000;z-index:5}
-.video video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
-.video .cap{position:absolute;left:0;bottom:-2em;font-size:.62em;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
 
 /* =========================================================
-   Pages : spécifiques
+   À propos
    ========================================================= */
-/* couverture */
-.cover .img img{filter:grayscale(1) contrast(1.1)}
-.cover .mast{position:absolute;left:.12em;right:.12em;top:.32em;color:#fff;font-size:8.3em;text-align:center;z-index:4;mix-blend-mode:difference}
-.mobile .cover .mast{font-size:7.2em}
-.cover .top{position:absolute;left:2.2em;right:2.2em;top:1.3em;display:flex;justify-content:space-between;color:#fff;z-index:5}
-.cover .lines{position:absolute;left:2.2em;bottom:6.5em;z-index:5;color:#fff;width:46%}
-.cover .lines div{margin-bottom:1em}
-.cover .lines b{display:block;font-family:var(--display);font-weight:400;font-size:1.7em;line-height:.95;text-transform:uppercase}
-.cover .lines small{font-size:.75em;opacity:.85}
-.cover .name{position:absolute;right:2.2em;bottom:2.2em;text-align:right;color:#fff;z-index:5}
-.cover .name .disp{font-size:3.6em}
-.cover .barcode{position:absolute;left:2.2em;bottom:2.2em;z-index:5;background:#fff;padding:.4em .5em .25em;color:#000;font-size:.5em;letter-spacing:.2em;text-align:center}
-.cover .barcode i{display:block;width:9em;height:2.6em;margin-bottom:.3em;
-  background:repeating-linear-gradient(90deg,#000 0 2px,transparent 2px 3px,#000 3px 4px,transparent 4px 7px,#000 7px 10px,transparent 10px 11px)}
-.cover .badge{position:absolute;right:2.2em;top:40%;z-index:5;width:6.5em;height:6.5em;border-radius:50%;background:var(--red);color:#fff;
-  display:flex;align-items:center;justify-content:center;text-align:center;font-size:.8em;font-weight:800;line-height:1.05;letter-spacing:.04em;text-transform:uppercase;transform:rotate(-10deg)}
+.about{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,6vw,100px);align-items:start}
+.portrait{position:relative;aspect-ratio:4/5;background:#1b1916;overflow:hidden}
+.portrait img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05)}
+.portrait .fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:min(30vw,220px);color:var(--safe);letter-spacing:-.06em}
+.portrait .tag{position:absolute;z-index:2;left:14px;bottom:14px;background:var(--paper);padding:6px 10px}
+.about .big{font-family:var(--display);font-weight:500;font-size:clamp(24px,2.6vw,40px);line-height:1.15;letter-spacing:-.02em}
+.about .big em{font-style:normal;color:var(--safe)}
+.about .txt{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;color:#333}
+.skills{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(36px,5vw,64px);border-top:1px solid var(--ink)}
+.skills div{padding:18px 18px 18px 0;border-right:1px solid var(--line)}
+.skills div:last-child{border-right:0}
+.skills div + div{padding-left:18px}
+.skills h4{font-family:var(--display);font-weight:600;font-size:20px;margin:6px 0 8px;letter-spacing:-.01em}
+.skills ul{list-style:none;color:#444;font-size:14.5px;line-height:1.7}
+.cv{margin-top:clamp(36px,5vw,64px)}
+.cv .row{display:grid;grid-template-columns:130px 1fr auto;gap:20px;padding:15px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.cv .row:first-child{border-top:1px solid var(--line)}
+.cv .row b{font-weight:600}
+.cv .row .mono{color:var(--mute)}
+@media (max-width: 1100px){
+  .skills{grid-template-columns:1fr 1fr}
+  .skills div:nth-child(2){border-right:0}
+  .skills div:nth-child(3){padding-left:0}
+  .skills div:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width: 960px){ .about{grid-template-columns:1fr} .portrait{max-width:420px} }
+@media (max-width: 560px){
+  .about .txt{grid-template-columns:1fr}
+  .cv .row{grid-template-columns:1fr;gap:2px}
+  .skills{grid-template-columns:1fr}
+  .skills div{border-right:0!important;padding-left:0!important}
+  .skills div + div{border-top:1px solid var(--line)}
+}
 
-/* sommaire */
-.toc{list-style:none;margin-top:1em;border-top:1px solid rgba(0,0,0,.85)}
-.toc li{border-bottom:1px solid rgba(0,0,0,.18)}
-.toc button{display:grid;grid-template-columns:2.6em 1fr auto;align-items:baseline;width:100%;text-align:left;padding:.42em 0;transition:padding .25s,color .2s}
-.toc button:hover{padding-left:.5em;color:var(--red)}
-.toc .n{font-family:var(--display);font-size:1.25em;color:var(--red)}
-.toc .t{font-weight:600;font-size:1.02em}
-.toc .t small{display:inline;margin-left:.6em;font-weight:400;font-size:.8em;opacity:.55}
-.toc .p{font-size:.75em;font-weight:600;letter-spacing:.1em}
+/* =========================================================
+   Contact & pied de page
+   ========================================================= */
+.contact{background:var(--dark);color:var(--paper);margin-top:clamp(80px,11vw,160px);padding-top:clamp(70px,10vw,140px);padding-bottom:28px}
+.contact > .mono{color:#9a968e}
+.contact h2{font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 80;font-size:clamp(52px,12vw,220px);line-height:.86;letter-spacing:-.035em;margin:18px 0 clamp(30px,4vw,56px)}
+.contact h2 em{font-style:normal;color:var(--safe)}
+.mail{display:inline-flex;align-items:center;gap:14px;font-family:var(--display);font-weight:500;font-size:clamp(20px,3.6vw,52px);letter-spacing:-.02em;border-bottom:2px solid var(--safe);padding-bottom:6px;transition:color .2s;word-break:break-all}
+.mail:hover{color:var(--safe)}
+.contact .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:99px;border:1px solid rgba(255,255,255,.3);font-size:15px;font-weight:500;transition:background .2s,color .2s,border-color .2s}
+.btn:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.btn.fill{background:var(--safe);border-color:var(--safe);color:#fff}
+.btn.fill:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.foot{display:flex;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;margin-top:clamp(70px,10vw,140px);padding-top:22px;border-top:1px solid rgba(255,255,255,.14);color:#8f8b83;font-size:13px}
+.foot a{text-decoration:underline;text-underline-offset:3px}
 
-/* parcours */
-.tl .row{display:grid;grid-template-columns:6.4em 1fr;gap:1em;padding:.7em 0;border-bottom:1px solid rgba(0,0,0,.15)}
-.tl .d{font-size:.7em;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--red);padding-top:.25em}
-.tl .t{font-weight:600;line-height:1.25}
-.tl .s{font-size:.86em;opacity:.65}
-.tl-h{font-family:var(--display);font-size:1.6em;text-transform:uppercase;margin:1.1em 0 .2em;line-height:1}
-
-/* compétences */
-.skills{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #fff}
-.skills div{padding:.6em 0;border-bottom:1px solid rgba(255,255,255,.18);font-weight:500;display:flex;justify-content:space-between}
-.skills div span{opacity:.5;font-size:.8em}
-.skills div:nth-child(odd){padding-right:1em}
-
-/* boutons */
-.btn{display:inline-flex;align-items:center;gap:.6em;font-size:.72em;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
-  padding:1em 1.4em;border:1px solid currentColor;text-decoration:none;transition:background .2s,color .2s}
-.dark .btn:hover{background:#fff;color:#000}
-.face:not(.dark) .btn:hover{background:#000;color:#fff}
-.btn.fill{background:var(--red);border-color:var(--red);color:#fff}
-.btn.fill:hover{background:#fff!important;color:#000!important;border-color:#fff}
-
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* =========================================================
+   Étude de cas (plein écran)
+   ========================================================= */
+.case{position:fixed;inset:0;z-index:100;background:var(--dark);color:var(--paper);overflow-y:auto;overscroll-behavior:contain;
+  opacity:0;visibility:hidden;transform:translateY(24px);transition:opacity .45s var(--ease),transform .55s var(--ease),visibility 0s .55s}
+.case.open{opacity:1;visibility:visible;transform:none;transition:opacity .45s var(--ease),transform .55s var(--ease)}
+.case:focus{outline:none}
+.case-bar{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px var(--pad);
+  background:linear-gradient(var(--dark) 60%, rgba(14,14,14,0))}
+.case-bar .mono{color:#9a968e}
+.close{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:99px;border:1px solid rgba(255,255,255,.25);font-size:14px;transition:background .2s,color .2s;flex:none}
+.close:hover{background:var(--paper);color:var(--ink)}
+.case-hd{padding-top:clamp(24px,5vw,70px)}
+.case-hd .kick{color:var(--safe)}
+.case-hd h2{font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 82;font-size:clamp(46px,9vw,160px);line-height:.9;letter-spacing:-.03em;margin:14px 0 clamp(28px,4vw,56px)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.2)}
+.facts div{padding:16px 16px 16px 0}
+.facts .mono{color:#9a968e;display:block;margin-bottom:6px}
+.facts b{font-weight:500;font-size:15px}
+.case-intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);padding-top:clamp(36px,5vw,72px)}
+.case-intro .lead{font-family:var(--display);font-weight:500;font-size:clamp(22px,2.4vw,34px);line-height:1.2;letter-spacing:-.015em}
+.case-intro .body p{color:#c9c4ba;margin-bottom:1em}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.4vw,20px);padding-top:clamp(40px,6vw,90px);align-items:start}
+.gal figure{grid-column:span 2}
+.gal figure.half{grid-column:span 1}
+.gal img{width:100%;height:auto;background:#1b1916}
+.gal figcaption{display:flex;justify-content:space-between;gap:12px;padding-top:10px;color:#8f8b83}
+.gal figcaption .tc{color:var(--safe)}
+.process{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,3vw,40px);padding-top:clamp(50px,7vw,110px)}
+.process div{border-top:1px solid rgba(255,255,255,.2);padding-top:16px}
+.process .mono{color:var(--safe)}
+.process h4{font-family:var(--display);font-weight:600;font-size:22px;margin:8px 0;letter-spacing:-.01em}
+.process p{color:#c9c4ba;font-size:15px}
+.next{display:block;margin-top:clamp(70px,10vw,140px);padding:clamp(40px,6vw,80px) 0 clamp(50px,7vw,100px);border-top:1px solid rgba(255,255,255,.2);text-align:left;width:100%}
+.next .mono{color:#9a968e}
+.next .t{display:block;font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 82;font-size:clamp(40px,8vw,130px);line-height:.9;letter-spacing:-.03em;margin-top:10px;transition:color .25s}
+.next:hover .t{color:var(--safe)}
+@media (max-width: 820px){
+  .facts{grid-template-columns:1fr 1fr}
+  .case-intro,.process{grid-template-columns:1fr}
+  .gal figure.half{grid-column:span 2}
+}
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <a href="/portfolio/">← iolite.team</a>
-  <span class="mast">ALBANE RIOU</span>
-  <nav aria-label="Rubriques">
-    <button data-goto="2">Sommaire</button>
-    <button data-goto="3">Édito</button>
-    <button data-goto="7">Projets</button>
-    <button data-goto="19">Contact</button>
+<header class="hd" id="hd">
+  <a class="logo" href="#top" aria-label="Albane Riou, retour en haut"><i></i>Albane Riou</a>
+  <nav class="nav" aria-label="Navigation principale">
+    <a href="#travaux">Travaux</a>
+    <a href="#apropos">À propos</a>
+    <a href="#contact">Contact</a>
   </nav>
+  <a class="pill" href="mailto:ariou917@gmail.com">Me contacter ↗</a>
+  <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mmenu"><span></span></button>
 </header>
+<nav class="mmenu" id="mmenu" aria-label="Menu mobile">
+  <a href="#travaux">Travaux<span>.</span></a>
+  <a href="#apropos">À propos<span>.</span></a>
+  <a href="#contact">Contact<span>.</span></a>
+</nav>
 
-<main class="stage" aria-label="Portfolio d'Albane Riou au format magazine">
-  <div class="book-wrap"><div class="book" id="book"></div></div>
-</main>
-
-<div class="hint" id="hint">Cliquez sur le coin de la page, ou utilisez les flèches ← →</div>
-<div class="controls">
-  <button id="prev" aria-label="Page précédente"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button>
-  <span class="ind" id="ind" aria-live="polite">Couverture</span>
-  <button id="next" aria-label="Page suivante"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button>
-</div>
-<div class="progress" id="progress"></div>
-
-<!-- =========================================================
-     PAGES DU MAGAZINE
-     Une <section class="face"> = une page.
-     0 = couverture ; ensuite les doubles pages (impaire à gauche, paire à droite) ; dernière = 4e de couverture.
-     Garder un nombre PAIR de pages.
-     Classes de fond : (aucune) papier · dark · red · bleed (image pleine page, sans marges).
-     data-nofolio : pas d'en-tête ni de numéro de page.
-     Images : data-asset="chemin" (résolu avec ASSET_BASE, voir le script en bas).
-     ========================================================= -->
-<template id="pages">
-
-  <!-- 0 · COUVERTURE -->
-  <section class="face bleed cover" data-label="Couverture" data-nofolio>
-    <div class="img full shade-b"><img data-asset="photo/moi.png" alt="Portrait d'Albane Riou"></div>
-    <div class="top k"><span>N°01 — Édition 2026</span><span>BUT MMI · Rouen</span></div>
-    <div class="mast disp">Portfolio</div>
-    <div class="badge">Prix<br>Green<br>Awards<br>2025</div>
-    <div class="lines">
-      <div><b>Portraits</b><small>Une série dessinée sur tablette graphique</small></div>
-      <div><b>Seconde Chance</b><small>Un court métrage contre la fast fashion</small></div>
-      <div><b>Casque de F1</b><small>De la modélisation au rendu 3D</small></div>
+<main id="top">
+  <!-- ================= HERO ================= -->
+  <section class="hero wrap" aria-labelledby="hero-t">
+    <div class="hero-top mono"><span>Portfolio — 2026</span><span>BUT MMI · IUT de Rouen</span></div>
+    <h1 id="hero-t"><span class="ln"><span>Cadrer le réel,</span></span><span class="ln"><span>composer <em>le reste.</em></span></span></h1>
+    <div class="hero-bot">
+      <p>Je m'appelle Albane, je suis étudiante en Métiers du Multimédia et de l'Internet. Je photographie, je filme et je mets en page : trois façons de raconter une même histoire.</p>
+      <div class="disc" id="disc"></div>
     </div>
-    <div class="name"><div class="k" style="margin-bottom:.4em">Design · Audiovisuel · 3D</div><div class="disp">Albane<br>Riou</div></div>
   </section>
 
-  <!-- 1 · 2E DE COUVERTURE (gauche) -->
-  <section class="face dark" data-label="Ours">
-    <div class="disp" style="font-size:11em;line-height:.8;margin-top:.15em">N°<br>01</div>
-    <div class="abs" style="left:3.2em;right:3.2em;bottom:4.2em">
-      <div class="rule" style="opacity:.5"></div>
-      <div class="small" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em">
-        <div><div class="k red">Direction artistique</div>Albane Riou</div>
-        <div><div class="k red">Formation</div>BUT MMI, IUT de Rouen</div>
-        <div><div class="k red">Disciplines</div>Illustration, vidéo, 3D, web, communication</div>
-        <div><div class="k red">Publié sur</div>iolite.team</div>
+  <div class="film" aria-hidden="true"><div class="film-track" id="film"></div></div>
+
+  <!-- ================= TRAVAUX ================= -->
+  <section class="sec wrap" id="travaux" aria-labelledby="w-t">
+    <div class="sec-hd">
+      <h2 id="w-t">Travaux<sup id="count">(06)</sup></h2>
+      <div class="filters" id="filters" role="group" aria-label="Filtrer les projets"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- ================= À PROPOS ================= -->
+  <section class="sec wrap" id="apropos" aria-labelledby="a-t">
+    <div class="sec-hd"><h2 id="a-t">À propos</h2><span class="mono" style="color:var(--mute)">Rouen, Normandie</span></div>
+    <div class="about">
+      <div class="portrait rv">
+        <div class="fallback" aria-hidden="true">AR</div>
+        <img src="https://albaneriou.fr/photo/moi.png" alt="Portrait d'Albane Riou" loading="lazy" onerror="this.remove()">
+        <span class="tag mono">Autoportrait</span>
+      </div>
+      <div>
+        <p class="big rv">Depuis toute petite, je dessine. Aujourd'hui je <em>cadre</em> : un paysage, une scène, une page. Ce qui m'intéresse, c'est le moment où une image commence à raconter quelque chose.</p>
+        <div class="txt rv">
+          <p>En BUT MMI à l'IUT de Rouen, j'apprends à passer d'un médium à l'autre : la photo pour observer, la vidéo pour faire durer, le graphisme pour organiser. Je travaille aussi bien seule qu'en équipe, de l'écriture jusqu'au rendu final.</p>
+          <p>En dehors des écrans, je sculpte, je danse et je fais de la boxe anglaise. Je fais aussi partie du pôle communication du BDE La Bête, et j'ai été conseillère municipale des jeunes à Lisieux.</p>
+        </div>
+        <div class="skills rv">
+          <div><span class="mono" style="color:var(--safe)">01</span><h4>Photographie</h4><ul><li>Prise de vue extérieure</li><li>Argentique &amp; numérique</li><li>Retouche Photoshop</li></ul></div>
+          <div><span class="mono" style="color:var(--safe)">02</span><h4>Vidéo</h4><ul><li>Écriture &amp; scénario</li><li>Tournage, direction artistique</li><li>Montage</li></ul></div>
+          <div><span class="mono" style="color:var(--safe)">03</span><h4>Graphisme</h4><ul><li>Identité visuelle</li><li>Affiche &amp; édition</li><li>Illustrator, Photoshop</li></ul></div>
+          <div><span class="mono" style="color:var(--safe)">04</span><h4>Et aussi</h4><ul><li>HTML, CSS, PHP, MySQL</li><li>3D sur Blender</li><li>Anglais, allemand</li></ul></div>
+        </div>
+        <div class="cv rv">
+          <div class="row"><span class="mono">Depuis 2024</span><b>BUT Métiers du Multimédia et de l'Internet</b><span class="mono">IUT de Rouen</span></div>
+          <div class="row"><span class="mono">2020 — 2024</span><b>Baccalauréat général, mention assez bien</b><span class="mono">Lisieux</span></div>
+          <div class="row"><span class="mono">Depuis 2025</span><b>Pôle communication, BDE La Bête</b><span class="mono">Rouen</span></div>
+          <div class="row"><span class="mono">Saison d'été</span><b>Réceptionniste, Hôtel Amirauté</b><span class="mono">Deauville</span></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 2 · SOMMAIRE (droite) -->
-  <section class="face" data-label="Sommaire">
-    <div class="disp" style="font-size:5.8em">Som&#8209;<br>maire</div>
-    <ul class="toc">
-      <li><button data-goto="3"><span class="n">—</span><span class="t">Édito<small>Qui suis-je ?</small></span><span class="p">03</span></button></li>
-      <li><button data-goto="5"><span class="n">—</span><span class="t">Parcours &amp; outils<small>Formation, expériences, compétences</small></span><span class="p">05</span></button></li>
-      <li><button data-goto="7"><span class="n">01</span><span class="t">Portraits<small>Illustration numérique</small></span><span class="p">07</span></button></li>
-      <li><button data-goto="9"><span class="n">02</span><span class="t">Seconde Chance<small>Court métrage</small></span><span class="p">09</span></button></li>
-      <li><button data-goto="11"><span class="n">03</span><span class="t">Casque de F1<small>Modélisation 3D</small></span><span class="p">11</span></button></li>
-      <li><button data-goto="13"><span class="n">04</span><span class="t">Village<small>Vidéo</small></span><span class="p">13</span></button></li>
-      <li><button data-goto="15"><span class="n">05</span><span class="t">BDE La Bête<small>Communication</small></span><span class="p">15</span></button></li>
-      <li><button data-goto="17"><span class="n">06</span><span class="t">Dernière Enquête<small>Vidéo</small></span><span class="p">17</span></button></li>
-      <li><button data-goto="19"><span class="n">—</span><span class="t">Contact</span><span class="p">19</span></button></li>
-    </ul>
-  </section>
-
-  <!-- 3 · ÉDITO (gauche) -->
-  <section class="face" data-label="Édito">
-    <div class="k red">Édito</div>
-    <div class="disp" style="font-size:7.2em;margin:.12em 0 .25em">Bonjour.</div>
-    <p class="lead">Moi c'est Albane, étudiante en BUT Métiers du Multimédia et de l'Internet à l'IUT de Rouen.</p>
-    <div class="cols small">
-      <p>Depuis toute petite, le dessin occupe une place essentielle dans ma vie : un terrain de jeu, un espace d'expression, parfois même un refuge.</p>
-      <p>Aujourd'hui, j'aime raconter des histoires avec toutes sortes d'outils : le crayon et la tablette graphique, la caméra, la 3D ou le code.</p>
-      <p>Ce magazine rassemble des projets personnels et des projets réalisés pendant ma formation : illustration, court métrage, modélisation 3D et communication associative.</p>
-      <p>En dehors des écrans, je sculpte, je danse et je fais de la boxe anglaise.</p>
-    </div>
-    <div class="serif it abs" style="right:3.2em;bottom:3.4em;font-size:2.4em">— Albane</div>
-  </section>
-
-  <!-- 4 · ÉDITO, PHOTO (droite) -->
-  <section class="face bleed" data-label="Édito">
-    <div class="img full shade-b"><img data-asset="photo/moi.png" alt="Albane Riou"></div>
-    <div class="abs" style="left:2.4em;right:2.4em;bottom:3.6em;color:#fff;z-index:4">
-      <div class="k" style="margin-bottom:.8em"><span class="box">Manifeste</span></div>
-      <div class="disp" style="font-size:5.6em">Dessiner.<br>Filmer.<br>Modéliser.</div>
-    </div>
-  </section>
-
-  <!-- 5 · PARCOURS (gauche) -->
-  <section class="face" data-label="Parcours">
-    <div class="disp vert abs" style="left:1.2em;top:4.2em;bottom:3.6em;font-size:5.2em;text-align:right">Parcours</div>
-    <div style="margin-left:8.4em">
-      <div class="tl-h" style="margin-top:0">Formation</div>
-      <div class="tl">
-        <div class="row"><div class="d">Depuis 2024</div><div><div class="t">BUT Métiers du Multimédia et de l'Internet</div><div class="s">IUT de Rouen</div></div></div>
-        <div class="row"><div class="d">2020–2024</div><div><div class="t">Baccalauréat général, mention assez bien</div><div class="s">Institution de Lisieux</div></div></div>
-      </div>
-      <div class="tl-h">Expériences</div>
-      <div class="tl">
-        <div class="row"><div class="d">Saison d'été</div><div><div class="t">Réceptionniste</div><div class="s">Hôtel Amirauté, Deauville</div></div></div>
-        <div class="row"><div class="d">2024</div><div><div class="t">Contrat étudiant, mise en rayon</div><div class="s">E.Leclerc, Lisieux</div></div></div>
-        <div class="row"><div class="d">Saisonnier</div><div><div class="t">Mise en rayon</div><div class="s">Intermarché, Lisieux</div></div></div>
-      </div>
-      <div class="tl-h">Engagements</div>
-      <div class="tl">
-        <div class="row"><div class="d">Depuis 2025</div><div><div class="t">BDE La Bête, pôle communication</div></div></div>
-        <div class="row"><div class="d">2021–2023</div><div><div class="t">Conseillère municipale des jeunes</div><div class="s">Ville de Lisieux</div></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6 · COMPÉTENCES (droite) -->
-  <section class="face dark" data-label="Compétences">
-    <div class="k red">Boîte à outils</div>
-    <div class="disp" style="font-size:9em;margin:.1em 0 .1em">08<span class="red-t">+</span></div>
-    <div class="disp" style="font-size:2.4em;margin-bottom:1em">outils maîtrisés</div>
-    <div class="skills">
-      <div>Photoshop <span>Création</span></div><div>Illustrator <span>Création</span></div>
-      <div>Blender <span>3D</span></div><div>Artstudio <span>Illustration</span></div>
-      <div>HTML <span>Web</span></div><div>CSS <span>Web</span></div>
-      <div>PHP <span>Web</span></div><div>MySQL <span>Web</span></div>
-    </div>
-    <div class="tl-h" style="font-size:1.6em">Langues</div>
-    <div class="small" style="opacity:.85">Français · Anglais (diplôme de Cambridge) · Allemand (certification)</div>
-    <div class="small abs" style="left:3.2em;bottom:3.6em;opacity:.6">Permis B</div>
-  </section>
-
-  <!-- 7 · PROJET 01 OUVERTURE (gauche) -->
-  <section class="face bleed" data-label="Portraits">
-    <div class="img full shade-t"><img data-asset="photo/fille.png" alt="Portrait numérique dessiné par Albane Riou"></div>
-    <div class="disp abs" style="right:.2em;bottom:-.08em;font-size:15em;color:var(--red);z-index:4;line-height:.8">01</div>
-  </section>
-
-  <!-- 8 · PROJET 01 TEXTE (droite) -->
-  <section class="face" data-label="Portraits">
-    <div class="tagline"><span>Illustration</span><span>Projet personnel</span><span>Artstudio</span></div>
-    <div class="disp" style="font-size:7.6em;margin:.18em 0 .3em">Por&#8209;<br>traits</div>
-    <p class="lead">« J'ai toujours été attirée par les visages : leur complexité, leur douceur, les émotions qu'ils renferment. »</p>
-    <div class="cols small">
-      <p>Pour ce projet personnel, j'ai réalisé une série de portraits entièrement sur tablette graphique, avec le logiciel Artstudio. Le numérique m'a offert une liberté nouvelle : on superpose, on efface, on recommence, on explore encore.</p>
-      <p>Chaque portrait est né d'une impulsion : tester une ambiance, un angle, une émotion. Ce sont des esquisses spontanées où la recherche artistique se mêle à l'instant présent.</p>
-      <p>Cette série m'a permis d'affiner mon geste et de sortir de ma zone de confort, entre réalisme délicat et traits plus bruts, pour mieux comprendre le visage humain : formes, volumes, lumière et textures.</p>
-    </div>
-  </section>
-
-  <!-- 9 · PROJET 02 TEXTE (gauche) -->
-  <section class="face dark" data-label="Seconde Chance">
-    <div class="tagline"><span>Court métrage</span><span>2025</span><span>En équipe</span></div>
-    <div class="disp" style="font-size:6.8em;margin:.18em 0 .3em">Seconde<br><span class="red-t">Chance</span></div>
-    <p class="lead">Un film engagé pour sensibiliser aux effets de la fast fashion sur l'environnement et sur l'humain.</p>
-    <div class="cols small">
-      <p>Le film explore les conséquences de la production textile de masse (gaspillage de l'eau, pollution, conditions de travail précaires) et interroge notre rapport au vêtement jetable. Il suggère, de manière poétique, que donner une seconde chance à nos vêtements est aussi un acte de responsabilité collective.</p>
-      <p>Au sein de l'équipe, j'ai pris part à la scénarisation, à la direction artistique (lumières, décors, contraste entre la beauté des matières et la dureté de la production), à la gestion de production et au montage.</p>
-    </div>
-  </section>
-
-  <!-- 10 · PROJET 02 VISUEL (droite) -->
-  <section class="face" data-label="Seconde Chance">
-    <div class="video" style="left:0;right:0;top:0;height:46%">
-      <video controls preload="none" playsinline data-asset-poster="photo/loane2.png" data-asset="videos%20/secondchance.MP4"></video>
-    </div>
-    <div class="img" style="left:3.2em;top:50%;width:46%;height:34%"><img data-asset="photo/loane2.png" alt="Image du court métrage Seconde Chance"></div>
-    <div class="abs" style="left:calc(46% + 4.4em);right:3.2em;top:50%">
-      <div class="k">▶ Le film</div>
-      <div class="rule"></div>
-      <div class="disp" style="font-size:3.4em;line-height:.9">Primé aux<br><span class="red-t">Green<br>Awards</span><br>2025</div>
-    </div>
-    <div class="abs small" style="left:3.2em;right:3.2em;bottom:3.4em;opacity:.7">Lancez la vidéo ci-dessus pour voir le film.</div>
-  </section>
-
-  <!-- 11 · PROJET 03 TEXTE (gauche) -->
-  <section class="face" data-label="Casque de F1">
-    <div class="tagline"><span>Modélisation 3D</span><span>Blender</span><span>En équipe</span></div>
-    <div class="disp" style="font-size:6.8em;margin:.18em 0 .3em">Casque<br>de F1</div>
-    <p class="lead">Modéliser en détail un casque de Formule 1 pour acquérir une vraie maîtrise des outils 3D.</p>
-    <div class="cols small">
-      <p>Sa géométrie combine des courbes aérodynamiques fluides et des éléments techniques rigides (mécanisme de visière, fixations) qui demandent une grande précision.</p>
-      <p>Le défi : articuler hard surface modeling pour les pièces mécaniques et modélisation de surfaces lisses pour la coque, avec le modificateur Subdivision Surface et des boucles de polygones propres pour éviter les artefacts.</p>
-      <p>Le texturing avec les Shading Nodes de Blender (rendu physiquement réaliste) a donné des matériaux crédibles : peinture brillante, fibre de carbone, visière en plexiglas. Une expérience complète, du maillage au rendu final.</p>
-    </div>
-  </section>
-
-  <!-- 12 · PROJET 03 VISUEL (droite) -->
-  <section class="face bleed dark" data-label="Casque de F1">
-    <div class="img full"><img data-asset="photo/casque1.png" alt="Rendu 3D du casque de Formule 1"></div>
-    <div class="disp abs" style="left:.15em;top:.5em;font-size:15em;color:var(--red);z-index:4;line-height:.8">03</div>
-    <div class="abs k" style="left:2.4em;bottom:3.4em;z-index:4;color:#fff">Rendu final — Blender</div>
-  </section>
-
-  <!-- 13 · PROJET 04 OUVERTURE (gauche) -->
-  <!-- TODO : compléter le titre et la description (le texte de l'ancien site était dans une image) -->
-  <section class="face bleed" data-label="Village">
-    <div class="img full shade-b"><img data-asset="photo/photovillage.png" alt="Image du projet Village"></div>
-    <div class="abs" style="left:2.4em;right:2.4em;bottom:3.6em;color:#fff;z-index:4">
-      <div class="disp" style="font-size:3em;color:var(--red)">04</div>
-      <div class="disp" style="font-size:8em">Village</div>
-    </div>
-  </section>
-
-  <!-- 14 · PROJET 04 VIDÉO (droite) -->
-  <section class="face" data-label="Village">
-    <div class="tagline"><span>Vidéo</span><span>Tournage</span><span>Montage</span></div>
-    <div class="video" style="left:3.2em;right:3.2em;top:7em;aspect-ratio:16/9">
-      <video controls preload="none" playsinline data-asset-poster="photo/photovillage.png" data-asset="videos%20/ca2.mp4"></video>
-      <span class="cap">▶ La vidéo</span>
-    </div>
-    <div class="abs" style="left:3.2em;right:3.2em;bottom:4em">
-      <p class="lead">Un projet vidéo à découvrir ci-dessus.</p>
-    </div>
-  </section>
-
-  <!-- 15 · PROJET 05 TEXTE (gauche) -->
-  <!-- TODO : détailler les réalisations pour le BDE -->
-  <section class="face red" data-label="BDE La Bête">
-    <div class="tagline" style="color:#fff"><span style="--c:#fff">Communication</span><span>Associatif</span><span>Depuis mars 2025</span></div>
-    <div class="disp" style="font-size:9em;margin:.15em 0 .2em;line-height:.92">BDE<br>La<br>Bête</div>
-    <p class="lead">Depuis mars 2025, je fais partie du pôle communication du BDE La Bête.</p>
-    <p class="small">Au sein du pôle, je participe à la création des contenus qui font vivre l'association et la vie étudiante.</p>
-    <div class="disp abs" style="right:.2em;bottom:-.1em;font-size:12em;line-height:.8;color:#fff;opacity:.95">05</div>
-  </section>
-
-  <!-- 16 · PROJET 05 VISUEL (droite) -->
-  <section class="face bleed" data-label="BDE La Bête">
-    <div class="img full"><img data-asset="photo/bdeee.png" alt="Visuel réalisé pour le BDE La Bête"></div>
-  </section>
-
-  <!-- 17 · PROJET 06 TEXTE (gauche) -->
-  <!-- TODO : compléter la description du projet -->
-  <section class="face dark" data-label="Dernière Enquête">
-    <div class="tagline"><span>Vidéo</span><span>Réalisation</span></div>
-    <div class="disp" style="font-size:7.4em;margin:.18em 0 .3em;line-height:.94">Der&#8209;<br>nière<br><span class="red-t">En&#8209;<br>quête</span></div>
-    <p class="lead">Un projet vidéo à découvrir ci-contre.</p>
-    <div class="disp abs" style="right:.2em;bottom:-.1em;font-size:12em;line-height:.8;color:var(--red)">06</div>
-  </section>
-
-  <!-- 18 · PROJET 06 VISUEL (droite) -->
-  <section class="face" data-label="Dernière Enquête">
-    <div class="img" style="left:0;right:0;top:0;height:44%"><img data-asset="photo/jules.png" alt="Image du projet Dernière Enquête"></div>
-    <div class="video" style="left:3.2em;right:3.2em;top:48%;aspect-ratio:16/9">
-      <video controls preload="none" playsinline data-asset-poster="photo/jules.png" data-asset="videos%20/Derni%C3%A8reEnqu%C3%A8te.mp4"></video>
-      <span class="cap">▶ La vidéo</span>
-    </div>
-    <div class="disp abs" style="left:3.2em;bottom:2.6em;font-size:3.6em">Look<span class="red-t">?</span></div>
-  </section>
-
-  <!-- 19 · CONTACT (gauche) -->
-  <section class="face dark" data-label="Contact">
-    <div class="k red">Contact</div>
-    <div class="disp" style="font-size:9.4em;margin:.12em 0 .3em;line-height:.84">Let's<br>work<span class="red-t">.</span></div>
-    <p class="lead">Un projet, un stage, une question ?<br>Écrivez-moi.</p>
-    <div class="rule" style="opacity:.4"></div>
-    <a href="mailto:ariou917@gmail.com" style="font-size:1.25em;font-weight:600;text-decoration:none;border-bottom:2px solid var(--red)">ariou917@gmail.com ↗</a>
-    <div class="abs" style="left:3.2em;right:3.2em;bottom:4em;display:flex;flex-wrap:wrap;gap:.7em">
-      <a class="btn fill" href="mailto:ariou917@gmail.com">M'écrire</a>
+  <!-- ================= CONTACT ================= -->
+  <section class="contact wrap" id="contact" aria-labelledby="c-t">
+    <span class="mono">Contact</span>
+    <h2 id="c-t">On travaille<br><em>ensemble&nbsp;?</em></h2>
+    <a class="mail" href="mailto:ariou917@gmail.com">ariou917@gmail.com <span aria-hidden="true">↗</span></a>
+    <div class="acts">
+      <a class="btn fill" href="mailto:ariou917@gmail.com">Écrire un message</a>
       <a class="btn" href="https://albaneriou.fr/photo/cvportfolio.pdf" target="_blank" rel="noopener">Télécharger le CV ↓</a>
     </div>
+    <footer class="foot">
+      <span>© 2026 Albane Riou</span>
+      <span>Maquette de démonstration : les projets présentés sont fictifs.</span>
+      <a href="/portfolio/">iolite.team</a>
+    </footer>
   </section>
+</main>
 
-  <!-- 20 · FIN (droite) -->
-  <section class="face" data-label="Fin">
-    <div class="disp" style="font-size:14em;line-height:.8;margin-top:.1em">Fin<span class="red-t">.</span></div>
-    <p class="lead" style="margin-top:.8em">Merci d'avoir feuilleté ce magazine.</p>
-    <div class="abs" style="left:3.2em;right:3.2em;bottom:4em;display:flex;flex-wrap:wrap;gap:.7em">
-      <button class="btn" data-goto="0">↺ Revenir à la couverture</button>
-      <a class="btn" href="/portfolio/">L'équipe iolite →</a>
-    </div>
-  </section>
-
-  <!-- 21 · 4E DE COUVERTURE -->
-  <section class="face dark" data-label="4e de couverture" data-nofolio>
-    <div class="disp" style="font-size:5em">Albane<br>Riou<span class="red-t">.</span></div>
-    <div class="k" style="margin-top:1em;opacity:.6">Portfolio — N°01 — 2026</div>
-    <div class="cover" style="position:absolute;inset:0"><div class="barcode" style="bottom:2.6em;left:3.2em"><i></i>IOLITE.TEAM</div></div>
-  </section>
-
-</template>
+<!-- ================= ÉTUDE DE CAS ================= -->
+<div class="case" id="case" role="dialog" aria-modal="true" aria-labelledby="case-t" tabindex="-1">
+  <div class="case-bar">
+    <span class="mono" id="case-pos">01 / 06</span>
+    <button class="close" id="case-close">Fermer <span aria-hidden="true">✕</span></button>
+  </div>
+  <div class="wrap" id="case-body"></div>
+</div>
 
 <script>
-/* ---------------------------------------------------------
-   Où se trouvent les images et vidéos.
-   Une fois les fichiers copiés dans /portfolio/albane-riou/assets/,
-   remplacer par :  const ASSET_BASE = 'assets/';
-   --------------------------------------------------------- */
-const ASSET_BASE = 'https://albaneriou.fr/';
-
-(() => {
-  const book = document.getElementById('book');
-  const tpl = document.getElementById('pages');
-  const ind = document.getElementById('ind');
-  const prevB = document.getElementById('prev');
-  const nextB = document.getElementById('next');
-  const hint = document.getElementById('hint');
-  const bar = document.getElementById('progress');
-  const faces = [...tpl.content.children];
-  const mq = matchMedia('(max-width: 760px)');
-  const FLIP_MS = matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 1000;
-
-  let leaves = [], flipped = 0, mobile = false, queue = null, turnZ = 100;
-
-  function resolveAssets(root){
-    root.querySelectorAll('[data-asset]').forEach(el => {
-      el.src = ASSET_BASE + el.dataset.asset;
-      if (el.tagName === 'IMG') { el.loading = 'lazy'; el.decoding = 'async'; }
-    });
-    root.querySelectorAll('[data-asset-poster]').forEach(el => el.poster = ASSET_BASE + el.dataset.assetPoster);
+/* =========================================================
+   Projets (fictifs, pour la démonstration)
+   type : photo | video | graphisme
+   images : [fichier dans img/ sans extension, légende, 'half' pour une demi-largeur]
+   ========================================================= */
+const PROJECTS = [
+  {
+    slug:'maree-basse', type:'photo', title:'Marée basse', year:'2026', cover:'3/2',
+    sub:'Série argentique sur la Côte d\'Albâtre',
+    exif:'Pentax K1000 · 50 mm · Portra 400',
+    facts:{'Type':'Série personnelle','Lieu':'Côte d\'Albâtre','Matériel':'Pentax K1000, Portra 400','Images':'24 tirages'},
+    lead:'Ce que la mer laisse derrière elle quand elle se retire : du vide, des reflets et quelques silhouettes.',
+    body:['Pendant un hiver, je suis retournée sur les mêmes plages aux heures de marée basse. Le sable mouillé devient un miroir, l\'horizon se dédouble, et les promeneurs ne sont plus que des points.',
+          'J\'ai choisi l\'argentique pour ralentir : 36 poses par sortie, pas de retour immédiat. La série a été pensée pour un accrochage en grand format, avec beaucoup de blanc autour des images.'],
+    images:[['maree-1','f/8 · 1/250 · ISO 400'],['maree-4','f/11 · 1/125','half'],['maree-2','f/5.6 · 1/60','half'],['maree-3','f/4 · 1/500 · contre-jour']],
+    process:[['Repérage','Tables des marées, orientation du soleil et accès aux plages notés dans un carnet.'],['Prise de vue','Cadres très ouverts, horizon bas, une silhouette au maximum par image.'],['Tirage','Scans légèrement retouchés, puis sélection de 12 images pour l\'accrochage.']]
+  },
+  {
+    slug:'fil', type:'video', title:'Fil — Lune Rousse', year:'2026', cover:'16/9',
+    sub:'Clip musical, 3 min 40',
+    exif:'Clip · 2.39:1 · 3 min 40',
+    facts:{'Type':'Clip musical','Rôle':'Réalisation, image, montage','Durée':'3 min 40','Format':'2.39:1, 4K'},
+    lead:'Un clip tourné en une nuit, avec trois projecteurs colorés et une machine à fumée.',
+    body:['Lune Rousse cherchait un clip simple à produire mais très graphique. J\'ai proposé un dispositif unique : la chanteuse filmée à contre-jour, sa silhouette découpée par des lumières qui changent à chaque refrain.',
+          'Le montage suit la structure du morceau : plans longs sur les couplets, coupes rapides et flares sur les refrains. L\'étalonnage pousse les magentas et les oranges pour rester raccord avec la pochette.'],
+    images:[['clip-1','00:01:12:04'],['clip-2','00:02:03:18','half'],['clip-3','00:03:01:09','half']],
+    process:[['Écriture','Découpage plan par plan, calé sur les temps forts du morceau.'],['Tournage','Une nuit en studio, trois projecteurs à gélatines, caméra à l\'épaule.'],['Post-production','Montage, étalonnage et grain ajouté pour un rendu pellicule.']]
+  },
+  {
+    slug:'hors-champ', type:'graphisme', title:'Hors-Champ', year:'2026', cover:'4/5',
+    sub:'Identité visuelle d\'un festival de courts métrages',
+    exif:'Illustrator · Photoshop · 4 déclinaisons',
+    facts:{'Type':'Identité visuelle','Commande':'Festival étudiant (fictif)','Outils':'Illustrator, Photoshop','Livrables':'Affiches, programme, réseaux'},
+    lead:'Une identité construite autour d\'une idée : ce qui compte se passe souvent en dehors du cadre.',
+    body:['Le système repose sur deux éléments : les coins d\'un viseur de caméra et un grand disque qui déborde toujours du format. D\'une affiche à l\'autre, le disque change de place et de couleur, mais il n\'est jamais entier.',
+          'La typographie, très condensée, laisse de la place à l\'image. Le noir, le papier et l\'orange suffisent pour toute la communication, de l\'affiche au post Instagram.'],
+    images:[['hc-1','Affiche principale · 40×60','half'],['hc-2','Variante nocturne · 40×60','half'],['hc-3','Affiche programme','half'],['hc-4','Réseaux sociaux','half']],
+    process:[['Recherche','Planches de références autour du cinéma, du viseur et du hors-champ.'],['Système','Une grille, un disque, une typographie et trois couleurs.'],['Déclinaisons','Affiches, programme, posts et bannières.']]
+  },
+  {
+    slug:'rive-gauche', type:'photo', title:'Rive gauche, la nuit', year:'2025', cover:'3/2',
+    sub:'Série urbaine, Rouen',
+    exif:'50 mm f/1.8 · flou volontaire',
+    facts:{'Type':'Série urbaine','Lieu':'Rouen, rive gauche','Matériel':'Hybride, 50 mm f/1.8','Images':'15 photographies'},
+    lead:'La ville sans ses contours : seulement ses lumières, quand on retire la mise au point.',
+    body:['Chaque soir de pluie, je suis allée photographier les mêmes rues de la rive gauche, objectif grand ouvert et mise au point volontairement manquée. Les lampadaires, les feux et les vitrines deviennent des taches de couleur.',
+          'La série joue sur la frontière entre photographie et peinture : on reconnaît une rue, un carrefour, mais on ne voit plus rien de précis.'],
+    images:[['nuit-1','f/1.8 · 1/60 · ISO 1600'],['nuit-3','f/1.8 · 1/30','half'],['nuit-2','f/1.8 · 1/80','half']],
+    process:[['Contrainte','Un seul objectif, toujours à pleine ouverture, mise au point au minimum.'],['Récurrence','Les mêmes rues photographiées à plusieurs soirées d\'intervalle.'],['Édition','Une séquence pensée comme une promenade, du quai jusqu\'aux néons.']]
+  },
+  {
+    slug:'atelier', type:'video', title:'Les mains de l\'atelier', year:'2025', cover:'3/2',
+    sub:'Documentaire court, 4 min',
+    exif:'Documentaire · 4 min · son direct',
+    facts:{'Type':'Documentaire court','Rôle':'Réalisation, image, son','Durée':'4 min','Format':'2.39:1, son direct'},
+    lead:'Le portrait d\'une céramiste, filmé presque uniquement à travers ses gestes.',
+    body:['Plutôt qu\'une interview face caméra, j\'ai choisi de filmer le travail : le tour, la terre, l\'eau, la lumière de la fenêtre. La voix de la céramiste n\'arrive qu\'en off, comme si elle commentait ses propres mains.',
+          'Le film est construit sur une journée d\'atelier, du premier pain de terre aux bols qui sèchent le soir. Le son direct (le tour, l\'eau, la radio) porte autant que l\'image.'],
+    images:[['atelier-1','00:00:42:12'],['atelier-2','00:02:15:03','half'],['atelier-3','00:03:20:21','half']],
+    process:[['Immersion','Deux demi-journées d\'observation, sans caméra.'],['Tournage','Caméra fixe ou au pied, plans serrés, lumière naturelle uniquement.'],['Montage','Une journée racontée en quatre minutes, rythmée par le son du tour.']]
+  },
+  {
+    slug:'sillons', type:'graphisme', title:'Sillons', year:'2026', cover:'1/1',
+    sub:'Pochette d\'album et déclinaisons',
+    exif:'Pochette 30×30 · single · affiche de tournée',
+    facts:{'Type':'Direction artistique','Artiste':'Lune Rousse (fictif)','Outils':'Illustrator, Photoshop','Livrables':'Vinyle, single, tournée'},
+    lead:'Une lune rousse posée sur les sillons d\'un vinyle : l\'image de l\'album tient en deux formes.',
+    body:['Après le clip « Fil », Lune Rousse m\'a confié la pochette de son premier album. Le titre, Sillons, m\'a donné le motif : des cercles concentriques qui évoquent à la fois le disque, les rides de l\'eau et les orbites.',
+          'Le même système se décline sur le single et sur l\'affiche de tournée en inversant les couleurs : la lune devient tour à tour lumière, ombre ou éclipse.'],
+    images:[['sillons-1','Album · 30×30 cm','half'],['sillons-2','Single « Fil »','half'],['sillons-3','Affiche de tournée']],
+    process:[['Écoute','Trois écoutes de l\'album et une liste de mots-clés.'],['Motif','Recherche de formes simples : cercle, sillon, éclipse.'],['Cohérence','Couleurs et typographie raccord avec le clip.']]
   }
+];
+const TYPES = { photo:'Photographie', video:'Vidéo', graphisme:'Graphisme' };
+const IMG = n => 'img/' + n + '.webp';
+const pad = n => String(n).padStart(2, '0');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function makeSide(cls, fi){
-    const side = document.createElement('div');
-    side.className = 'side ' + cls;
-    if (fi == null) side.innerHTML = '<section class="face"></section>';
-    else {
-      const f = faces[fi].cloneNode(true);
-      side.appendChild(f);
-      if (!f.hasAttribute('data-nofolio')) {
-        const fo = document.createElement('div');
-        fo.className = 'folio';
-        fo.innerHTML = '<span>Albane Riou — Portfolio</span><span>' + (f.dataset.label || '') + '</span>';
-        f.appendChild(fo);
-        const n = document.createElement('span');
-        n.className = 'pnum'; n.textContent = String(fi).padStart(2, '0');
-        f.appendChild(n);
-      }
-    }
-    if (cls === 'front') addCorner(side, 'next');
-    if (cls === 'back' || (mobile && cls === 'front' && fi !== 0)) addCorner(side, 'prev');
-    return side;
-  }
-  function addCorner(side, dir){
-    const c = document.createElement('button');
-    c.className = 'corner ' + dir;
-    c.setAttribute('aria-label', dir === 'next' ? 'Page suivante' : 'Page précédente');
-    c.addEventListener('click', e => { e.stopPropagation(); dir === 'next' ? next() : prev(); });
-    side.appendChild(c);
-  }
+/* ---------- Disciplines (hero) & filtres ---------- */
+const counts = Object.fromEntries(Object.keys(TYPES).map(t => [t, PROJECTS.filter(p => p.type === t).length]));
+document.getElementById('disc').innerHTML = Object.entries(TYPES).map(([k, v]) =>
+  `<button data-filter="${k}"><span class="mono">(${pad(counts[k])})</span>${v}<span class="arr" aria-hidden="true">↓</span></button>`).join('');
+const filters = document.getElementById('filters');
+filters.innerHTML = `<button class="chip on" data-f="all" aria-pressed="true">Tout<span>${pad(PROJECTS.length)}</span></button>` +
+  Object.entries(TYPES).map(([k, v]) => `<button class="chip" data-f="${k}" aria-pressed="false">${v}<span>${pad(counts[k])}</span></button>`).join('');
 
-  function build(keep){
-    mobile = mq.matches;
-    document.body.classList.toggle('mobile', mobile);
-    book.innerHTML = ''; leaves = [];
-    const n = mobile ? faces.length : Math.ceil(faces.length / 2);
-    for (let i = 0; i < n; i++) {
-      const leaf = document.createElement('div');
-      leaf.className = 'leaf';
-      const fF = mobile ? i : 2 * i;
-      const fB = mobile ? null : (2 * i + 1 < faces.length ? 2 * i + 1 : null);
-      leaf.appendChild(makeSide('front', fF));
-      leaf.appendChild(makeSide('back', fB));
-      leaf.addEventListener('transitionend', e => {
-        if (e.target === leaf && e.propertyName === 'transform') { leaf.classList.remove('turning'); setZ(); }
-      });
-      book.appendChild(leaf); leaves.push(leaf);
-    }
-    ['l','r'].forEach(s => { const e = document.createElement('div'); e.className = 'edge ' + s; book.appendChild(e); });
-    resolveAssets(book);
-    book.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); goTo(+b.dataset.goto); }));
-    book.style.transition = 'none';
-    flipped = targetFor(keep || 0);
-    leaves.forEach((l, i) => { l.style.transition = 'none'; l.classList.toggle('flipped', i < flipped); });
-    setZ(); update();
-    requestAnimationFrame(() => requestAnimationFrame(() => { book.style.transition = ''; leaves.forEach(l => l.style.transition = ''); }));
-  }
+/* ---------- Bande de film ---------- */
+const filmImgs = ['maree-1','clip-1','hc-1','nuit-1','atelier-1','sillons-1','maree-3','clip-3','hc-2','nuit-3','atelier-2','sillons-2'];
+const frames = filmImgs.map((n, i) => `<div class="frame"><img src="${IMG(n)}" alt="" loading="lazy"><span class="ed">ALBANE 400 ▸ ${i + 12}A</span></div>`).join('');
+document.getElementById('film').innerHTML = frames + frames;
 
-  function setZ(){
-    leaves.forEach((l, i) => {
-      if (l.classList.contains('turning')) return;
-      l.style.zIndex = l.classList.contains('flipped') ? i + 1 : leaves.length - i;
-    });
-  }
-  const targetFor = f => mobile ? f : Math.ceil(f / 2);
-  const currentFace = () => mobile ? flipped : (flipped === 0 ? 0 : 2 * flipped - 1);
+/* ---------- Grille ---------- */
+const grid = document.getElementById('grid');
+grid.innerHTML = PROJECTS.map((p, i) => `
+  <button class="card rv" data-type="${p.type}" data-i="${i}" aria-label="Voir le projet ${p.title}">
+    <div class="ph" style="aspect-ratio:${p.cover}">
+      <img src="${IMG(p.images[0][0])}" alt="" loading="lazy">
+      ${p.type === 'video' ? '<span class="rec mono">Lecture</span>' : ''}
+      <span class="exif mono">${p.exif}</span>
+    </div>
+    <div class="meta"><span class="n mono">${pad(i + 1)}</span><h3>${p.title}</h3><span class="c mono">${TYPES[p.type]} · ${p.year}</span></div>
+    <div class="sub">${p.sub}</div>
+  </button>`).join('');
 
-  function flipOne(dir){
-    const leaf = leaves[dir > 0 ? flipped : flipped - 1];
-    if (!leaf) return;
-    book.querySelectorAll('video').forEach(v => { if (!v.paused) v.pause(); });
-    leaf.classList.add('turning');
-    leaf.style.zIndex = ++turnZ;
-    leaf.classList.toggle('flipped', dir > 0);
-    flipped += dir;
-    update();
-    hint.classList.add('hide');
-  }
-  const cancelQueue = () => { if (queue) { clearInterval(queue); queue = null; } };
-  function next(){ cancelQueue(); flipOne(1); }
-  function prev(){ cancelQueue(); flipOne(-1); }
-  function goTo(f){
-    cancelQueue();
-    const target = Math.max(0, Math.min(leaves.length, targetFor(f)));
-    if (target === flipped) return;
-    const step = target > flipped ? 1 : -1;
-    flipOne(step);
-    if (flipped === target) return;
-    queue = setInterval(() => { flipOne(step); if (flipped === target) cancelQueue(); }, Math.min(170, FLIP_MS));
-  }
+// décalage en quinconce : une carte sur deux parmi les cartes visibles
+function layout(){
+  [...grid.querySelectorAll('.card:not(.hide)')].forEach((c, k) => c.classList.toggle('shift', k % 2 === 1));
+}
+function setFilter(f){
+  filters.querySelectorAll('.chip').forEach(c => { const on = c.dataset.f === f; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  let n = 0;
+  grid.querySelectorAll('.card').forEach(c => { const show = f === 'all' || c.dataset.type === f; c.classList.toggle('hide', !show); if (show) { n++; c.classList.add('in'); } });
+  document.getElementById('count').textContent = '(' + pad(n) + ')';
+  layout();
+}
+layout();
+filters.addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) setFilter(b.dataset.f); });
+document.getElementById('disc').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  setFilter(b.dataset.filter);
+  document.getElementById('travaux').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+});
 
-  function update(){
-    book.classList.toggle('at-start', flipped === 0);
-    book.classList.toggle('at-end', flipped === leaves.length);
-    prevB.disabled = flipped === 0;
-    nextB.disabled = flipped === leaves.length;
-    const el = book.querySelector('.edge.l'), er = book.querySelector('.edge.r');
-    if (el) el.style.opacity = flipped > 0 ? 1 : 0;
-    if (er) er.style.opacity = flipped < leaves.length ? 1 : 0;
-    bar.style.width = (flipped / leaves.length * 100) + '%';
+/* ---------- Étude de cas ---------- */
+const caseEl = document.getElementById('case'), caseBody = document.getElementById('case-body');
+let current = -1, lastFocus = null;
+function openCase(i, push = true){
+  const p = PROJECTS[i]; current = i;
+  const ni = (i + 1) % PROJECTS.length, nx = PROJECTS[ni];
+  document.getElementById('case-pos').textContent = pad(i + 1) + ' / ' + pad(PROJECTS.length) + ' — ' + TYPES[p.type];
+  caseBody.innerHTML = `
+    <header class="case-hd">
+      <span class="kick mono">${TYPES[p.type]} · ${p.year}</span>
+      <h2 id="case-t">${p.title}</h2>
+      <div class="facts">${Object.entries(p.facts).map(([k, v]) => `<div><span class="mono">${k}</span><b>${v}</b></div>`).join('')}</div>
+    </header>
+    <div class="case-intro"><p class="lead">${p.lead}</p><div class="body">${p.body.map(t => `<p>${t}</p>`).join('')}</div></div>
+    <div class="gal">${p.images.map(([n, cap, cls]) => `
+      <figure class="${cls || ''}"><img src="${IMG(n)}" alt="${p.title} — ${cap}" loading="lazy">
+      <figcaption class="mono"><span>${p.title}</span><span class="${p.type === 'video' ? 'tc' : ''}">${cap}</span></figcaption></figure>`).join('')}</div>
+    <div class="process">${p.process.map(([h, t], k) => `<div><span class="mono">Étape ${pad(k + 1)}</span><h4>${h}</h4><p>${t}</p></div>`).join('')}</div>
+    <button class="next"><span class="mono">Projet suivant →</span><span class="t">${nx.title}</span></button>`;
+  caseBody.querySelector('.next').addEventListener('click', () => openCase(ni));
+  if (!caseEl.classList.contains('open')) lastFocus = document.activeElement;
+  caseEl.classList.add('open'); document.body.classList.add('locked');
+  caseEl.scrollTop = 0; caseEl.focus({ preventScroll: true });
+  if (push) history.replaceState(null, '', '#' + p.slug);
+}
+function closeCase(){
+  caseEl.classList.remove('open'); document.body.classList.remove('locked'); current = -1;
+  history.replaceState(null, '', location.pathname + location.search);
+  if (lastFocus) lastFocus.focus({ preventScroll: true });
+}
+grid.addEventListener('click', e => { const c = e.target.closest('.card'); if (c) openCase(+c.dataset.i); });
+document.getElementById('case-close').addEventListener('click', closeCase);
+document.addEventListener('keydown', e => {
+  if (current < 0) return;
+  if (e.key === 'Escape') closeCase();
+  if (e.key === 'ArrowRight') openCase((current + 1) % PROJECTS.length);
+  if (e.key === 'ArrowLeft') openCase((current - 1 + PROJECTS.length) % PROJECTS.length);
+});
+const fromHash = PROJECTS.findIndex(p => '#' + p.slug === location.hash);
+if (fromHash >= 0) openCase(fromHash, false);
 
-    const cf = currentFace();
-    let label;
-    if (flipped === 0) label = 'Couverture';
-    else if (flipped === leaves.length && !mobile) label = '4e de couverture';
-    else if (mobile) label = (faces[cf].dataset.label || '') + ' · ' + String(cf).padStart(2, '0');
-    else { const r = Math.min(2 * flipped, faces.length - 1); label = (faces[r].dataset.label || '') + ' · ' + String(cf).padStart(2,'0') + '–' + String(r).padStart(2,'0'); }
-    ind.textContent = label;
-    history.replaceState(null, '', cf ? '#p' + cf : location.pathname + location.search);
-    const navs = [...document.querySelectorAll('.topbar nav button')];
-    navs.forEach((b, i) => {
-      const g = +b.dataset.goto, nx = navs[i + 1] ? +navs[i + 1].dataset.goto : 99;
-      b.classList.toggle('on', cf >= g - 1 && cf < nx - 1);
-    });
-  }
+/* ---------- En-tête, menu mobile, apparitions ---------- */
+const hd = document.getElementById('hd');
+const onScroll = () => hd.classList.toggle('scrolled', scrollY > 20);
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+const burger = document.getElementById('burger');
+const setMenu = o => { document.body.classList.toggle('menu-open', o); burger.setAttribute('aria-expanded', o); burger.setAttribute('aria-label', o ? 'Fermer le menu' : 'Ouvrir le menu'); };
+burger.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+document.querySelectorAll('#mmenu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-  prevB.addEventListener('click', prev);
-  nextB.addEventListener('click', next);
-  document.querySelectorAll('.topbar [data-goto]').forEach(b => b.addEventListener('click', () => goTo(+b.dataset.goto)));
-  document.addEventListener('keydown', e => {
-    if (e.target.closest('video, input, textarea')) return;
-    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); next(); }
-    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
-    if (e.key === 'Home') goTo(0);
-    if (e.key === 'End') goTo(faces.length - 1);
-  });
-  let tx = null, ty = null;
-  book.addEventListener('touchstart', e => {
-    if (e.target.closest('video')) { tx = null; return; }
-    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
-  }, { passive: true });
-  book.addEventListener('touchend', e => {
-    if (tx == null) return;
-    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? next() : prev();
-    tx = null;
-  });
-  mq.addEventListener('change', () => build(currentFace()));
-
-  const start = parseInt((location.hash.match(/^#p(\d+)$/) || [])[1] || '0', 10);
-  build(Math.min(start, faces.length - 1));
-  setTimeout(() => hint.classList.add('hide'), 6000);
-})();
+if ('IntersectionObserver' in window && !reduce) {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+} else document.querySelectorAll('.rv').forEach(el => el.classList.add('in'));
 </script>
 </body>
 </html>
