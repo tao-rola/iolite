@@ -67,7 +67,7 @@
           <div role="button" tabindex="0" data-open="${p.id}" class="block w-full text-left cursor-pointer" aria-label="Ouvrir ${esc(p.title)}">
             ${media(p)}
             <!-- informations par-dessus l'aperçu : au survol à la souris, toujours visibles sur écran tactile -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/0 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-45% to-black/0 opacity-100 [text-shadow:0_1px_8px_rgba(0,0,0,.6)] [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               <div class="absolute bottom-0 inset-x-0 p-4 pointer-events-auto">
                 <h3 class="text-white font-semibold mb-1">${esc(p.title)}</h3>
                 ${p.description ? `<p class="text-white/70 text-sm mb-2 line-clamp-2">${esc(p.description)}</p>` : ''}
