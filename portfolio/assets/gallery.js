@@ -121,7 +121,7 @@
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) play();
   }
 
-  /* écran de chargement : attend que les aperçus du haut de page soient prêts (7 s maximum) */
+  /* écran de chargement : attend que les aperçus du haut de page soient prêts (5 s maximum) */
   let loaderDone = false;
   function finishLoader() {
     if (loaderDone) return; loaderDone = true;
@@ -150,9 +150,9 @@
     const bar = document.getElementById('loader-bar');
     let done = 0; const total = waits.length || 1;
     waits.forEach((w) => w.then(() => { done++; if (bar) bar.style.width = `${Math.max(8, Math.round((done / total) * 100))}%`; }));
-    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 7000))]).then(finishLoader);
+    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 5000))]).then(finishLoader);
   }
-  setTimeout(finishLoader, 9000); /* sécurité : jamais bloqué sur l'écran de chargement */
+  setTimeout(finishLoader, 7000); /* sécurité : jamais bloqué sur l'écran de chargement */
 
   let byId = {}, items = [], cols = 0, ytReady = [];
   const colCount = () => (innerWidth >= 1024 ? 3 : innerWidth >= 640 ? 2 : 1);
