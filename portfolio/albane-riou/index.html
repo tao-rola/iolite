@@ -126,9 +126,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    Hero
    ========================================================= */
 .hero{padding-top:clamp(120px, 17vh, 180px);position:relative}
-.hero-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:clamp(18px,3vw,34px);color:var(--mute)}
-.hero-top .live{display:inline-flex;align-items:center;gap:8px}
-.hero-top .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);animation:blink 1.4s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
 .hero h1{font-family:var(--display);font-weight:700;font-variation-settings:"wdth" 82;font-size:clamp(50px, 11.2vw, 200px);line-height:.9;letter-spacing:-.03em}
 .hero h1 .ln{display:block}
@@ -241,7 +238,7 @@ section{scroll-margin-top:70px}
 .about .big{font-family:var(--display);font-weight:500;font-size:clamp(24px,2.8vw,44px);line-height:1.15;letter-spacing:-.02em}
 .about .big em{font-style:normal;color:var(--acc)}
 .about .txt{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px;color:#333}
-.skills{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(36px,5vw,64px);border-top:1px solid var(--ink)}
+.skills{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(36px,5vw,64px);border-top:1px solid var(--ink)}
 .skills > div{padding:18px 18px 18px 0;border-right:1px solid var(--line)}
 .skills > div:last-child{border-right:0}
 .skills > div + div{padding-left:18px}
@@ -254,12 +251,6 @@ section{scroll-margin-top:70px}
 .cv .row:hover{padding-left:12px;padding-right:12px;background:rgba(35,64,255,.06)}
 .cv .row b{font-weight:600}
 .cv .row .mono{color:var(--mute)}
-@media (max-width: 1100px){
-  .skills{grid-template-columns:1fr 1fr}
-  .skills > div:nth-child(2){border-right:0}
-  .skills > div:nth-child(3){padding-left:0}
-  .skills > div:nth-child(n+3){border-top:1px solid var(--line)}
-}
 @media (max-width: 960px){ .about{grid-template-columns:1fr} .portrait{position:relative;top:0;max-width:420px} }
 @media (max-width: 560px){
   .about .txt{grid-template-columns:1fr}
@@ -354,7 +345,7 @@ section{scroll-margin-top:70px}
   .wd{opacity:1!important}
   .loader,.cur,.peek{display:none!important}
   .case{transition:visibility 0s!important}
-  .logo i,.hero-top .live::before,.card .rec::before{animation:none}
+  .logo i,.card .rec::before{animation:none}
 }
 </style>
 </head>
@@ -391,7 +382,6 @@ section{scroll-margin-top:70px}
 <main id="top">
   <!-- ================= HERO ================= -->
   <section class="hero wrap" aria-labelledby="hero-t">
-    <div class="hero-top mono"><span class="live" id="clock">Rouen</span><span>BUT MMI · IUT de Rouen</span></div>
     <h1 id="hero-t" aria-label="Cadrer le réel, composer le reste.">
       <span class="ln split" aria-hidden="true">Cadrer le réel,</span>
       <span class="ln" aria-hidden="true"><span class="split">composer</span> <span class="rot" id="rot"></span></span>
@@ -433,7 +423,6 @@ section{scroll-margin-top:70px}
           <div class="rv"><span class="mono">01</span><h4>Photographie</h4><ul><li>Prise de vue extérieure</li><li>Argentique &amp; numérique</li><li>Retouche Photoshop</li></ul></div>
           <div class="rv" style="--d:.08s"><span class="mono">02</span><h4>Vidéo</h4><ul><li>Écriture &amp; scénario</li><li>Tournage, direction artistique</li><li>Montage</li></ul></div>
           <div class="rv" style="--d:.16s"><span class="mono">03</span><h4>Graphisme</h4><ul><li>Identité visuelle</li><li>Affiche &amp; édition</li><li>Illustrator, Photoshop</li></ul></div>
-          <div class="rv" style="--d:.24s"><span class="mono">04</span><h4>Et aussi</h4><ul><li>HTML, CSS, PHP, MySQL</li><li>3D sur Blender</li><li>Anglais, allemand</li></ul></div>
         </div>
         <div class="cv">
           <div class="row rv"><span class="mono">Depuis 2024</span><b>BUT Métiers du Multimédia et de l'Internet</b><span class="mono">IUT de Rouen</span></div>
@@ -620,13 +609,6 @@ $$('.scrub').forEach(el => splitText(el, 'words'));
   if (!REDUCE) setInterval(() => { k = (k + 1) % bs.length; place(k); }, 2600);
 })();
 
-/* ---------- Horloge en direct ---------- */
-(() => {
-  const el = $('#clock');
-  const fmt = new Intl.DateTimeFormat('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'Europe/Paris' });
-  const tick = () => { el.textContent = 'Rouen — ' + fmt.format(new Date()); };
-  tick(); setInterval(tick, 1000);
-})();
 
 /* ---------- Apparitions au défilement ---------- */
 let io = null;
