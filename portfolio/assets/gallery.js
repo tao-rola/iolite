@@ -175,14 +175,26 @@
   }
 
   /* YouTube : lecture lancée dès l'arrivée ; la vidéo apparaît une seconde après son chargement (le temps que l'habillage YouTube s'efface) */
+  /* la vidéo ne remplace la miniature que lorsqu'elle joue vraiment (sinon la miniature reste : jamais de cadre noir) */
+  const ytWaiting = new Map();
+  addEventListener('message', (e) => {
+    if (!/youtube(-nocookie)?\.com$/.test(new URL(e.origin).hostname)) return;
+    let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
+    const state = d && d.info && d.info.playerState;
+    if (state !== 1) return;
+    ytWaiting.forEach((show, f) => { if (f.contentWindow === e.source) show(); });
+  });
   function revealYt(f) {
     return new Promise((resolve) => {
       let shown = false;
-      const show = () => { if (shown) return; shown = true; f.classList.remove('opacity-0'); resolve(); };
-      f.addEventListener('load', () => setTimeout(show, 1000), { once: true });
-      setTimeout(show, 6000);
+      const show = () => { if (shown) return; shown = true; ytWaiting.delete(f); setTimeout(() => f.classList.remove('opacity-0'), 400); resolve(); };
+      ytWaiting.set(f, show);
+      const listen = () => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: f.dataset.yt, channel: 'widget' }), '*'); } catch {} };
+      f.addEventListener('load', () => { listen(); setTimeout(listen, 800); setTimeout(listen, 2000); }, { once: true });
+      setTimeout(resolve, 5000); /* l'écran de chargement n'attend pas indéfiniment */
     });
   }
+
   /* diaporamas : avancent toutes les 3 s, uniquement quand ils sont à l'écran */
   const visible = new Set();
   const slideObs = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target))), { threshold: 0.2 }) : null;
