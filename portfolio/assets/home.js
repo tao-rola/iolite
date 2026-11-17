@@ -158,10 +158,3 @@
     if (el && snap) snap.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
   });
 })();
-
-/* section Contact : bouton « Télécharger le CV » si un PDF est enregistré dans l'admin */
-window.TR.withSettings((st) => {
-  const b = document.getElementById('c-cv'); if (!b || !st.cv_pdf_url) return;
-  b.href = st.cv_pdf_url; b.setAttribute('download', 'CV_Tao_ROLA.pdf'); b.target = '_blank'; b.rel = 'noopener';
-  b.innerHTML = 'Télécharger le CV <span aria-hidden="true">↓</span>';
-});

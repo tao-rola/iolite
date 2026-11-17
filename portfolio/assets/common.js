@@ -230,6 +230,42 @@
       </footer>`;
   }
 
+  /* ---------- bloc « On travaille ensemble ? » (accueil et page profil) ---------- */
+  function initContactBlocks() {
+    document.querySelectorAll('[data-contact-block]').forEach((host) => {
+      host.innerHTML = `
+        <h2 class="display text-[14vw] sm:text-[11vw] lg:text-[8.5rem] text-white">On travaille<br><span class="text-emerald-400">ensemble ?</span></h2>
+        <a href="mailto:${CONTACT.email}" class="c-mail group relative mt-10 sm:mt-14 inline-flex items-center gap-3 sm:gap-5 pb-2 sm:pb-3 text-white display !font-medium !tracking-[-0.02em] text-[8.4vw] sm:text-5xl lg:text-6xl max-w-full">
+          <span class="c-mail-t whitespace-nowrap">${CONTACT.email}</span>
+          <span class="c-arr inline-block transition-transform duration-500 group-hover:translate-x-1.5 group-hover:-translate-y-1.5 group-hover:rotate-45" aria-hidden="true">↗</span>
+          <span class="absolute left-0 right-0 bottom-0 h-[2px] bg-emerald-500 origin-left transition-transform duration-500 group-hover:scale-x-0 group-hover:origin-right"></span>
+        </a>`;
+      /* lettres qui se brouillent puis se remettent en place (survol, ou à l'arrivée à l'écran sur mobile) */
+      const el = host.querySelector('.c-mail-t'), link = host.querySelector('.c-mail'), txt = el.textContent;
+      const chars = 'abcdefghijklnopqrstuvxyz0123456789';
+      el.innerHTML = [...txt].map((c) => `<span class="sc inline-block text-center whitespace-pre">${c}</span>`).join('');
+      const cells = [...el.querySelectorAll('.sc')];
+      const lock = () => cells.forEach((c, k) => { c.textContent = txt[k]; c.style.width = ''; c.style.width = c.getBoundingClientRect().width + 'px'; });
+      if (document.fonts) document.fonts.ready.then(lock); else lock();
+      addEventListener('resize', lock);
+      let raf = null;
+      const scramble = () => {
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        cancelAnimationFrame(raf); let f = 0;
+        const run = () => {
+          cells.forEach((c, k) => { const o = txt[k]; c.textContent = k < f / 2 || o === '@' || o === '.' ? o : chars[Math.floor(Math.random() * chars.length)]; });
+          if (++f / 2 <= txt.length) raf = requestAnimationFrame(run); else cells.forEach((c, k) => (c.textContent = txt[k]));
+        };
+        run();
+      };
+      link.addEventListener('mouseenter', scramble);
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) scramble(); }), { threshold: 0.6 });
+        io.observe(link);
+      }
+    });
+  }
+
   /* ---------- fond animé (dégradés verts) sur toute la page ---------- */
   function initBackdrop() {
     if (document.getElementById('backdrop')) return;
@@ -360,5 +396,5 @@
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
   window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
-  document.addEventListener('DOMContentLoaded', () => { initBackdrop(); initCursor(); });
+  document.addEventListener('DOMContentLoaded', () => { initBackdrop(); initCursor(); initContactBlocks(); });
 })();
