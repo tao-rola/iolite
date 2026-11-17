@@ -70,8 +70,8 @@
             <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-45% to-black/0 opacity-100 [text-shadow:0_1px_8px_rgba(0,0,0,.6)] [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               <div class="absolute bottom-0 inset-x-0 p-4 pointer-events-auto">
                 <h3 class="text-white font-semibold mb-1">${esc(p.title)}</h3>
-                ${p.description ? `<p class="text-white/70 text-sm mb-2 line-clamp-2">${esc(p.description)}</p>` : ''}
-                ${tags ? `<div class="flex flex-wrap gap-1 mb-2">${tags}</div>` : ''}
+                ${p.description ? `<p class="text-white/70 text-sm mb-2 line-clamp-2 hidden [@media(hover:hover)]:block">${esc(p.description)}</p>` : ''}
+                ${tags ? `<div class="flex gap-1 mb-2 overflow-x-auto no-scrollbar whitespace-nowrap [@media(hover:hover)]:flex-wrap [@media(hover:hover)]:whitespace-normal">${tags}</div>` : ''}
                 ${projectLink(p) ? `<a href="${esc(projectLink(p))}" target="_blank" rel="noopener noreferrer" data-ext class="inline-flex items-center gap-1 text-emerald-400 text-sm hover:text-emerald-300">${icon('externalLink')}Voir le projet</a>` : `<span class="inline-flex items-center gap-1 text-emerald-400 text-sm">${icon('externalLink')}Détails</span>`}
               </div>
             </div>
