@@ -13,3 +13,5 @@
   X-Robots-Tag: noindex, nofollow
 /portfolio/assets/*
   Cache-Control: public, max-age=31536000, immutable
+/tmp-store/*
+  Access-Control-Allow-Origin: *
