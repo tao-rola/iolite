@@ -50,7 +50,7 @@
       const on = b.dataset.goto === id, d = b.querySelector('.dot');
       d.style.height = on ? '28px' : '8px'; d.style.background = on ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.4)';
     });
-    const navOn = ['accueil', 'categories', 'contact'].includes(id) ? id : null;
+    const navOn = id === 'pied' ? 'contact' : ['accueil', 'categories', 'contact'].includes(id) ? id : null;
     window.TR.navTo(navOn);
     dots.style.opacity = id === 'pied' ? '0' : '1';
   }
