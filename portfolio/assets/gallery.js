@@ -142,7 +142,7 @@
     const bar = document.getElementById('loader-bar');
     let done = 0; const total = waits.length || 1;
     waits.forEach((w) => w.then(() => { done++; if (bar) bar.style.width = `${Math.max(8, Math.round((done / total) * 100))}%`; }));
-    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 5000))]).then(finishLoader);
+    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 6000))]).then(finishLoader);
   }
   setTimeout(finishLoader, 7000); /* sécurité : jamais bloqué sur l'écran de chargement */
 
@@ -187,11 +187,11 @@
   function revealYt(f) {
     return new Promise((resolve) => {
       let shown = false;
-      const show = () => { if (shown) return; shown = true; ytWaiting.delete(f); setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 2600); /* le titre et le logo YouTube disparaissent environ 2,5 s après le début de la lecture */ };
+      const show = () => { if (shown) return; shown = true; ytWaiting.delete(f); setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 3500); /* le titre et le logo YouTube disparaissent quelques secondes après le début de la lecture */ };
       ytWaiting.set(f, show);
       const listen = () => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: f.dataset.yt, channel: 'widget' }), '*'); } catch {} };
       f.addEventListener('load', () => { listen(); setTimeout(listen, 800); setTimeout(listen, 2000); }, { once: true });
-      setTimeout(resolve, 5000); /* l'écran de chargement n'attend pas indéfiniment */
+      setTimeout(resolve, 6000); /* l’écran de chargement n'attend pas indéfiniment */
     });
   }
 
