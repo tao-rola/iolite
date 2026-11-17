@@ -271,6 +271,7 @@ section{scroll-margin-top:70px}
 .mail{display:inline-flex;align-items:center;gap:14px;font-family:var(--display);font-weight:500;font-size:clamp(20px,3.6vw,52px);letter-spacing:-.02em;padding-bottom:6px;position:relative;word-break:break-all}
 .mail::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--acc);transform-origin:left;transition:transform .6s var(--ease-io)}
 .mail:hover::after{transform:scaleX(0);transform-origin:right}
+.mail .sc{display:inline-block;text-align:center;white-space:pre}
 .mail .arr{display:inline-block;transition:transform .45s var(--ease)}
 .mail:hover .arr{transform:translate(6px,-6px) rotate(45deg)}
 .contact .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
@@ -425,7 +426,7 @@ section{scroll-margin-top:70px}
           <div class="rv" style="--d:.16s"><span class="mono">03</span><h4>Graphisme</h4><ul><li>Identité visuelle</li><li>Affiche &amp; édition</li><li>Illustrator, Photoshop</li></ul></div>
         </div>
         <div class="cv">
-          <div class="row rv"><span class="mono">2024 — 2027</span><b>BUT Métiers du Multimédia et de l'Internet</b><span class="mono">IUT de Rouen</span></div>
+          <div class="row rv"><span class="mono">2024 — 2027</span><b>BUT Métiers du Multimédia et de l'Internet</b><span class="mono">Rouen</span></div>
           <div class="row rv" style="--d:.06s"><span class="mono">2025 — 2027</span><b>Pôle communication, BDE La Bête</b><span class="mono">Rouen</span></div>
           <div class="row rv" style="--d:.12s"><span class="mono">Été 2025 &amp; 2026</span><b>Réceptionniste saisonnière, Hôtel Amirauté</b><span class="mono">Deauville</span></div>
           <div class="row rv" style="--d:.18s"><span class="mono">2020 — 2024</span><b>Baccalauréat général, mention assez bien</b><span class="mono">Lisieux</span></div>
@@ -760,16 +761,22 @@ if (FINE && !REDUCE) {
   });
 }
 
-/* ---------- Adresse e-mail qui se brouille au survol ---------- */
+/* ---------- Adresse e-mail qui se brouille au survol ----------
+   Chaque lettre a une case de largeur fixe : le texte garde sa largeur et la flèche ne bouge pas. */
 (() => {
-  const el = $('#mail-t'), txt = el.textContent, chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const el = $('#mail-t'), txt = el.textContent, chars = 'abcdefghijklnopqrstuvxyz0123456789';
+  el.innerHTML = [...txt].map(c => `<span class="sc">${c}</span>`).join('');
+  const cells = $$('.sc', el);
+  const lock = () => cells.forEach(c => { c.style.width = ''; c.style.width = c.getBoundingClientRect().width + 'px'; });
+  if (document.fonts) document.fonts.ready.then(lock); else lock();
+  addEventListener('resize', () => { cells.forEach((c, k) => c.textContent = txt[k]); lock(); });
   let raf = null;
   $('#mail').addEventListener('mouseenter', () => {
     if (REDUCE) return;
     cancelAnimationFrame(raf); let f = 0;
     const run = () => {
-      el.textContent = [...txt].map((c, k) => k < f / 2 || c === '@' || c === '.' ? c : chars[Math.floor(Math.random() * chars.length)]).join('');
-      if (++f / 2 <= txt.length) raf = requestAnimationFrame(run); else el.textContent = txt;
+      cells.forEach((c, k) => { const o = txt[k]; c.textContent = k < f / 2 || o === '@' || o === '.' ? o : chars[Math.floor(Math.random() * chars.length)]; });
+      if (++f / 2 <= txt.length) raf = requestAnimationFrame(run); else cells.forEach((c, k) => c.textContent = txt[k]);
     };
     run();
   });
