@@ -187,7 +187,7 @@
   function revealYt(f) {
     return new Promise((resolve) => {
       let shown = false;
-      const show = () => { if (shown) return; shown = true; ytWaiting.delete(f); setTimeout(() => f.classList.remove('opacity-0'), 400); resolve(); };
+      const show = () => { if (shown) return; shown = true; ytWaiting.delete(f); setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 2600); /* le titre et le logo YouTube disparaissent environ 2,5 s après le début de la lecture */ };
       ytWaiting.set(f, show);
       const listen = () => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: f.dataset.yt, channel: 'widget' }), '*'); } catch {} };
       f.addEventListener('load', () => { listen(); setTimeout(listen, 800); setTimeout(listen, 2000); }, { once: true });
