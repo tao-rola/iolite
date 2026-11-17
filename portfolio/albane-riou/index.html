@@ -639,6 +639,15 @@ function startHero(){ $$('.hero .split, .hero .rv').forEach(reveal); }
   requestAnimationFrame(step);
 })();
 
+/* ---------- Défilement vers une section : on arrive sur son titre, pas sur sa marge ---------- */
+function scrollToSection(id){
+  const sec = $(id); if (!sec) return;
+  if (id === '#top') return scrollTo({ top: 0, behavior: REDUCE ? 'auto' : 'smooth' });
+  const head = $('.sec-hd', sec) || sec.firstElementChild || sec;
+  const gap = innerWidth < 820 ? 84 : 96;   // hauteur de la barre de navigation + un peu d'air
+  scrollTo({ top: Math.max(0, head.getBoundingClientRect().top + scrollY - gap), behavior: REDUCE ? 'auto' : 'smooth' });
+}
+
 /* ---------- Grille : quinconce + filtres animés ---------- */
 function layout(){ $$('.card:not(.hide)', grid).forEach((c, k) => c.classList.toggle('shift', k % 2 === 1)); }
 layout();
@@ -663,7 +672,7 @@ filters.addEventListener('click', e => { const b = e.target.closest('.chip'); if
 $('#disc').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   setFilter(b.dataset.filter);
-  scrollTo({ top: $('#travaux').getBoundingClientRect().top + scrollY - 70, behavior: REDUCE ? 'auto' : 'smooth' });
+  scrollToSection('#travaux');
 });
 
 /* ---------- Boucle d'animation : en-tête, progression, bandeaux, parallaxe ---------- */
@@ -823,9 +832,8 @@ const burger = $('#burger');
 const setMenu = o => { document.body.classList.toggle('menu-open', o); burger.setAttribute('aria-expanded', o); burger.setAttribute('aria-label', o ? 'Fermer le menu' : 'Ouvrir le menu'); };
 burger.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
 $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
-  const id = a.getAttribute('href'), t = $(id); if (!t) return;
-  e.preventDefault(); setMenu(false);
-  scrollTo({ top: id === '#top' ? 0 : t.getBoundingClientRect().top + scrollY - 70, behavior: REDUCE ? 'auto' : 'smooth' });
+  const id = a.getAttribute('href'); if (!$(id)) return;
+  e.preventDefault(); setMenu(false); scrollToSection(id);
 }));
 </script>
 </body>
