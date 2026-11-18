@@ -107,7 +107,7 @@
     if (p.media_type === 'image' || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(p.media_url)) return 'image';
     return 'video';
   };
-  const posterOf = (p) => p.poster_url || (kindOf(p) === 'youtube' ? `https://i.ytimg.com/vi/${ytId(p.media_url)}/hqdefault.jpg` : '');
+  const posterOf = (p) => p.poster_url || (kindOf(p) === 'youtube' ? `https://i.ytimg.com/vi/${ytId(p.media_url)}/maxresdefault.jpg` : '');
   /* YouTube en boucle, muet, sans aucune interaction possible */
   const ytLoopSrc = (id) => `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disablekb=1&fs=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1`;
   const projectLink = (p) => p.link || (kindOf(p) === 'youtube' ? p.media_url : '');

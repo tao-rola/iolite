@@ -14,8 +14,8 @@
     if (k === 'youtube') {
       /* vignette affichée tout de suite, puis la vidéo YouTube muette en boucle (sans interaction) dès qu'elle est à l'écran */
       return `<div class="relative aspect-video bg-black overflow-hidden">
-        <img src="${posterOf(p)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover">
-        <iframe data-yt="${ytId(p.media_url)}" src="${ytLoopSrc(ytId(p.media_url))}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.2] opacity-0 transition-opacity duration-700" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
+        <img src="${posterOf(p)}" alt="${esc(p.title)}" loading="lazy" decoding="async" onload="if(this.naturalWidth<=120)this.src=this.src.replace('maxresdefault','hqdefault')" class="absolute inset-0 w-full h-full object-cover">
+        <iframe data-yt="${ytId(p.media_url)}" src="${ytLoopSrc(ytId(p.media_url))}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.02] opacity-0 transition-opacity duration-500" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
       </div>`;
     }
     if (k === 'video') {
@@ -173,24 +173,28 @@
     ytReady = [...grid.querySelectorAll('iframe.yt')].map(revealYt);
   }
 
-  /* YouTube : lecture lancée dès l'arrivée ; la vidéo apparaît une seconde après son chargement (le temps que l'habillage YouTube s'efface) */
-  /* la vidéo ne remplace la miniature que lorsqu'elle joue vraiment (sinon la miniature reste : jamais de cadre noir) */
-  const ytWaiting = new Map();
+  /* YouTube : la vidéo (cadrage d'origine, sans zoom) ne remplace la miniature que lorsqu'elle joue vraiment depuis quelques secondes ;
+     dès qu'elle s'interrompt (chargement, pause, fin), la miniature revient : l'habillage YouTube (titre, logo, « Plus de vidéos ») n'est jamais visible */
+  const ytPlayers = new Map();
   addEventListener('message', (e) => {
-    if (!/youtube(-nocookie)?\.com$/.test(new URL(e.origin).hostname)) return;
+    let host = ''; try { host = new URL(e.origin).hostname; } catch {}
+    if (!/youtube(-nocookie)?\.com$/.test(host)) return;
     let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
     const state = d && d.info && d.info.playerState;
-    if (state !== 1) return;
-    ytWaiting.forEach((show, f) => { if (f.contentWindow === e.source) show(); });
+    if (typeof state !== 'number') return;
+    ytPlayers.forEach((onState, f) => { if (f.contentWindow === e.source) onState(state); });
   });
   function revealYt(f) {
     return new Promise((resolve) => {
-      let shown = false;
-      const show = () => { if (shown) return; shown = true; ytWaiting.delete(f); setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 3500); /* le titre et le logo YouTube disparaissent quelques secondes après le début de la lecture */ };
-      ytWaiting.set(f, show);
+      let timer = null;
+      ytPlayers.set(f, (state) => {
+        clearTimeout(timer);
+        if (state === 1) timer = setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 3500);
+        else f.classList.add('opacity-0');
+      });
       const listen = () => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: f.dataset.yt, channel: 'widget' }), '*'); } catch {} };
       f.addEventListener('load', () => { listen(); setTimeout(listen, 800); setTimeout(listen, 2000); }, { once: true });
-      setTimeout(resolve, 6000); /* l’écran de chargement n'attend pas indéfiniment */
+      setTimeout(resolve, 6000); /* l'écran de chargement n'attend pas indéfiniment */
     });
   }
 
