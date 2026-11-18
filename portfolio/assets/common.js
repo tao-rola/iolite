@@ -143,9 +143,10 @@
     });
     const btn = key && track.querySelector(`.nav-btn[data-nav="${key}"]`);
     if (!btn) { blob.animate([{ opacity: getComputedStyle(blob).opacity }, { opacity: 0 }], { duration: 250, fill: 'forwards' }); blobKey = null; return; }
-    const to = { x: btn.offsetLeft, w: btn.offsetWidth };
-    const r = blob.getBoundingClientRect(), tr = track.getBoundingClientRect();
-    const from = blobKey ? { x: r.left - tr.left, w: r.width } : { x: to.x + to.w / 2 - 6, w: 12 };
+    /* positions mesurées à l'écran (le bouton « Projets » est dans un sous-bloc : offsetLeft serait faux) */
+    const tr = track.getBoundingClientRect(), br = btn.getBoundingClientRect(), r = blob.getBoundingClientRect();
+    const to = { x: br.left - tr.left - track.clientLeft, w: br.width };
+    const from = blobKey ? { x: r.left - tr.left - track.clientLeft, w: r.width } : { x: to.x + to.w / 2 - 6, w: 12 };
     blob.getAnimations().forEach((a) => a.cancel());
     const left = Math.min(from.x, to.x), right = Math.max(from.x + from.w, to.x + to.w);
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
