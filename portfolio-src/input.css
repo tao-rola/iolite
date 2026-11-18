@@ -40,4 +40,4 @@
 
 /* aperçus de projets : page qui défile (sites) et écrans qui glissent (applications) */
 @keyframes pagescroll { 0%, 8% { transform: translateY(0); } 46%, 54% { transform: translateY(var(--d, 0)); } 92%, 100% { transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) { [data-pagescroll] img, .animate-marquee, #backdrop .glow { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { [data-pagescroll] img, .animate-marquee, #backdrop .glow, .photo-ring * { animation: none !important; } }

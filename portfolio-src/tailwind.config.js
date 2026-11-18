@@ -12,6 +12,7 @@ module.exports = {
         fadeUp: { from: { opacity: '0', transform: 'translateY(30px)' }, to: { opacity: '1', transform: 'none' } },
         fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
         sheet: { from: { transform: 'translateY(40px)', opacity: '0' }, to: { transform: 'none', opacity: '1' } },
+        halo: { '0%,100%': { opacity: '.55', transform: 'scale(.92)' }, '50%': { opacity: '1', transform: 'scale(1.08)' } },
         marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
         drift1: { '0%,100%': { transform: 'translate(0,0) scale(1)' }, '33%': { transform: 'translate(30vw,20vh) scale(1.15)' }, '66%': { transform: 'translate(10vw,45vh) scale(.9)' } },
         drift2: { '0%,100%': { transform: 'translate(0,0) scale(1)' }, '33%': { transform: 'translate(-35vw,-15vh) scale(.9)' }, '66%': { transform: 'translate(-15vw,25vh) scale(1.2)' } },

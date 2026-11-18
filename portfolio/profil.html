@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="assets/app.css?v=bd9a7926">
+  <link rel="stylesheet" href="assets/app.css?v=4e6b90b2">
 </head>
 <body class="bg-[#0a0a0a] min-h-screen" data-title="Mon Profil">
   <div id="top"></div>
@@ -23,11 +23,16 @@
 
       <!-- en-tête -->
       <div class="flex flex-col md:flex-row items-center gap-8 mb-12 md:mb-16 animate-fade-up">
-        <div class="relative shrink-0">
-          <div class="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-emerald-500/30 bg-white/5">
-            <img id="photo" src="assets/photo.webp" alt="Tao ROLA" width="256" height="256" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
+        <!-- photo avec anneaux animés -->
+        <div class="photo-ring relative shrink-0 w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64">
+          <div class="absolute -inset-10 bg-emerald-500/25 blur-3xl rounded-full animate-[halo_5s_ease-in-out_infinite]" aria-hidden="true"></div>
+          <div class="absolute -inset-[5px] rounded-full animate-[spin_6s_linear_infinite]" style="background:conic-gradient(from 0deg,#10b981,rgba(16,185,129,0) 35%,rgba(16,185,129,0) 55%,#34d399 80%,#10b981)" aria-hidden="true"></div>
+          <div class="absolute -inset-[18px] rounded-full border border-dashed border-emerald-400/35 animate-[spin_24s_linear_infinite_reverse]" aria-hidden="true">
+            <span class="absolute -top-[4px] left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_3px_rgba(52,211,153,.7)]"></span>
           </div>
-          <div class="absolute -z-10 inset-0 bg-emerald-500/20 blur-3xl rounded-full"></div>
+          <div class="relative w-full h-full rounded-full overflow-hidden border-[5px] border-[#0a0a0a] bg-white/5">
+            <img id="photo" src="assets/photo.webp" alt="Tao ROLA" width="256" height="256" fetchpriority="high" decoding="async" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105">
+          </div>
         </div>
         <div class="flex-1 text-center md:text-left">
           <h2 class="display text-7xl md:text-8xl text-white mb-3">Tao ROLA</h2>
