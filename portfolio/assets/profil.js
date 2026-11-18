@@ -32,9 +32,9 @@
     ['briefcase', 'Expérience Professionnelle', [
       ['Octobre 2026 - Présent', 'Serveur Barman', 'Café de Rouen Quais de Seine, Rouen', 'Service en salle et au bar, accueil de la clientèle.'],
       ['Septembre 2026 - Octobre 2026', 'Commercial', 'Axecibles, Rouen', "Prospection de TPE et d'artisans par téléphone et sur le terrain. Vente en one shot de solutions web (sites internet, référencement), avec négociation et signature des contrats dès le premier rendez-vous."],
-      ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale et marketing événementiel. Gestion des réseaux sociaux du restaurant.'],
-      ['Septembre 2025 - Septembre 2026', 'Chef de Rang', 'Le Bouillon Italia, Rouen', "Gestion d'un rang et participation à l'ouverture, à la mise en place et à la fermeture de la salle. Accueil des clients, gestion des réservations, du placement et des réclamations, dans le respect des standards de qualité. Formation et intégration des nouveaux membres de l'équipe."],
-      ['Avril 2025 - Juin 2025', 'Stagiaire Chargé de Communication et Développeur Web', 'Attineos Cybersécurité, Rouen', "Création de supports de communication digitale. Développement d'interfaces web."],
+      ['Septembre 2025 - Septembre 2026', 'Chargé de Communication et Marketing (Alternance)', "Restaurant Le Bouillon d'Or, Rouen", 'Communication digitale et marketing événementiel. Gestion des réseaux sociaux du groupe et de ses restaurants.'],
+      ['Septembre 2025 - Septembre 2026', 'Responsable de salle', 'Le Bouillon Italia, Rouen', "Gestion d'un rang et participation à l'ouverture, à la mise en place et à la fermeture de la salle. Accueil des clients, gestion des réservations, du placement et des réclamations, dans le respect des standards de qualité. Formation et intégration des nouveaux membres de l'équipe."],
+      ['Avril 2025 - Juin 2025', 'Stagiaire Chargé de Communication et Développeur Web', 'Attineos Cybersécurité, Rouen', "Création de supports de communication digitale. Développement d'interfaces web pour un client attitré, entièrement à ma charge pendant toute la durée du stage."],
       ['Août 2024 - Avril 2025', 'Chef de Rang', "Restaurant Le Bouillon d'Or, Rouen", "Gestion d'un rang en totale autonomie dans un restaurant à fort volume de couverts. Service soigné, conseil à la carte et fidélisation de la clientèle, en coordination avec la cuisine."],
       ['Octobre 2023 - Juin 2025', 'Employé Polyvalent', 'Food-Truck Clara Pizza, Rouen', 'Tenue de la caisse et assistance en cuisine. Entretien et nettoyage du food-truck.'],
       ['Septembre 2023 - Présent', 'Entrepreneur Individuel', 'Auto-entreprise Gallium, Rouen', "Prestations en photographie et en vidéo (shootings, interviews, reportages). Création graphique : identités visuelles, supports de communication et motion design. Conception et développement de sites internet et d'applications web."],
@@ -62,8 +62,18 @@
       </div>
     </section>`).join('');
 
-  const SKILLS = ['PHP, HTML, CSS, SQL', 'JavaScript, Python','Photoshop, Illustrator, After Effects', 'Suite Microsoft Office', 'Google Workspace', 'Productions Audio/Vidéo', 'Guitare, Piano, Ukulélé', 'Anglais (B2), Espagnol (B1)'];
-  document.getElementById('skills').innerHTML = SKILLS.map((s) => `<div class="px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-sm sm:text-base">${s}</div>`).join('');
+  const SKILLS = [
+    ['Développement', ['PHP, HTML, CSS, SQL', 'JavaScript, TypeScript, Python', 'React, Tailwind CSS', 'Node.js', 'Supabase', 'Git / GitHub', 'Applications Android & iOS', 'Responsive design', 'Figma (UI/UX)']],
+    ['Graphisme', ['Photoshop, Illustrator, After Effects', 'InDesign', 'Canva', 'Identité visuelle', 'Motion design']],
+    ['Photo & Vidéo', ['Premiere Pro', 'DaVinci Resolve', 'Lightroom', 'Montage vidéo', 'Productions Audio/Vidéo']],
+    ['Bureautique', ['Suite Microsoft Office', 'Google Workspace']],
+    ['Langues & Musique', ['Anglais (B2), Espagnol (B1)', 'Guitare, Piano, Ukulélé']],
+  ];
+  document.getElementById('skills').innerHTML = SKILLS.map(([g, list]) => `
+    <div>
+      <p class="text-xs uppercase tracking-[0.2em] text-emerald-400/80 mb-3">${g}</p>
+      <div class="flex flex-wrap gap-2 sm:gap-3">${list.map((s) => `<div class="px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-sm sm:text-base">${s}</div>`).join('')}</div>
+    </div>`).join('');
 
   /* réglages dynamiques : photo, disponibilité, CV (PDF) */
   withSettings((s) => {
