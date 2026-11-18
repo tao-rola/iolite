@@ -169,7 +169,7 @@
       : `<video src="${esc(p.media_url)}#t=0.5" class="w-full h-auto block bg-black min-h-[180px]" muted playsinline preload="metadata"></video>`;
     if (p.device === 'phone') return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]"><div class="absolute inset-y-[9%] left-[4%] flex gap-3">${shots.slice(0, 5).map((src) => `<img src="${esc(src)}" alt="" loading="lazy" class="h-full w-auto rounded-xl ring-1 ring-white/10">`).join('')}</div></div>`;
     if (p.device === 'desktop') return `<div class="relative aspect-[3/4] overflow-hidden bg-[#0d0d0d]">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute top-0 left-0 w-full h-auto">` : ''}</div>`;
-    if (shots.length > 1) return `<div class="relative aspect-[16/10] overflow-hidden bg-black"><img src="${esc(first)}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover object-top"></div>`;
+    if (shots.length > 1) return `<img src="${esc(first)}" alt="" loading="lazy" class="w-full h-auto block bg-black">`;
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="" loading="lazy" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
   }

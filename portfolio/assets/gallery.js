@@ -54,7 +54,8 @@
       </div>`;
     }
 
-    if (slides.length > 1) return `<div class="relative overflow-hidden bg-black aspect-[16/10]">${screen('')}</div>`;
+    /* diaporama : la carte prend le format de la première image (carrée, verticale, horizontale…) */
+    if (slides.length > 1) return `<div class="relative overflow-hidden bg-black"><img src="${esc(slides[0])}" alt="" aria-hidden="true" loading="lazy" decoding="async" class="block w-full h-auto invisible">${screen('')}</div>`;
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
   }
