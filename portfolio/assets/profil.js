@@ -19,7 +19,7 @@
   coords.innerHTML =
     box('mail', 'Email', CONTACT.email, 'mailto:' + CONTACT.email) +
     box('phone', 'Téléphone', CONTACT.phone, 'tel:' + CONTACT.tel) +
-    box('mapPin', 'Localisation', 'France');
+    box('mapPin', 'Localisation', 'Normandie, France');
   coords.querySelectorAll('.c-coord').forEach((l) => window.TR.scrambleText(l, l.querySelector('.c-coord-t')));
 
   /* parcours */
