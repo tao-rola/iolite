@@ -44,38 +44,46 @@
       ['Décembre 2018 - Décembre 2024', 'Pôle Événementiel', 'Association Amnesty International, Rennes', "Coordination d'événements, dont le Salon d'art et d'artisanat d'Amnesty Rennes."],
     ]],
   ];
-  document.getElementById('timeline').innerHTML = SECTIONS.map(([ic, title, items]) => `
+  /* le parcours est géré depuis l'administration (table portfolio_cv) ; la liste ci-dessus sert de secours hors connexion */
+  const SECT = [['formation', 'graduationCap', 'Formation'], ['experience', 'briefcase', 'Expérience Professionnelle'], ['engagement', 'users', 'Engagement Associatif']];
+  const fallback = SECTIONS.flatMap(([, title, items], k) => items.map(([period, t, place, description]) => ({ section: SECT[k][0], period, title: t, place, description })));
+  function renderTimeline(rows) {
+    document.getElementById('timeline').innerHTML = SECT.map(([key, ic, title]) => {
+      const items = rows.filter((r) => r.section === key);
+      if (!items.length) return '';
+      return `
     <section class="mb-12 md:mb-16">
       <div class="flex items-center gap-3 mb-6 md:mb-8">${icon(ic, 'w-6 h-6 text-emerald-500')}<h3 class="text-2xl font-bold text-white">${title}</h3></div>
       <div class="space-y-6">
-        ${items.map(([date, role, place, desc]) => `
+        ${items.map((r) => `
           <div class="relative pl-6 sm:pl-8 border-l-2 border-white/10 pb-6 last:pb-0">
             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emerald-500"></div>
-            <div class="flex items-center gap-2 mb-2">${icon('calendar', 'w-4 h-4 text-white/40')}<span class="text-sm text-emerald-500">${date}</span></div>
-            <h4 class="text-lg sm:text-xl font-semibold text-white mb-1">${role}</h4>
-            <p class="text-white/60 ${desc && desc.length ? 'mb-2' : ''}">${place}</p>
-            ${Array.isArray(desc)
-              ? `<ul class="space-y-1.5">${desc.map((d) => `<li class="relative pl-4 text-white/50 text-sm before:content-[''] before:absolute before:left-0 before:top-[.55em] before:w-1.5 before:h-1.5 before:rounded-full before:bg-emerald-500/60">${d}</li>`).join('')}</ul>`
-              : desc ? `<p class="text-white/50 text-sm">${desc}</p>` : ''}
+            ${r.period ? `<div class="flex items-center gap-2 mb-2">${icon('calendar', 'w-4 h-4 text-white/40')}<span class="text-sm text-emerald-500">${esc(r.period)}</span></div>` : ''}
+            <h4 class="text-lg sm:text-xl font-semibold text-white mb-1">${esc(r.title)}</h4>
+            ${r.place ? `<p class="text-white/60 ${r.description ? 'mb-2' : ''}">${esc(r.place)}</p>` : ''}
+            ${r.description ? `<p class="text-white/50 text-sm whitespace-pre-line">${esc(r.description)}</p>` : ''}
           </div>`).join('')}
       </div>
-    </section>`).join('');
+    </section>`;
+    }).join('');
+  }
+  const CV_KEY = 'tr-cv-v1';
+  let cvCached = null; try { cvCached = JSON.parse(localStorage.getItem(CV_KEY)); } catch {}
+  renderTimeline(cvCached || fallback);
+  window.TR.rest('portfolio_cv?select=section,period,title,place,description&published=eq.true&order=sort_order.desc,created_at.desc')
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((rows) => { if (JSON.stringify(rows) !== JSON.stringify(cvCached)) renderTimeline(rows); try { localStorage.setItem(CV_KEY, JSON.stringify(rows)); } catch {} })
+    .catch((e) => console.error(e));
 
-  const SKILLS = ['PHP', 'HTML', 'CSS', 'SQL', 'JavaScript', 'TypeScript', 'Python', 'React', 'Tailwind CSS', 'Node.js', 'Supabase', 'Git / GitHub',
-    'Applications Android & iOS', 'Responsive design', 'Photoshop', 'Illustrator', 'After Effects', 'Canva', 'Identité visuelle', 'Premiere Pro', 'Lightroom',
-    'Montage vidéo', 'Productions Audio/Vidéo', 'Suite Microsoft Office', 'Google Workspace', 'Anglais (B2)', 'Espagnol (B1)', 'Guitare', 'Piano', 'Ukulélé'];
-  document.getElementById('skills').innerHTML = SKILLS.map((s, i) => `<span class="inline-flex items-center gap-x-3"><span class="text-white/60 text-sm sm:text-base">${s}</span>${i < SKILLS.length - 1 ? '<span class="text-emerald-500/70 text-[10px] leading-none" aria-hidden="true">✦</span>' : ''}</span>`).join('');
-
-  /* réglages dynamiques : photo, disponibilité, CV (PDF) */
+  /* réglages dynamiques : photo, disponibilité, compétences */
   withSettings((s) => {
+    if (Array.isArray(s.skills) && s.skills.length) renderSkills(s.skills);
     const photo = document.getElementById('photo');
     const src = s.photo_thumb_url || s.photo_url;
     if (src && photo.getAttribute('src') !== src) photo.src = src;
     document.getElementById('dispo').innerHTML = s.available
       ? '<span class="relative flex w-2.5 h-2.5 shrink-0"><span class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-60"></span><span class="absolute -inset-0.5 rounded-full bg-emerald-400/25 animate-[halo_2s_ease-in-out_infinite]"></span><span class="relative w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_6px_1px_rgba(52,211,153,.8)]"></span></span><span class="text-sm text-white/70">Disponible pour de nouveaux projets</span>'
       : '<span class="relative flex w-2.5 h-2.5 shrink-0"><span class="absolute inset-0 rounded-full bg-red-400 animate-ping opacity-60"></span><span class="absolute -inset-0.5 rounded-full bg-red-400/25 animate-[halo_2s_ease-in-out_infinite]"></span><span class="relative w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_6px_1px_rgba(248,113,113,.8)]"></span></span><span class="text-sm text-white/70">Indisponible pour de nouveaux projets</span>';
-    document.getElementById('cv-links').innerHTML = s.cv_pdf_url
-      ? `<a href="${esc(s.cv_pdf_url)}" target="_blank" rel="noopener" download="CV_Tao_ROLA.pdf" class="flex items-center gap-2 text-emerald-500 hover:text-emerald-400 text-sm transition-colors duration-300 py-1">${icon('download')}Télécharger mon CV</a>` : '';
   });
 
 })();
