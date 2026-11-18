@@ -107,7 +107,7 @@
     if (p.media_type === 'image' || /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i.test(p.media_url)) return 'image';
     return 'video';
   };
-  const posterOf = (p) => p.poster_url || (kindOf(p) === 'youtube' ? `https://i.ytimg.com/vi/${ytId(p.media_url)}/maxresdefault.jpg` : '');
+  const posterOf = (p) => p.poster_url || ''; /* jamais de miniature YouTube */
   const projectLink = (p) => (/youtu\.?be/.test(p.link || '') ? '' : p.link || ''); /* plus aucun lien vers YouTube */
   const hostOf = (url) => { try { return new URL(url).host; } catch { return ''; } };
 
