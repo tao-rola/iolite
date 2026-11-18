@@ -196,17 +196,17 @@
         <div class="max-w-7xl mx-auto">
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12 mb-10 md:mb-12">
             <div class="sm:col-span-2 md:col-span-1">
-              <h3 class="display text-5xl text-white mb-4">Tao ROLA</h3>
+              <h3 class="display text-3xl md:text-4xl text-white mb-6">Tao ROLA</h3>
               <p class="text-white/60 text-sm leading-relaxed max-w-sm">Photographe, vidéaste, graphiste et développeur, je donne vie à vos projets, de l'image jusqu'au web.</p>
-              <a href="admin" class="inline-block mt-4 text-white/40 hover:text-white text-sm transition-colors duration-300">Administration</a>
+              <a href="admin" class="inline-block mt-5 text-white/40 hover:text-white text-sm transition-colors duration-300">Administration</a>
             </div>
             <div>
-              <h4 class="text-lg font-semibold text-white mb-4">Liens Rapides</h4>
-              <ul class="space-y-2">
+              <h4 class="display text-3xl md:text-4xl text-white mb-6">Liens rapides</h4>
+              <ul class="space-y-3">
                 ${link(onHome ? '#accueil' : './', 'Accueil')}
                 <li>
                   <a href="${onHome ? '#categories' : './#categories'}" class="text-white/60 hover:text-white text-sm transition-colors duration-300">Projets</a>
-                  <ul class="mt-2 ml-3 pl-3 border-l border-white/10 space-y-2">
+                  <ul class="mt-3 ml-1 pl-4 border-l border-white/10 space-y-3">
                     ${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
                   </ul>
                 </li>
@@ -215,7 +215,7 @@
               </ul>
             </div>
             <div>
-              <h4 class="text-lg font-semibold text-white mb-4">Contact</h4>
+              <h4 class="display text-3xl md:text-4xl text-white mb-6">Contact</h4>
               <ul class="space-y-3">
                 ${contact('mailto:' + CONTACT.email, 'mail', CONTACT.email)}
                 ${contact('tel:' + CONTACT.tel, 'phone', CONTACT.phone)}
