@@ -180,15 +180,20 @@
     let host = ''; try { host = new URL(e.origin).hostname; } catch {}
     if (!/youtube(-nocookie)?\.com$/.test(host)) return;
     let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
-    const state = d && d.info && d.info.playerState;
-    if (typeof state !== 'number') return;
+    if (!d) return;
+    /* état du lecteur (onStateChange ou infoDelivery) ; début de lecture et retour en boucle : l'habillage YouTube s'affiche les premières secondes */
+    let state = d.event === 'onStateChange' && typeof d.info === 'number' ? d.info : d.info && typeof d.info.playerState === 'number' ? d.info.playerState : null;
+    const t = d.info && typeof d.info.currentTime === 'number' ? d.info.currentTime : null;
+    if (state === null && t !== null) state = t < 3 ? -1 : 1;
+    if (state === null) return;
     ytPlayers.forEach((onState, f) => { if (f.contentWindow === e.source) onState(state); });
   });
   function revealYt(f) {
     return new Promise((resolve) => {
       let timer = null;
       ytPlayers.set(f, (state) => {
-        clearTimeout(timer);
+        if (state === 1 && timer) return; /* déjà en attente d'affichage */
+        clearTimeout(timer); timer = null;
         if (state === 1) { try { ['captions', 'cc'].forEach((m) => f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'unloadModule', args: [m] }), '*')); } catch {} }
         if (state === 1) timer = setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 3500);
         else f.classList.add('opacity-0');
