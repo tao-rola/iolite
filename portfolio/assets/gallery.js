@@ -1,6 +1,6 @@
 /* Portfolio Tao ROLA : pages galerie (Audiovisuel, Graphisme, Développement) */
 (function () {
-  const { icon, esc, withProjects, kindOf, ytId, hostOf, posterOf, ytLoopSrc, projectLink, topBar, footer, projectModal, devPlaceholder, watchVideo } = window.TR;
+  const { icon, esc, withProjects, kindOf, hostOf, posterOf, projectLink, topBar, footer, projectModal, devPlaceholder, watchVideo } = window.TR;
   const cat = document.body.dataset.category;
   const grid = document.getElementById('grid');
   document.getElementById('top').innerHTML = topBar(document.body.dataset.title);
@@ -12,10 +12,9 @@
   function media(p) {
     const k = kindOf(p);
     if (k === 'youtube') {
-      /* vignette affichée tout de suite, puis la vidéo YouTube muette en boucle (sans interaction) dès qu'elle est à l'écran */
+      /* ancien lien YouTube : image fixe (plus aucune lecture via YouTube) en attendant le fichier vidéo */
       return `<div class="relative aspect-video bg-black overflow-hidden">
         <img src="${posterOf(p)}" alt="${esc(p.title)}" loading="lazy" decoding="async" onload="if(this.naturalWidth<=120)this.src=this.src.replace('maxresdefault','hqdefault')" class="absolute inset-0 w-full h-full object-cover">
-        <iframe data-yt="${ytId(p.media_url)}" src="${ytLoopSrc(ytId(p.media_url))}" class="yt absolute inset-0 w-full h-full pointer-events-none scale-[1.02] opacity-0 transition-opacity duration-500" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
       </div>`;
     }
     if (k === 'video') {
@@ -138,7 +137,6 @@
       if (v.preload === 'none') v.preload = 'metadata';
       waits.push(v.readyState >= 2 ? Promise.resolve() : new Promise((r) => { v.addEventListener('loadeddata', r, { once: true }); v.addEventListener('error', r, { once: true }); }));
     });
-    waits.push(...ytReady);
     const bar = document.getElementById('loader-bar');
     let done = 0; const total = waits.length || 1;
     waits.forEach((w) => w.then(() => { done++; if (bar) bar.style.width = `${Math.max(8, Math.round((done / total) * 100))}%`; }));
@@ -146,7 +144,7 @@
   }
   setTimeout(finishLoader, 7000); /* sécurité : jamais bloqué sur l'écran de chargement */
 
-  let byId = {}, items = [], cols = 0, ytReady = [];
+  let byId = {}, items = [], cols = 0;
   const colCount = () => (innerWidth >= 1024 ? 3 : innerWidth >= 640 ? 2 : 1);
   function layout() {
     const n = colCount(); if (n === cols || !items.length) return; cols = n;
@@ -171,38 +169,6 @@
     grid.querySelectorAll('[data-pagescroll]').forEach(pageTour);
     requestAnimationFrame(waitForMedia);
     grid.querySelectorAll('video').forEach(watchVideo);
-    ytReady = [...grid.querySelectorAll('iframe.yt')].map(revealYt);
-  }
-
-  /* YouTube : la vidéo (cadrage d'origine, sans zoom) ne remplace la miniature que lorsqu'elle joue vraiment depuis quelques secondes ;
-     dès qu'elle s'interrompt (chargement, pause, fin), la miniature revient : l'habillage YouTube (titre, logo, « Plus de vidéos ») n'est jamais visible */
-  const ytPlayers = new Map();
-  addEventListener('message', (e) => {
-    let host = ''; try { host = new URL(e.origin).hostname; } catch {}
-    if (!/youtube(-nocookie)?\.com$/.test(host)) return;
-    let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
-    if (!d) return;
-    /* état du lecteur (onStateChange ou infoDelivery) ; début de lecture et retour en boucle : l'habillage YouTube s'affiche les premières secondes */
-    let state = d.event === 'onStateChange' && typeof d.info === 'number' ? d.info : d.info && typeof d.info.playerState === 'number' ? d.info.playerState : null;
-    const t = d.info && typeof d.info.currentTime === 'number' ? d.info.currentTime : null;
-    if (state === null && t !== null) state = t < 3 ? -1 : 1;
-    if (state === null) return;
-    ytPlayers.forEach((onState, f) => { if (f.contentWindow === e.source) onState(state); });
-  });
-  function revealYt(f) {
-    return new Promise((resolve) => {
-      let timer = null;
-      ytPlayers.set(f, (state) => {
-        if (state === 1 && timer) return; /* déjà en attente d'affichage */
-        clearTimeout(timer); timer = null;
-        if (state === 1) { try { ['captions', 'cc'].forEach((m) => f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'unloadModule', args: [m] }), '*')); } catch {} }
-        if (state === 1) timer = setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 3500);
-        else f.classList.add('opacity-0');
-      });
-      const listen = () => { try { f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: f.dataset.yt, channel: 'widget' }), '*'); } catch {} };
-      f.addEventListener('load', () => { listen(); setTimeout(listen, 800); setTimeout(listen, 2000); }, { once: true });
-      setTimeout(resolve, 6000); /* l'écran de chargement n'attend pas indéfiniment */
-    });
   }
 
   /* diaporamas : avancent toutes les 3 s, uniquement quand ils sont à l'écran */

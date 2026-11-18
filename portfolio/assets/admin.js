@@ -88,7 +88,7 @@
   }
 
   async function upload(file, folder) {
-    if (file.size > MAX_MB * 1024 * 1024) throw new Error(`Fichier trop lourd (${(file.size / 1048576).toFixed(0)} Mo). Maximum ${MAX_MB} Mo : compressez-le ou mettez la vidéo sur YouTube.`);
+    if (file.size > MAX_MB * 1024 * 1024) throw new Error(`Fichier trop lourd (${(file.size / 1048576).toFixed(0)} Mo). Maximum ${MAX_MB} Mo : compressez-le (par exemple en 1080p ou 720p) avant de l'importer.`);
     const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
     const base = file.name.replace(/\.[^.]+$/, '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9-_]+/g, '-').slice(0, 40);
     const path = `${folder}/${Date.now()}-${base}.${ext}`;
@@ -292,7 +292,7 @@
         <div><label class="text-sm text-white/70 mb-2 block">Tags (séparés par des virgules)</label><input name="tags" class="field" value="${esc((p.tags || []).join(', '))}"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div><label class="text-sm text-white/70 mb-2 block">Type de média</label>
-            <select name="media_type" class="field">${[['video', 'Vidéo'], ['image', 'Image'], ['youtube', 'YouTube']].map(([k, l]) => `<option value="${k}" ${p.media_type === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+            <select name="media_type" class="field">${[['video', 'Vidéo'], ['image', 'Image']].map(([k, l]) => `<option value="${k}" ${p.media_type === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div class="sm:col-span-2"><label class="text-sm text-white/70 mb-2 block">Adresse du média</label><input name="media_url" class="field" placeholder="https://… (ou importez un fichier)" value="${esc(p.media_url || '')}"></div>
         </div>
         <label class="flex items-center justify-center gap-2 p-4 rounded-xl border border-dashed border-white/20 text-white/60 hover:text-white hover:border-white/40 cursor-pointer text-sm text-center">
@@ -303,7 +303,7 @@
           <textarea name="gallery" class="field !min-h-[90px] font-mono text-xs" placeholder="https://…">${esc((p.gallery || []).join('\n'))}</textarea>
           <label class="mt-2 btn-ghost !h-9 cursor-pointer">${icon('upload')}Ajouter des captures<input type="file" name="gfiles" accept="image/*" multiple class="sr-only"></label>
           <span id="gcount" class="text-xs text-white/40 ml-2"></span></div>
-        <div><label class="text-sm text-white/70 mb-2 block">Lien « Voir le projet » (YouTube, site…)</label><input name="link" class="field" placeholder="https://" value="${esc(p.link || '')}"></div>
+        <div><label class="text-sm text-white/70 mb-2 block">Lien « Voir le projet » (site internet…)</label><input name="link" class="field" placeholder="https://" value="${esc(p.link || '')}"></div>
         <label class="flex items-center gap-3 text-sm text-white/80"><input type="checkbox" name="published" class="w-5 h-5 accent-emerald-500" ${p.published ? 'checked' : ''}>Visible sur le site</label>
         <div class="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end pt-2">
           <button type="button" data-close class="btn-ghost !h-11">Annuler</button>
@@ -336,8 +336,9 @@
         for (const g of f.gfiles.files) { btn.textContent = 'Envoi des captures…'; gallery.push(await upload(g, f.category.value + '/captures')); }
         if (!media_url && gallery.length) media_url = gallery[0];
         let media_type = f.media_type.value;
-        if (ytId(media_url)) media_type = 'youtube';
-        else if (!file && gallery.length && media_url === gallery[0]) media_type = 'image';
+        if (ytId(media_url)) throw new Error('Les vidéos YouTube ne sont plus acceptées : importez le fichier vidéo (MP4).');
+        if (ytId(f.link.value)) throw new Error('Les liens YouTube ne sont plus acceptés.');
+        if (!file && gallery.length && media_url === gallery[0]) media_type = 'image';
         const row = {
           category: f.category.value, title: f.title.value.trim(), description: f.description.value.trim(),
           tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), media_type, media_url,

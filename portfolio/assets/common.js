@@ -108,9 +108,7 @@
     return 'video';
   };
   const posterOf = (p) => p.poster_url || (kindOf(p) === 'youtube' ? `https://i.ytimg.com/vi/${ytId(p.media_url)}/maxresdefault.jpg` : '');
-  /* YouTube en boucle, muet, sans aucune interaction possible */
-  const ytLoopSrc = (id) => `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disablekb=1&fs=0&rel=0&iv_load_policy=3&cc_load_policy=0&modestbranding=1&playsinline=1&enablejsapi=1`;
-  const projectLink = (p) => p.link || (kindOf(p) === 'youtube' ? p.media_url : '');
+  const projectLink = (p) => (/youtu\.?be/.test(p.link || '') ? '' : p.link || ''); /* plus aucun lien vers YouTube */
   const hostOf = (url) => { try { return new URL(url).host; } catch { return ''; } };
 
   /* ---------- navigation ---------- */
@@ -360,13 +358,13 @@
   function projectModal(p) {
     const k = kindOf(p);
     let media = '';
-    if (k === 'youtube') media = `<div class="relative aspect-video bg-black overflow-hidden"><iframe class="absolute inset-0 w-full h-full pointer-events-none scale-[1.2]" src="${ytLoopSrc(ytId(p.media_url))}" title="${esc(p.title)}" allow="autoplay; encrypted-media" tabindex="-1""></iframe><img src="${posterOf(p)}" alt="" class="yt-cover absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none"></div>`;
+    if (k === 'youtube') media = `<div class="relative aspect-video bg-black overflow-hidden"><img src="${posterOf(p)}" alt="${esc(p.title)}" onload="if(this.naturalWidth<=120)this.src=this.src.replace('maxresdefault','hqdefault')" class="absolute inset-0 w-full h-full object-cover"></div>`; /* ancien lien YouTube : image fixe en attendant le fichier vidéo */
     else if (k === 'video') media = `<div class="bg-black flex justify-center"><video src="${esc(p.media_url)}" ${p.poster_url ? `poster="${esc(p.poster_url)}"` : ''} class="w-full max-h-[60dvh] object-contain" controls autoplay muted loop playsinline></video></div>`;
     else if (k === 'image') media = `<div class="bg-black flex justify-center"><img src="${esc(p.media_url)}" alt="${esc(p.title)}" class="w-full max-h-[60dvh] object-contain"></div>`;
     else if (p.category === 'developpement') media = devPlaceholder(p, 'aspect-video');
     const href = projectLink(p);
     const link = href
-      ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/5 transition-all">${icon('externalLink')}${p.category === 'developpement' ? 'Voir le site' : k === 'youtube' ? 'Voir le projet sur YouTube' : 'Voir le projet'}</a>` : '';
+      ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/30 text-white text-sm font-medium hover:bg-white/5 transition-all">${icon('externalLink')}${p.category === 'developpement' ? 'Voir le site' : 'Voir le projet'}</a>` : '';
     openModal(`
       ${media}
       <div class="p-5 sm:p-8">
@@ -408,6 +406,6 @@
   }, { rootMargin: '100px' }) : null;
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
-  window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo, scrambleText };
+  window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo, scrambleText };
   document.addEventListener('DOMContentLoaded', () => { initBackdrop(); initCursor(); initContactBlocks(); });
 })();
