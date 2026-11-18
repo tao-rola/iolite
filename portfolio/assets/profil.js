@@ -11,7 +11,7 @@
     <div class="min-w-0">
       <${href ? `a href="${href}"` : 'div'} class="c-coord group relative inline-flex items-center gap-3 pb-2 text-white display !font-medium !tracking-[-0.02em] text-[7.4vw] sm:text-3xl lg:text-[2.1rem] max-w-full">
         <span class="c-coord-t whitespace-nowrap">${value}</span>${href ? ARR : ''}
-        <span class="absolute left-0 right-0 bottom-0 h-[2px] ${href ? 'bg-emerald-500 origin-left transition-transform duration-500 group-hover:scale-x-0 group-hover:origin-right' : 'bg-white/15'}"></span>
+        <span class="absolute left-0 right-0 bottom-0 h-[2px] bg-emerald-500 ${href ? 'origin-left transition-transform duration-500 group-hover:scale-x-0 group-hover:origin-right' : ''}"></span>
       </${href ? 'a' : 'div'}>
     </div>`;
   const coords = document.getElementById('coords');
