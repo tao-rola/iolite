@@ -536,11 +536,24 @@
       const it = items[i];
       try {
         st.textContent = `Copie ${i + 1}/${items.length} : ${it.label}…`;
-        const res = await fetch(it.url, { cache: 'no-store' }); if (!res.ok) throw new Error('HTTP ' + res.status);
-        const blob = await res.blob();
+        /* téléchargement par morceaux de 4 Mo : le serveur de Base44 coupe les longs transferts (copie tronquée sinon) */
+        const parts = []; let got = 0, total = Infinity, ctype = '';
+        while (got < total) {
+          const res = await fetch(it.url, { cache: 'no-store', headers: { Range: `bytes=${got}-${got + 4194303}` } });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const buf = await res.arrayBuffer();
+          ctype = ctype || res.headers.get('content-type') || '';
+          const cr = res.headers.get('content-range');
+          if (res.status === 206 && cr) total = +cr.split('/')[1] || total;
+          else if (res.status === 200) { total = +res.headers.get('content-length') || buf.byteLength; parts.length = 0; got = 0; }
+          if (!buf.byteLength) break;
+          parts.push(buf); got += buf.byteLength;
+          st.textContent = `Copie ${i + 1}/${items.length} : ${it.label} (${(got / 1048576).toFixed(0)}/${isFinite(total) ? (total / 1048576).toFixed(0) : '?'} Mo)…`;
+          if (res.status === 200) break;
+        }
+        const blob = new Blob(parts, { type: ctype });
         /* contrôle : fichier complet et lisible avant de remplacer le lien (évite une copie tronquée) */
-        const expected = +res.headers.get('content-length') || 0;
-        if (expected && blob.size < expected) throw new Error('téléchargement incomplet');
+        if (isFinite(total) && blob.size < total) throw new Error('téléchargement incomplet');
         if (it.kind === 'project' && /\.(mp4|mov|webm)(\?|$)/i.test(it.url)) await new Promise((ok, ko) => {
           const v = document.createElement('video'); v.muted = true; v.preload = 'metadata'; v.src = URL.createObjectURL(blob);
           v.onloadedmetadata = () => (v.duration > 0 ? ok() : ko(new Error('vidéo illisible'))); v.onerror = () => ko(new Error('vidéo illisible'));
