@@ -197,7 +197,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12 mb-10 md:mb-12">
             <div class="sm:col-span-2 md:col-span-1">
               <h3 class="display text-5xl text-white mb-4">Tao ROLA</h3>
-              <p class="text-white/60 text-sm leading-relaxed max-w-sm">Professionnel de l'événementiel et passionné d'image, je vous accompagne pour faire de chaque instant un moment d'exception.</p>
+              <p class="text-white/60 text-sm leading-relaxed max-w-sm">Photographe, vidéaste, graphiste et développeur, je donne vie à vos projets, de l'image jusqu'au web.</p>
               <a href="admin" class="inline-block mt-4 text-white/40 hover:text-white text-sm transition-colors duration-300">Administration</a>
             </div>
             <div>
