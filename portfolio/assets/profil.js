@@ -64,7 +64,7 @@
   const SKILLS = ['PHP', 'HTML', 'CSS', 'SQL', 'JavaScript', 'TypeScript', 'Python', 'React', 'Tailwind CSS', 'Node.js', 'Supabase', 'Git / GitHub',
     'Applications Android & iOS', 'Responsive design', 'Photoshop', 'Illustrator', 'After Effects', 'Canva', 'Identité visuelle', 'Premiere Pro', 'Lightroom',
     'Montage vidéo', 'Productions Audio/Vidéo', 'Suite Microsoft Office', 'Google Workspace', 'Anglais (B2)', 'Espagnol (B1)', 'Guitare', 'Piano', 'Ukulélé'];
-  document.getElementById('skills').innerHTML = SKILLS.map((s, i) => `<span class="inline-flex items-center gap-x-3"><span class="text-white/60 text-sm sm:text-base transition-colors duration-300 hover:text-emerald-400">${s}</span>${i < SKILLS.length - 1 ? '<span class="text-emerald-500/70 text-[10px] leading-none" aria-hidden="true">✦</span>' : ''}</span>`).join('');
+  document.getElementById('skills').innerHTML = SKILLS.map((s, i) => `<span class="inline-flex items-center gap-x-3"><span class="text-white/60 text-sm sm:text-base">${s}</span>${i < SKILLS.length - 1 ? '<span class="text-emerald-500/70 text-[10px] leading-none" aria-hidden="true">✦</span>' : ''}</span>`).join('');
 
   /* réglages dynamiques : photo, disponibilité, CV (PDF) */
   withSettings((s) => {
