@@ -536,7 +536,7 @@
       const it = items[i];
       try {
         st.textContent = `Copie ${i + 1}/${items.length} : ${it.label}…`;
-        const res = await fetch(it.url); if (!res.ok) throw new Error('HTTP ' + res.status);
+        const res = await fetch(it.url, { cache: 'no-store' }); if (!res.ok) throw new Error('HTTP ' + res.status);
         const blob = await res.blob();
         /* contrôle : fichier complet et lisible avant de remplacer le lien (évite une copie tronquée) */
         const expected = +res.headers.get('content-length') || 0;
