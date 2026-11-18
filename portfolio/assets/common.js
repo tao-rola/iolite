@@ -189,8 +189,8 @@
 
   function footer() {
     const onHome = !!document.getElementById('snap');
-    const link = (href, label, cls = '') => `<li><a href="${href}" class="text-white/60 hover:text-white text-sm transition-colors duration-300 ${cls}">${label}</a></li>`;
-    const contact = (href, ic, label, ext) => `<li><a href="${href}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors duration-300 break-all">${icon(ic)}${label}</a></li>`;
+    const link = (href, label, cls = '') => `<li><a href="${href}" class="block text-white/60 hover:text-white text-sm leading-relaxed transition-colors duration-300 ${cls}">${label}</a></li>`;
+    const contact = (href, ic, label, ext) => `<li><a href="${href}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''} class="flex items-center gap-2 text-white/60 hover:text-white text-sm leading-relaxed transition-colors duration-300 break-all">${icon(ic)}${label}</a></li>`;
     return `
       <footer class="relative bg-black/30 backdrop-blur-[2px] border-t border-white/10 py-12 md:py-16 px-6 md:px-12">
         <div class="max-w-7xl mx-auto">
@@ -203,20 +203,20 @@
             <div>
               <h4 class="display text-3xl md:text-4xl text-white mb-6">Liens rapides</h4>
               <div class="flex gap-5">
-                <ul class="space-y-2">
+                <ul>
                   ${link(onHome ? '#accueil' : './', 'Accueil')}
                   ${link(onHome ? '#categories' : './#categories', 'Projets')}
                   ${link('profil', 'Mon profil (CV)')}
                   ${link(onHome ? '#contact' : './#contact', 'Contact')}
                 </ul>
-                <ul class="space-y-2 pl-5 border-l border-white/10">
+                <ul class="pl-5 border-l border-white/10">
                   ${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
                 </ul>
               </div>
             </div>
             <div>
               <h4 class="display text-3xl md:text-4xl text-white mb-6">Contact</h4>
-              <ul class="space-y-2">
+              <ul>
                 ${contact('mailto:' + CONTACT.email, 'mail', CONTACT.email)}
                 ${contact('tel:' + CONTACT.tel, 'phone', CONTACT.phone)}
                 ${contact(CONTACT.instagram, 'instagram', CONTACT.instagramName, true)}
