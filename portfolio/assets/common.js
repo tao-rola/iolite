@@ -238,7 +238,7 @@
         <h2 class="display text-[14vw] sm:text-[11vw] lg:text-[8.5rem] text-white">On travaille<br><span class="text-emerald-400">ensemble ?</span></h2>
         <a href="mailto:${CONTACT.email}" class="c-mail group relative mt-10 sm:mt-14 inline-flex items-center gap-3 sm:gap-5 pb-2 sm:pb-3 text-white display !font-medium !tracking-[-0.02em] text-[8.4vw] sm:text-5xl lg:text-6xl max-w-full">
           <span class="c-mail-t whitespace-nowrap">${CONTACT.email}</span>
-          <svg class="c-arr w-[0.74em] h-[0.74em] shrink-0 self-center -translate-y-[0.02em] transition-transform duration-500 group-hover:translate-x-[0.08em] group-hover:-translate-y-[0.06em] group-hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 19 18 6M8 5h11v11"/></svg>
+          <svg width="0.74em" height="0.74em" style="width:.74em;height:.74em" class="c-arr w-[0.74em] h-[0.74em] shrink-0 self-center -translate-y-[0.02em] transition-transform duration-500 group-hover:translate-x-[0.08em] group-hover:-translate-y-[0.06em] group-hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 19 18 6M8 5h11v11"/></svg>
           <span class="absolute left-0 right-0 bottom-0 h-[2px] bg-emerald-500 origin-left transition-transform duration-500 group-hover:scale-x-0 group-hover:origin-right"></span>
         </a>`;
       /* lettres qui se brouillent puis se remettent en place (survol, ou à l'arrivée à l'écran sur mobile) */

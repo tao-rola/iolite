@@ -10,7 +10,7 @@ tw = ['npx', '--yes', 'tailwindcss@3'] if len(sys.argv) < 2 else [sys.argv[1]]
 subprocess.run(tw + ['-c', 'portfolio-src/tailwind.config.js', '-i', 'portfolio-src/input.css', '-o', 'portfolio/assets/app.css', '--minify'], cwd=root, check=True)
 def stamp(m):
     path = site / m.group(2)
-    v = hashlib.sha1(path.read_bytes() + b'r2').hexdigest()[:8]  # « r2 » : change toutes les empreintes si le cache de Cloudflare a gardé une ancienne version
+    v = hashlib.sha1(path.read_bytes() + b'r3').hexdigest()[:8]  # « r2 » : change toutes les empreintes si le cache de Cloudflare a gardé une ancienne version
     return f'{m.group(1)}{m.group(2)}?v={v}"'
 for page in site.glob('*.html'):
     html = page.read_text(encoding='utf-8')
