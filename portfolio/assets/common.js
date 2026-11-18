@@ -202,21 +202,21 @@
             </div>
             <div>
               <h4 class="display text-3xl md:text-4xl text-white mb-6">Liens rapides</h4>
-              <div class="grid grid-cols-2 gap-6">
-                <ul class="space-y-3">
+              <div class="flex gap-8">
+                <ul class="space-y-2">
                   ${link(onHome ? '#accueil' : './', 'Accueil')}
                   ${link(onHome ? '#categories' : './#categories', 'Projets')}
                   ${link('profil', 'Mon profil (CV)')}
                   ${link(onHome ? '#contact' : './#contact', 'Contact')}
                 </ul>
-                <ul class="space-y-3 pl-4 border-l border-white/10">
+                <ul class="space-y-2 pl-8 border-l border-white/10">
                   ${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
                 </ul>
               </div>
             </div>
             <div>
               <h4 class="display text-3xl md:text-4xl text-white mb-6">Contact</h4>
-              <ul class="space-y-3">
+              <ul class="space-y-2">
                 ${contact('mailto:' + CONTACT.email, 'mail', CONTACT.email)}
                 ${contact('tel:' + CONTACT.tel, 'phone', CONTACT.phone)}
                 ${contact(CONTACT.instagram, 'instagram', CONTACT.instagramName, true)}
