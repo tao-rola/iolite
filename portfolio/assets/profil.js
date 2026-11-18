@@ -62,18 +62,10 @@
       </div>
     </section>`).join('');
 
-  const SKILLS = [
-    ['Développement', ['PHP, HTML, CSS, SQL', 'JavaScript, TypeScript, Python', 'React, Tailwind CSS', 'Node.js', 'Supabase', 'Git / GitHub', 'Applications Android & iOS', 'Responsive design', 'Figma (UI/UX)']],
-    ['Graphisme', ['Photoshop, Illustrator, After Effects', 'InDesign', 'Canva', 'Identité visuelle', 'Motion design']],
-    ['Photo & Vidéo', ['Premiere Pro', 'DaVinci Resolve', 'Lightroom', 'Montage vidéo', 'Productions Audio/Vidéo']],
-    ['Bureautique', ['Suite Microsoft Office', 'Google Workspace']],
-    ['Langues & Musique', ['Anglais (B2), Espagnol (B1)', 'Guitare, Piano, Ukulélé']],
-  ];
-  document.getElementById('skills').innerHTML = SKILLS.map(([g, list]) => `
-    <div>
-      <p class="text-xs uppercase tracking-[0.2em] text-emerald-400/80 mb-3">${g}</p>
-      <div class="flex flex-wrap gap-2 sm:gap-3">${list.map((s) => `<div class="px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-sm sm:text-base">${s}</div>`).join('')}</div>
-    </div>`).join('');
+  const SKILLS = ['PHP', 'HTML', 'CSS', 'SQL', 'JavaScript', 'TypeScript', 'Python', 'React', 'Tailwind CSS', 'Node.js', 'Supabase', 'Git / GitHub',
+    'Applications Android & iOS', 'Responsive design', 'Photoshop', 'Illustrator', 'After Effects', 'Canva', 'Identité visuelle', 'Premiere Pro', 'Lightroom',
+    'Montage vidéo', 'Productions Audio/Vidéo', 'Suite Microsoft Office', 'Google Workspace', 'Anglais (B2)', 'Espagnol (B1)', 'Guitare', 'Piano', 'Ukulélé'];
+  document.getElementById('skills').innerHTML = SKILLS.map((s, i) => `<span class="group inline-flex items-center gap-x-3 sm:gap-x-5"><span class="display !font-medium !tracking-[-0.02em] text-2xl sm:text-4xl lg:text-5xl text-white/85 transition-colors duration-300 hover:text-emerald-400">${s}</span>${i < SKILLS.length - 1 ? '<span class="text-emerald-500 text-lg sm:text-2xl lg:text-3xl leading-none" aria-hidden="true">✦</span>' : ''}</span>`).join('');
 
   /* réglages dynamiques : photo, disponibilité, CV (PDF) */
   withSettings((s) => {
