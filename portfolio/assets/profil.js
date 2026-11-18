@@ -71,8 +71,8 @@
     const src = s.photo_thumb_url || s.photo_url;
     if (src && photo.getAttribute('src') !== src) photo.src = src;
     document.getElementById('dispo').innerHTML = s.available
-      ? '<div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div><span class="text-sm text-white/70">Disponible pour de nouveaux projets</span>'
-      : '<div class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div><span class="text-sm text-white/70">Indisponible pour de nouveaux projets</span>';
+      ? '<span class="relative flex w-3 h-3 shrink-0"><span class="absolute inset-0 rounded-full bg-emerald-400 animate-ping"></span><span class="absolute -inset-1.5 rounded-full bg-emerald-400/25 animate-[halo_2s_ease-in-out_infinite]"></span><span class="relative w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_10px_2px_rgba(52,211,153,.8)]"></span></span><span class="text-sm text-white/70">Disponible pour de nouveaux projets</span>'
+      : '<span class="relative flex w-3 h-3 shrink-0"><span class="absolute inset-0 rounded-full bg-red-400 animate-ping"></span><span class="absolute -inset-1.5 rounded-full bg-red-400/25 animate-[halo_2s_ease-in-out_infinite]"></span><span class="relative w-3 h-3 rounded-full bg-red-400 shadow-[0_0_10px_2px_rgba(248,113,113,.8)]"></span></span><span class="text-sm text-white/70">Indisponible pour de nouveaux projets</span>';
     document.getElementById('cv-links').innerHTML = s.cv_pdf_url
       ? `<a href="${esc(s.cv_pdf_url)}" target="_blank" rel="noopener" download="CV_Tao_ROLA.pdf" class="flex items-center gap-2 text-emerald-500 hover:text-emerald-400 text-sm transition-colors duration-300 py-1">${icon('download')}Télécharger mon CV</a>` : '';
   });
