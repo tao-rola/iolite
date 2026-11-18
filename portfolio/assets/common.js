@@ -197,22 +197,22 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12 mb-10 md:mb-12">
             <div class="sm:col-span-2 md:col-span-1">
               <h3 class="display text-3xl md:text-4xl text-white mb-6">Tao ROLA</h3>
-              <p class="text-white/60 text-sm leading-relaxed max-w-sm">Photographe, vidéaste, graphiste et développeur, je donne vie à vos projets, de l'image jusqu'au web.</p>
+              <p class="text-white/60 text-sm leading-relaxed max-w-sm">Photographe, vidéaste, graphiste et développeur basé en Normandie, je donne vie à vos projets, de l'image jusqu'au web : photos et vidéos, identités visuelles, sites internet et applications.</p>
               <a href="admin" class="inline-block mt-5 text-white/40 hover:text-white text-sm transition-colors duration-300">Administration</a>
             </div>
             <div>
               <h4 class="display text-3xl md:text-4xl text-white mb-6">Liens rapides</h4>
-              <ul class="space-y-3">
-                ${link(onHome ? '#accueil' : './', 'Accueil')}
-                <li>
-                  <a href="${onHome ? '#categories' : './#categories'}" class="text-white/60 hover:text-white text-sm transition-colors duration-300">Projets</a>
-                  <ul class="mt-3 ml-1 pl-4 border-l border-white/10 space-y-3">
-                    ${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
-                  </ul>
-                </li>
-                ${link('profil', 'Mon profil (CV)')}
-                ${link(onHome ? '#contact' : './#contact', 'Contact')}
-              </ul>
+              <div class="grid grid-cols-2 gap-6">
+                <ul class="space-y-3">
+                  ${link(onHome ? '#accueil' : './', 'Accueil')}
+                  ${link(onHome ? '#categories' : './#categories', 'Projets')}
+                  ${link('profil', 'Mon profil (CV)')}
+                  ${link(onHome ? '#contact' : './#contact', 'Contact')}
+                </ul>
+                <ul class="space-y-3 pl-4 border-l border-white/10">
+                  ${link('audiovisuel', 'Audiovisuel')}${link('graphisme', 'Graphisme')}${link('developpement', 'Développement')}
+                </ul>
+              </div>
             </div>
             <div>
               <h4 class="display text-3xl md:text-4xl text-white mb-6">Contact</h4>
