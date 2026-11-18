@@ -75,6 +75,13 @@
     .then((rows) => { if (JSON.stringify(rows) !== JSON.stringify(cvCached)) renderTimeline(rows); try { localStorage.setItem(CV_KEY, JSON.stringify(rows)); } catch {} })
     .catch((e) => console.error(e));
 
+  /* compétences (gérées depuis l'administration, liste de secours ci-dessous) */
+  const SKILLS = ['PHP', 'HTML', 'CSS', 'SQL', 'JavaScript', 'TypeScript', 'Python', 'React', 'Tailwind CSS', 'Node.js', 'Supabase', 'Git / GitHub',
+    'Applications Android & iOS', 'Responsive design', 'Photoshop', 'Illustrator', 'After Effects', 'Canva', 'Identité visuelle', 'Premiere Pro', 'Lightroom',
+    'Montage vidéo', 'Productions Audio/Vidéo', 'Suite Microsoft Office', 'Google Workspace', 'Anglais (B2)', 'Espagnol (B1)', 'Guitare', 'Piano', 'Ukulélé'];
+  const renderSkills = (list) => (document.getElementById('skills').innerHTML = list.map((s, i, all) => `<span class="inline-flex items-center gap-x-3"><span class="text-white/60 text-sm sm:text-base">${esc(s)}</span>${i < all.length - 1 ? '<span class="text-emerald-500/70 text-[10px] leading-none" aria-hidden="true">✦</span>' : ''}</span>`).join(''));
+  renderSkills(SKILLS);
+
   /* réglages dynamiques : photo, disponibilité, compétences */
   withSettings((s) => {
     if (Array.isArray(s.skills) && s.skills.length) renderSkills(s.skills);
