@@ -120,7 +120,7 @@
           <div id="nav-track" class="relative flex items-center gap-0.5 md:gap-1 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-1.5 md:px-2 py-1.5 md:py-2">
             <span id="nav-blob" class="absolute top-1.5 md:top-2 bottom-1.5 md:bottom-2 left-0 w-0 rounded-full bg-emerald-500 opacity-0 pointer-events-none" aria-hidden="true"></span>
             <button type="button" data-goto="accueil" data-nav="accueil" class="nav-btn ${base}">${pill(active === 'accueil')}${label(active === 'accueil', 'Accueil')}</button>
-            <a href="profil" data-nav="profil" class="nav-btn ${base}">${pill(active === 'profil')}${label(active === 'profil', 'Mon profil')}</a>
+            <a href="profil" data-nav="profil" class="nav-btn ${base}">${pill(active === 'profil')}${label(active === 'profil', 'Mon parcours')}</a>
             <div class="relative" id="menu-projets">
               <button type="button" data-nav="categories" aria-haspopup="true" aria-expanded="false" class="nav-btn ${base}">${pill(active === 'categories')}${label(active === 'categories', `Projets<svg class="chev w-3.5 h-3.5 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`)}</button>
               <div role="menu" class="menu-panel absolute left-1/2 top-full pt-3 -translate-x-1/2 opacity-0 pointer-events-none translate-y-1 transition-all duration-200">
@@ -206,7 +206,7 @@
                 <ul>
                   ${link(onHome ? '#accueil' : './', 'Accueil')}
                   ${link(onHome ? '#categories' : './#categories', 'Projets')}
-                  ${link('profil', 'Mon profil (CV)')}
+                  ${link('profil', 'Mon parcours')}
                   ${link(onHome ? '#contact' : './#contact', 'Contact')}
                 </ul>
                 <ul class="pl-5 border-l border-white/10">
