@@ -232,6 +232,33 @@
   }
 
   /* ---------- bloc « On travaille ensemble ? » (accueil et page profil) ---------- */
+  /* lettres qui se brouillent puis se remettent en place (survol, ou à l'arrivée à l'écran sur mobile) */
+  function scrambleText(link, el) {
+    const txt = el.textContent;
+    const chars = 'abcdefghijklnopqrstuvxyz0123456789';
+    el.innerHTML = [...txt].map((c) => `<span class="sc inline-block text-center whitespace-pre">${c}</span>`).join('');
+    const cells = [...el.querySelectorAll('.sc')];
+    const lock = () => cells.forEach((c, k) => { c.textContent = txt[k]; c.style.width = ''; c.style.width = c.getBoundingClientRect().width + 'px'; });
+    if (document.fonts) document.fonts.ready.then(lock); else lock();
+    addEventListener('resize', lock);
+    let raf = null;
+    const keep = /[@.\s]/;
+    const scramble = () => {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      cancelAnimationFrame(raf); let f = 0;
+      const run = () => {
+        cells.forEach((c, k) => { const o = txt[k]; c.textContent = k < f / 2 || keep.test(o) ? o : chars[Math.floor(Math.random() * chars.length)]; });
+        if (++f / 2 <= txt.length) raf = requestAnimationFrame(run); else cells.forEach((c, k) => (c.textContent = txt[k]));
+      };
+      run();
+    };
+    link.addEventListener('mouseenter', scramble);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) scramble(); }), { threshold: 0.6 });
+      io.observe(link);
+    }
+  }
+
   function initContactBlocks() {
     document.querySelectorAll('[data-contact-block]').forEach((host) => {
       host.innerHTML = `
@@ -241,29 +268,7 @@
           <svg width="0.74em" height="0.74em" style="width:.74em;height:.74em" class="c-arr w-[0.74em] h-[0.74em] shrink-0 self-center -translate-y-[0.02em] transition-transform duration-500 group-hover:translate-x-[0.08em] group-hover:-translate-y-[0.06em] group-hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 19 18 6M8 5h11v11"/></svg>
           <span class="absolute left-0 right-0 bottom-0 h-[2px] bg-emerald-500 origin-left transition-transform duration-500 group-hover:scale-x-0 group-hover:origin-right"></span>
         </a>`;
-      /* lettres qui se brouillent puis se remettent en place (survol, ou à l'arrivée à l'écran sur mobile) */
-      const el = host.querySelector('.c-mail-t'), link = host.querySelector('.c-mail'), txt = el.textContent;
-      const chars = 'abcdefghijklnopqrstuvxyz0123456789';
-      el.innerHTML = [...txt].map((c) => `<span class="sc inline-block text-center whitespace-pre">${c}</span>`).join('');
-      const cells = [...el.querySelectorAll('.sc')];
-      const lock = () => cells.forEach((c, k) => { c.textContent = txt[k]; c.style.width = ''; c.style.width = c.getBoundingClientRect().width + 'px'; });
-      if (document.fonts) document.fonts.ready.then(lock); else lock();
-      addEventListener('resize', lock);
-      let raf = null;
-      const scramble = () => {
-        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        cancelAnimationFrame(raf); let f = 0;
-        const run = () => {
-          cells.forEach((c, k) => { const o = txt[k]; c.textContent = k < f / 2 || o === '@' || o === '.' ? o : chars[Math.floor(Math.random() * chars.length)]; });
-          if (++f / 2 <= txt.length) raf = requestAnimationFrame(run); else cells.forEach((c, k) => (c.textContent = txt[k]));
-        };
-        run();
-      };
-      link.addEventListener('mouseenter', scramble);
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) scramble(); }), { threshold: 0.6 });
-        io.observe(link);
-      }
+      scrambleText(host.querySelector('.c-mail'), host.querySelector('.c-mail-t'));
     });
   }
 
@@ -396,6 +401,6 @@
   }, { rootMargin: '100px' }) : null;
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
-  window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo };
+  window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, ytLoopSrc, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo, scrambleText };
   document.addEventListener('DOMContentLoaded', () => { initBackdrop(); initCursor(); initContactBlocks(); });
 })();

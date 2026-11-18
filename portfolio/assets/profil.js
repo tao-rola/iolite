@@ -5,16 +5,22 @@
   document.getElementById('pied').innerHTML = footer();
   document.querySelectorAll('[data-ic]').forEach((s) => (s.outerHTML = icon(s.dataset.ic, 'w-6 h-6 text-emerald-500')));
 
-  /* coordonnées */
+  /* coordonnées : même style que l'email de la section contact */
+  const ARR = '<svg width="0.7em" height="0.7em" style="width:.7em;height:.7em" class="shrink-0 self-center transition-transform duration-500 group-hover:translate-x-[0.08em] group-hover:-translate-y-[0.06em] group-hover:rotate-45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.3" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 19 18 6M8 5h11v11"/></svg>';
   const box = (ic, label, value, href) => `
-    <${href ? `a href="${href}"` : 'div'} class="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 ${href ? 'hover:bg-white/10' : ''} transition-all min-w-0">
-      ${icon(ic, 'w-5 h-5 text-emerald-500')}
-      <div class="min-w-0"><p class="text-xs text-white/40">${label}</p><p class="text-white text-sm truncate">${value}</p></div>
-    </${href ? 'a' : 'div'}>`;
-  document.getElementById('coords').innerHTML =
+    <div class="min-w-0">
+      <p class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-emerald-400/80 mb-3">${icon(ic, 'w-4 h-4')}${label}</p>
+      <${href ? `a href="${href}"` : 'div'} class="c-coord group relative inline-flex items-center gap-3 pb-2 text-white display !font-medium !tracking-[-0.02em] text-[7.4vw] sm:text-3xl lg:text-[2.1rem] max-w-full">
+        <span class="c-coord-t whitespace-nowrap">${value}</span>${href ? ARR : ''}
+        <span class="absolute left-0 right-0 bottom-0 h-[2px] ${href ? 'bg-emerald-500 origin-left transition-transform duration-500 group-hover:scale-x-0 group-hover:origin-right' : 'bg-white/15'}"></span>
+      </${href ? 'a' : 'div'}>
+    </div>`;
+  const coords = document.getElementById('coords');
+  coords.innerHTML =
     box('mail', 'Email', CONTACT.email, 'mailto:' + CONTACT.email) +
     box('phone', 'Téléphone', CONTACT.phone, 'tel:' + CONTACT.tel) +
-    `<div class="sm:col-span-2 md:col-span-1">${box('mapPin', 'Localisation', 'France')}</div>`;
+    box('mapPin', 'Localisation', 'France');
+  coords.querySelectorAll('.c-coord').forEach((l) => window.TR.scrambleText(l, l.querySelector('.c-coord-t')));
 
   /* parcours */
   const SECTIONS = [
