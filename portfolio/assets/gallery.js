@@ -189,6 +189,7 @@
       let timer = null;
       ytPlayers.set(f, (state) => {
         clearTimeout(timer);
+        if (state === 1) { try { ['captions', 'cc'].forEach((m) => f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'unloadModule', args: [m] }), '*')); } catch {} }
         if (state === 1) timer = setTimeout(() => { f.classList.remove('opacity-0'); resolve(); }, 3500);
         else f.classList.add('opacity-0');
       });
