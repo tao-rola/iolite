@@ -537,11 +537,20 @@
         st.textContent = `Copie ${i + 1}/${items.length} : ${it.label}…`;
         const res = await fetch(it.url); if (!res.ok) throw new Error('HTTP ' + res.status);
         const blob = await res.blob();
+        /* contrôle : fichier complet et lisible avant de remplacer le lien (évite une copie tronquée) */
+        const expected = +res.headers.get('content-length') || 0;
+        if (expected && blob.size < expected) throw new Error('téléchargement incomplet');
+        if (it.kind === 'project' && /\.(mp4|mov|webm)(\?|$)/i.test(it.url)) await new Promise((ok, ko) => {
+          const v = document.createElement('video'); v.muted = true; v.preload = 'metadata'; v.src = URL.createObjectURL(blob);
+          v.onloadedmetadata = () => (v.duration > 0 ? ok() : ko(new Error('vidéo illisible'))); v.onerror = () => ko(new Error('vidéo illisible'));
+          setTimeout(() => ko(new Error('vidéo illisible')), 20000);
+        });
+        const type = blob.type && blob.type !== 'application/octet-stream' ? blob.type : (/\.(mp4|mov)(\?|$)/i.test(it.url) ? 'video/mp4' : /\.png(\?|$)/i.test(it.url) ? 'image/png' : undefined);
         const name = decodeURIComponent(it.url.split('?')[0].split('/').pop()).replace(/[^a-zA-Z0-9._-]+/g, '-');
         const path = `base44/${name}`;
-        const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: blob.type || undefined, cacheControl: '31536000', upsert: true });
+        const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: type, cacheControl: '31536000', upsert: true });
         if (error) throw error;
-        const url = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+        const url = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl + '?v=' + Date.now();
         const upd = it.kind === 'project'
           ? await sb.from('portfolio_projects').update({ media_url: url, updated_at: new Date().toISOString() }).eq('id', it.id)
           : await sb.from('portfolio_settings').update({ [it.id]: url }).eq('id', 1);
