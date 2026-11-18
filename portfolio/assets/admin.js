@@ -537,23 +537,30 @@
       try {
         st.textContent = `Copie ${i + 1}/${items.length} : ${it.label}…`;
         /* téléchargement par morceaux de 4 Mo : le serveur de Base44 coupe les longs transferts (copie tronquée sinon) */
-        const parts = []; let got = 0, total = Infinity, ctype = '';
-        while (got < total) {
-          const res = await fetch(it.url, { cache: 'no-store', headers: { Range: `bytes=${got}-${got + 4194303}` } });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const buf = await res.arrayBuffer();
-          ctype = ctype || res.headers.get('content-type') || '';
-          const cr = res.headers.get('content-range');
-          if (res.status === 206 && cr) total = +cr.split('/')[1] || total;
-          else if (res.status === 200) { total = +res.headers.get('content-length') || buf.byteLength; parts.length = 0; got = 0; }
+        const CHUNK = 4194304, parts = []; let got = 0, ctype = '';
+        let total = 0; try { total = +(await fetch(it.url, { method: 'HEAD', cache: 'no-store' })).headers.get('content-length') || 0; } catch {}
+        const getChunk = async (from) => {
+          for (let k = 0; k < 4; k++) {
+            try {
+              const res = await fetch(it.url, { cache: 'no-store', headers: { Range: `bytes=${from}-${from + CHUNK - 1}` } });
+              if (res.status === 416) return { buf: new ArrayBuffer(0) };
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              return { buf: await res.arrayBuffer(), status: res.status, type: res.headers.get('content-type') };
+            } catch (e) { if (k === 3) throw e; await new Promise((r) => setTimeout(r, 1500)); }
+          }
+        };
+        for (;;) {
+          const { buf, status, type } = await getChunk(got);
+          ctype = ctype || type || '';
+          if (status === 200) { parts.length = 0; parts.push(buf); got = buf.byteLength; break; }
           if (!buf.byteLength) break;
           parts.push(buf); got += buf.byteLength;
-          st.textContent = `Copie ${i + 1}/${items.length} : ${it.label} (${(got / 1048576).toFixed(0)}/${isFinite(total) ? (total / 1048576).toFixed(0) : '?'} Mo)…`;
-          if (res.status === 200) break;
+          st.textContent = `Copie ${i + 1}/${items.length} : ${it.label} (${(got / 1048576).toFixed(0)}${total ? '/' + (total / 1048576).toFixed(0) : ''} Mo)…`;
+          if ((total && got >= total) || buf.byteLength < CHUNK) break;
         }
         const blob = new Blob(parts, { type: ctype });
         /* contrôle : fichier complet et lisible avant de remplacer le lien (évite une copie tronquée) */
-        if (isFinite(total) && blob.size < total) throw new Error('téléchargement incomplet');
+        if (total && blob.size < total) throw new Error('téléchargement incomplet');
         if (it.kind === 'project' && /\.(mp4|mov|webm)(\?|$)/i.test(it.url)) await new Promise((ok, ko) => {
           const v = document.createElement('video'); v.muted = true; v.preload = 'metadata'; v.src = URL.createObjectURL(blob);
           v.onloadedmetadata = () => (v.duration > 0 ? ok() : ko(new Error('vidéo illisible'))); v.onerror = () => ko(new Error('vidéo illisible'));
