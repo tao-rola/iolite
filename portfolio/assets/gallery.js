@@ -131,16 +131,23 @@
       img.loading = 'eager';
       waits.push(imgReady(img).then(() => (img.decode ? img.decode().catch(() => {}) : null)));
     });
+    /* vidéos visibles dès l'arrivée : l'écran de chargement attend qu'elles tournent vraiment (mobile compris) ;
+       les suivantes commencent à se charger en arrière-plan */
+    const playing = (v) => (!v.paused && v.currentTime > 0 && v.readyState >= 3 ? Promise.resolve() : new Promise((r) => {
+      const ok = () => { if (v.currentTime > 0) { v.removeEventListener('timeupdate', ok); r(); } };
+      v.addEventListener('timeupdate', ok); v.addEventListener('error', r, { once: true });
+    }));
     grid.querySelectorAll('video').forEach((v) => {
       if (!near(v)) return;
-      if (v.poster) { const im = new Image(); im.src = v.poster; waits.push(imgReady(im)); return; }
-      if (v.preload === 'none') v.preload = 'metadata';
-      waits.push(v.readyState >= 2 ? Promise.resolve() : new Promise((r) => { v.addEventListener('loadeddata', r, { once: true }); v.addEventListener('error', r, { once: true }); }));
+      v.muted = true; v.preload = 'auto';
+      if (v.poster) { const im = new Image(); im.src = v.poster; waits.push(imgReady(im)); }
+      if (v.getBoundingClientRect().top < innerHeight) { v.play().catch(() => {}); waits.push(playing(v)); }
+      else v.load();
     });
     const bar = document.getElementById('loader-bar');
     let done = 0; const total = waits.length || 1;
     waits.forEach((w) => w.then(() => { done++; if (bar) bar.style.width = `${Math.max(8, Math.round((done / total) * 100))}%`; }));
-    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 6000))]).then(finishLoader);
+    Promise.race([Promise.all(waits), new Promise((r) => setTimeout(r, 12000))]).then(finishLoader); /* plafond : 12 s même sur une connexion lente */
   }
   setTimeout(finishLoader, 7000); /* sécurité : jamais bloqué sur l'écran de chargement */
 
