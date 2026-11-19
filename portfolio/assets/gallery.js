@@ -106,6 +106,18 @@
   /* aperçu en direct : le site est affiché comme sur un écran de 1280 x 800, réduit à la taille de la carte,
      puis défile lentement de haut en bas en boucle (il ne tourne que lorsqu'il est visible) */
   const LIVE_W = 1280, LIVE_H = 800;
+  /* zone qui défile dans un site : la page, ou son plus grand bloc défilant (pages découpées en sections, par exemple) */
+  function siteScroller(d) {
+    const se = d.scrollingElement || d.documentElement;
+    if (se.scrollHeight > se.clientHeight + 20) return se;
+    let best = se, area = 0;
+    d.querySelectorAll('body *').forEach((el) => {
+      if (el.scrollHeight <= el.clientHeight + 20) return;
+      const oy = getComputedStyle(el).overflowY; if (oy !== 'auto' && oy !== 'scroll') return;
+      const r = el.getBoundingClientRect(), a = r.width * r.height; if (a > area) { area = a; best = el; }
+    });
+    return best;
+  }
   /* défilement « humain » : des coups de molette de longueur variable, accélérés puis freinés, entrecoupés de courtes pauses */
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const rand = (a, b) => a + Math.random() * (b - a);
@@ -118,13 +130,14 @@
       raf = 0; if (!visible || !ready) return;
       const win = frame.contentWindow, doc = frame.contentDocument;
       if (!win || !doc) return;
-      const max = Math.max(0, doc.documentElement.scrollHeight - LIVE_H);
+      const sc = siteScroller(doc);
+      const max = Math.max(0, sc.scrollHeight - sc.clientHeight);
       if (!busy && t >= waitUntil) {
         if (!seg) {
           if (y >= max - 2) {
             /* fin de page : pause, fondu, retour en haut */
             busy = true;
-            setTimeout(() => { frame.style.opacity = '0'; setTimeout(() => { y = 0; win.scrollTo(0, 0); waitUntil = performance.now() + 1800; busy = false; frame.style.opacity = '1'; }, 600); }, 1500);
+            setTimeout(() => { frame.style.opacity = '0'; setTimeout(() => { y = 0; sc.scrollTop = 0; waitUntil = performance.now() + 1800; busy = false; frame.style.opacity = '1'; }, 600); }, 1500);
           } else {
             const dist = Math.min(max - y, rand(380, 1100));
             seg = { from: y, to: y + dist, t0: t, dur: rand(700, 1300) + dist * 0.4 };
@@ -133,7 +146,7 @@
         if (seg) {
           const k = Math.min(1, (t - seg.t0) / seg.dur);
           y = seg.from + (seg.to - seg.from) * ease(k);
-          win.scrollTo(0, y);
+          sc.scrollTop = y;
           if (k >= 1) { seg = null; waitUntil = t + rand(350, 1500); }
         }
       }
@@ -150,7 +163,7 @@
       frame.addEventListener('load', () => {
         try {
           const st = frame.contentDocument.createElement('style');
-          st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}::-webkit-scrollbar{display:none!important}';
+          st.textContent = '*{scroll-behavior:auto!important;scroll-snap-type:none!important;scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important}';
           frame.contentDocument.head.appendChild(st);
         } catch {}
         setTimeout(() => { ready = true; frame.style.opacity = '1'; y = 0; waitUntil = performance.now() + 1500; if (visible && !raf) raf = requestAnimationFrame(step); }, 900);
