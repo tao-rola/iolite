@@ -36,6 +36,11 @@
 
     /* applications : carte verticale (format téléphone), les écrans se succèdent en fondu */
     if (p.device === 'phone') {
+      /* démo en direct (même domaine) : la vraie app tourne dans la carte et une navigation de démonstration s'y joue */
+      const demo = sameOrigin(p.demo_url);
+      if (demo) return `<div class="relative aspect-[390/844] overflow-hidden bg-black" data-liveapp="${esc(demo)}">
+        ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
+      </div>`;
       if (!shots.length) return `<div class="relative aspect-[9/19] bg-[#0d0d0d]">${initial}</div>`;
       return `<div class="relative aspect-[9/19] overflow-hidden bg-black" ${shots.length > 1 ? 'data-slides' : ''}>
         ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
@@ -84,9 +89,11 @@
   }
 
   /* adresse affichable en direct : uniquement les sites du même domaine que le portfolio */
-  function liveUrl(p) {
-    try { const u = new URL(p.link, location.href); return u.origin === location.origin && !u.pathname.startsWith('/portfolio/admin') ? u.href : ''; } catch { return ''; }
+  function sameOrigin(url) {
+    if (!url) return '';
+    try { const u = new URL(url, location.href); return u.origin === location.origin && !u.pathname.startsWith('/portfolio/admin') ? u.href : ''; } catch { return ''; }
   }
+  const liveUrl = (p) => sameOrigin(p.link);
 
   /* aperçu en direct : le site est affiché comme sur un écran de 1280 x 800, réduit à la taille de la carte,
      puis défile lentement de haut en bas en boucle (il ne tourne que lorsqu'il est visible) */
@@ -146,6 +153,80 @@
       visible = e.isIntersecting;
       if (visible) { start(); if (ready && !raf) raf = requestAnimationFrame(step); }
     }, { rootMargin: '200px 0px' }).observe(box);
+  }
+
+  /* démo d'application : écran de téléphone (390 x 844) réduit à la carte ; un « doigt » virtuel parcourt l'app
+     (changement d'onglet, jours précédents, défilement, détail du salaire…) en boucle, uniquement quand la carte est visible */
+  const APP_W = 390, APP_H = 844;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  function liveApp(box) {
+    let frame = null, visible = false, running = false;
+    const fit = () => { if (frame) frame.style.transform = `scale(${box.clientWidth / APP_W})`; };
+    new ResizeObserver(fit).observe(box);
+    const dot = document.createElement('span');
+    dot.className = 'pointer-events-none absolute z-10 w-7 h-7 -ml-3.5 -mt-3.5 rounded-full bg-white/70 ring-4 ring-white/25 opacity-0 transition-[opacity,transform] duration-300 scale-75';
+    const until = async (ms) => { const end = performance.now() + ms; while (performance.now() < end) { await sleep(120); while (!visible) await sleep(300); } };
+    const doc = () => frame.contentDocument, win = () => frame.contentWindow;
+    async function tap(el) {
+      if (!el) return;
+      const r = el.getBoundingClientRect(), k = box.clientWidth / APP_W;
+      dot.style.left = `${(r.left + r.width / 2) * k}px`; dot.style.top = `${(r.top + r.height / 2) * k}px`;
+      dot.style.opacity = '1'; dot.style.transform = 'scale(1)';
+      await until(260); el.click(); await until(220);
+      dot.style.opacity = '0'; dot.style.transform = 'scale(.75)';
+    }
+    const q = (sel) => doc().querySelector(sel);
+    const byLabel = (txt) => [...doc().querySelectorAll('[aria-label]')].find((e) => e.getAttribute('aria-label') === txt && e.offsetParent !== null);
+    /* défilement « humain » de la page de l'app */
+    async function scrollBy(total) {
+      const w = win(), dir = Math.sign(total); let left = Math.abs(total);
+      while (left > 4) {
+        const max = Math.max(0, doc().documentElement.scrollHeight - APP_H), from = w.scrollY;
+        const dist = Math.min(left, rand(160, 420)), to = Math.max(0, Math.min(max, from + dir * dist));
+        if (Math.abs(to - from) < 2) break;
+        const dur = rand(450, 800), t0 = performance.now();
+        await new Promise((res) => { const f = (t) => { const k = Math.min(1, (t - t0) / dur); w.scrollTo(0, from + (to - from) * ease(k)); k < 1 ? requestAnimationFrame(f) : res(); }; requestAnimationFrame(f); });
+        left -= dist; await until(rand(250, 900));
+      }
+    }
+    const toTop = async () => { await scrollBy(-(win().scrollY + 50)); };
+    async function tour() {
+      if (running) return; running = true;
+      for (;;) {
+        try {
+          await until(1800);
+          await tap(byLabel('Jour précédent')); await until(1300);
+          await tap(byLabel('Jour précédent')); await until(1300);
+          await scrollBy(500); await until(900); await toTop();
+          await tap(byLabel('Jour suivant')); await until(800);
+          await tap(byLabel('Jour suivant')); await until(1200);
+          await tap(q('.tab[data-tab="stats"]')); await until(1600);
+          await scrollBy(600); await until(700);
+          await tap(byLabel('Afficher ou masquer le détail du salaire')); await until(1600);
+          await scrollBy(900); await until(1200); await toTop();
+          await tap(q('.tab[data-tab="alerts"]')); await until(1800);
+          await scrollBy(500); await until(900); await toTop();
+          await tap(q('.tab[data-tab="params"]')); await until(1500);
+          await scrollBy(700); await until(900); await toTop();
+          await tap(q('.tab[data-tab="shift"]'));
+        } catch (e) { await until(2000); }
+      }
+    }
+    function start() {
+      if (frame) return;
+      frame = document.createElement('iframe');
+      frame.src = box.dataset.liveapp;
+      frame.title = "Démo de l'application";
+      frame.setAttribute('aria-hidden', 'true'); frame.tabIndex = -1;
+      frame.style.cssText = `position:absolute;top:0;left:0;width:${APP_W}px;height:${APP_H}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .6s`;
+      fit();
+      frame.addEventListener('load', () => {
+        try { const st = doc().createElement('style'); st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}::-webkit-scrollbar{display:none!important}'; doc().head.appendChild(st); } catch {}
+        setTimeout(() => { frame.style.opacity = '1'; tour(); }, 1200);
+      }, { once: true });
+      box.append(frame, dot);
+    }
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }, { rootMargin: '200px 0px' }).observe(box);
   }
 
   /* visite des pages d'un site : défilement vers le bas, pause, fondu vers la page suivante */
@@ -252,6 +333,7 @@
     grid.lastElementChild.remove();
     grid.querySelectorAll('[data-pagescroll]').forEach(pageTour);
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.querySelectorAll('[data-live]').forEach(liveSite);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.querySelectorAll('[data-liveapp]').forEach(liveApp);
     requestAnimationFrame(waitForMedia);
     grid.querySelectorAll('video').forEach(watchVideo);
   }

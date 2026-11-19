@@ -304,6 +304,7 @@
           <label class="mt-2 btn-ghost !h-9 cursor-pointer">${icon('upload')}Ajouter des captures<input type="file" name="gfiles" accept="image/*" multiple class="sr-only"></label>
           <span id="gcount" class="text-xs text-white/40 ml-2"></span></div>
         <div><label class="text-sm text-white/70 mb-2 block">Lien « Voir le projet » (site internet…)</label><input name="link" class="field" placeholder="https://" value="${esc(p.link || '')}"></div>
+        <div><label class="text-sm text-white/70 mb-2 block">Démo en direct de l'application (adresse sur iolite.team, facultatif)</label><input name="demo_url" class="field" placeholder="/portfolio/demo/…" value="${esc(p.demo_url || '')}"></div>
         <label class="flex items-center gap-3 text-sm text-white/80"><input type="checkbox" name="published" class="w-5 h-5 accent-emerald-500" ${p.published ? 'checked' : ''}>Visible sur le site</label>
         <div class="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end pt-2">
           <button type="button" data-close class="btn-ghost !h-11">Annuler</button>
@@ -342,7 +343,7 @@
         const row = {
           category: f.category.value, title: f.title.value.trim(), description: f.description.value.trim(),
           tags: f.tags.value.split(',').map((t) => t.trim()).filter(Boolean), media_type, media_url,
-          link: f.link.value.trim(), published: f.published.checked, poster_url, gallery, device: f.device.value,
+          link: f.link.value.trim(), demo_url: f.demo_url.value.trim(), published: f.published.checked, poster_url, gallery, device: f.device.value,
           updated_at: new Date().toISOString(),
         };
         if (isNew || row.category !== p.category) row.sort_order = nextOrder(row.category);
