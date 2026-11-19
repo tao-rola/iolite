@@ -34,22 +34,29 @@
         <div class="relative">${inner}</div>
       </div>`;
 
-    /* applications : carte horizontale, les écrans défilent de droite à gauche en continu */
+    /* applications : carte verticale (format téléphone), les écrans se succèdent en fondu */
     if (p.device === 'phone') {
-      if (!shots.length) return `<div class="relative aspect-[16/10] bg-[#0d0d0d]">${initial}</div>`;
-      const row = shots.map((src) => `<img src="${esc(src)}" alt="" decoding="async" class="h-full w-auto mr-3 sm:mr-4 rounded-xl ring-1 ring-white/10 shadow-xl shrink-0">`).join('');
-      return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
-        <div class="glow" style="width:80%;height:80%;top:10%;left:10%;background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.25"></div>
-        <div class="absolute inset-y-[9%] left-0 flex w-max animate-marquee" style="animation-duration:${Math.max(shots.length * 6, 18)}s">${row}${row}</div>
+      if (!shots.length) return `<div class="relative aspect-[9/16] bg-[#0d0d0d]">${initial}</div>`;
+      return `<div class="relative aspect-[9/16] overflow-hidden bg-[#0d0d0d]" ${shots.length > 1 ? 'data-slides' : ''}>
+        <div class="glow" style="width:90%;height:70%;top:15%;left:5%;background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.3"></div>
+        <div class="absolute inset-y-[5%] left-1/2 -translate-x-1/2 aspect-[390/844] rounded-[1.6rem] overflow-hidden ring-1 ring-white/15 shadow-2xl bg-black">
+          ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
+        </div>
+        ${shots.length > 1 ? `<div class="absolute bottom-2 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow transition-colors duration-500 ${i ? 'bg-white/40' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
     }
 
-    /* sites internet : carte verticale, chaque page défile de haut en bas puis laisse place à la suivante */
+    /* sites internet : carte horizontale (format ordinateur portable).
+       Site hébergé sur iolite.team : le vrai site s'affiche en direct et défile doucement (animations comprises).
+       Autre hébergeur (le navigateur interdit de faire défiler une page d'un autre domaine) : capture pleine page qui défile. */
     if (p.device === 'desktop') {
-      if (!shots.length) return `<div class="relative aspect-[3/4] bg-[#0d0d0d]">${initial}</div>`;
-      return `<div class="relative aspect-[3/4] overflow-hidden bg-[#0d0d0d]" data-pagescroll>
+      if (!shots.length && !p.link) return `<div class="relative aspect-[16/10] bg-[#0d0d0d]">${initial}</div>`;
+      const live = liveUrl(p);
+      if (live) return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]" data-live="${esc(live)}">
+        ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
+      </div>`;
+      return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]" data-pagescroll>
         ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute top-0 left-0 w-full h-auto will-change-transform transition-opacity duration-700 ${i ? 'opacity-0' : 'opacity-100'}">`).join('')}
-        ${shots.length > 1 ? `<div class="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5 pointer-events-none z-10">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow ring-1 ring-black/20 transition-colors duration-500 ${i ? 'bg-white/50' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
     }
 
@@ -77,6 +84,59 @@
           </div>
         </article>
       </div>`;
+  }
+
+  /* adresse affichable en direct : uniquement les sites du même domaine que le portfolio */
+  function liveUrl(p) {
+    try { const u = new URL(p.link, location.href); return u.origin === location.origin && !u.pathname.startsWith('/portfolio/admin') ? u.href : ''; } catch { return ''; }
+  }
+
+  /* aperçu en direct : le site est affiché comme sur un écran de 1280 x 800, réduit à la taille de la carte,
+     puis défile lentement de haut en bas en boucle (il ne tourne que lorsqu'il est visible) */
+  const LIVE_W = 1280, LIVE_H = 800;
+  function liveSite(box) {
+    let frame = null, raf = 0, visible = false, y = 0, pauseUntil = 0, last = 0, ready = false, resetting = false;
+    const fit = () => { if (frame) frame.style.transform = `scale(${box.clientWidth / LIVE_W})`; };
+    new ResizeObserver(fit).observe(box);
+    function step(t) {
+      raf = 0; if (!visible || !ready) return;
+      const win = frame.contentWindow, doc = frame.contentDocument;
+      if (!win || !doc) return;
+      const max = Math.max(0, doc.documentElement.scrollHeight - LIVE_H);
+      const dt = last ? Math.min(64, t - last) : 16; last = t;
+      if (t >= pauseUntil) {
+        y += dt * 0.07; /* environ 70 px par seconde */
+        if (y >= max && !resetting) {
+          /* fin de page : courte pause, fondu, retour en haut */
+          y = max; resetting = true; pauseUntil = Infinity;
+          setTimeout(() => { frame.style.opacity = '0'; setTimeout(() => { y = 0; win.scrollTo(0, 0); pauseUntil = performance.now() + 2500; resetting = false; frame.style.opacity = '1'; }, 600); }, 2000);
+        }
+        win.scrollTo(0, y);
+      }
+      raf = requestAnimationFrame(step);
+    }
+    function start() {
+      if (frame) return;
+      frame = document.createElement('iframe');
+      frame.src = box.dataset.live;
+      frame.title = 'Aperçu en direct du site';
+      frame.setAttribute('aria-hidden', 'true'); frame.tabIndex = -1;
+      frame.style.cssText = `position:absolute;top:0;left:0;width:${LIVE_W}px;height:${LIVE_H}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .6s`;
+      fit();
+      frame.addEventListener('load', () => {
+        try {
+          const st = frame.contentDocument.createElement('style');
+          st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}::-webkit-scrollbar{display:none!important}';
+          frame.contentDocument.head.appendChild(st);
+        } catch {}
+        setTimeout(() => { ready = true; frame.style.opacity = '1'; y = 0; pauseUntil = performance.now() + 2500; if (visible && !raf) raf = requestAnimationFrame(step); }, 900);
+      });
+      box.appendChild(frame);
+    }
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible) { start(); if (ready && !raf) { last = 0; raf = requestAnimationFrame(step); } }
+    }, { rootMargin: '200px 0px' }).observe(box);
   }
 
   /* visite des pages d'un site : défilement vers le bas, pause, fondu vers la page suivante */
@@ -174,6 +234,7 @@
     cols = 0; layout();
     grid.lastElementChild.remove();
     grid.querySelectorAll('[data-pagescroll]').forEach(pageTour);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) grid.querySelectorAll('[data-live]').forEach(liveSite);
     requestAnimationFrame(waitForMedia);
     grid.querySelectorAll('video').forEach(watchVideo);
   }

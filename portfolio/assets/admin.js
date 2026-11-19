@@ -167,8 +167,8 @@
     if (k === 'video') return p.poster_url
       ? `<img src="${esc(p.poster_url)}" alt="" loading="lazy" class="w-full h-auto block bg-black">`
       : `<video src="${esc(p.media_url)}#t=0.5" class="w-full h-auto block bg-black min-h-[180px]" muted playsinline preload="metadata"></video>`;
-    if (p.device === 'phone') return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]"><div class="absolute inset-y-[9%] left-[4%] flex gap-3">${shots.slice(0, 5).map((src) => `<img src="${esc(src)}" alt="" loading="lazy" class="h-full w-auto rounded-xl ring-1 ring-white/10">`).join('')}</div></div>`;
-    if (p.device === 'desktop') return `<div class="relative aspect-[3/4] overflow-hidden bg-[#0d0d0d]">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute top-0 left-0 w-full h-auto">` : ''}</div>`;
+    if (p.device === 'phone') return `<div class="relative aspect-[9/16] overflow-hidden bg-[#0d0d0d]">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute inset-y-[5%] left-1/2 -translate-x-1/2 h-[90%] w-auto rounded-[1.6rem] ring-1 ring-white/15">` : ''}</div>`;
+    if (p.device === 'desktop') return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute top-0 left-0 w-full h-auto">` : ''}</div>`;
     if (shots.length > 1) return `<img src="${esc(first)}" alt="" loading="lazy" class="w-full h-auto block bg-black">`;
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="" loading="lazy" class="w-full h-auto block">`;
     return devPlaceholder(p, 'aspect-[16/10]');
@@ -285,7 +285,7 @@
           <div><label class="text-sm text-white/70 mb-2 block">Catégorie</label>
             <select name="category" class="field">${Object.entries(CATEGORIES).map(([k, v]) => `<option value="${k}" ${p.category === k ? 'selected' : ''}>${v.label}</option>`).join('')}</select></div>
           <div><label class="text-sm text-white/70 mb-2 block">Format de la carte</label>
-            <select name="device" class="field">${[['', 'Normal (image ou vidéo)'], ['phone', 'Application : écrans qui défilent'], ['desktop', 'Site internet : pages qui défilent']].map(([k, l]) => `<option value="${k}" ${(p.device || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+            <select name="device" class="field">${[['', 'Normal (image ou vidéo)'], ['phone', 'Application : carte verticale, écrans en fondu'], ['desktop', 'Site internet : carte horizontale, site en direct']].map(([k, l]) => `<option value="${k}" ${(p.device || '') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
         </div>
         <div><label class="text-sm text-white/70 mb-2 block">Titre *</label><input name="title" class="field" required value="${esc(p.title || '')}"></div>
         <div><label class="text-sm text-white/70 mb-2 block">Description</label><textarea name="description" class="field !min-h-[110px]">${esc(p.description || '')}</textarea></div>
