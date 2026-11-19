@@ -38,11 +38,17 @@
     if (p.device === 'phone') {
       /* démo en direct (même domaine) : la vraie app tourne dans la carte et une navigation de démonstration s'y joue */
       const demo = sameOrigin(p.demo_url);
-      if (demo) return `<div class="relative aspect-[4/5] overflow-hidden bg-black" data-liveapp="${esc(demo)}">
-        ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-contain">` : ''}
+      if (demo) return `<div class="relative aspect-[16/15] overflow-hidden bg-[#0d0d0d] transition-[background] duration-700" data-liveapp="${esc(demo)}">
+        <div class="absolute inset-0 bg-gradient-to-b from-white/[.04] to-black/30 pointer-events-none"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[90%] aspect-[410/864] rounded-[14%/6.6%] bg-[#111] p-[2.4%] shadow-[0_25px_60px_-15px_rgba(0,0,0,.75),inset_0_0_0_1.5px_rgba(255,255,255,.14)]">
+          <div class="relative w-full h-full rounded-[12%/5.6%] overflow-hidden bg-black" data-screen>
+            ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
+            <span class="absolute top-[1.6%] left-1/2 -translate-x-1/2 w-[30%] h-[3.6%] rounded-full bg-black z-20 pointer-events-none"></span>
+          </div>
+        </div>
       </div>`;
-      if (!shots.length) return `<div class="relative aspect-[4/5] bg-[#0d0d0d]">${initial}</div>`;
-      return `<div class="relative aspect-[4/5] overflow-hidden bg-black" ${shots.length > 1 ? 'data-slides' : ''}>
+      if (!shots.length) return `<div class="relative aspect-[16/15] bg-[#0d0d0d]">${initial}</div>`;
+      return `<div class="relative aspect-[16/15] overflow-hidden bg-black" ${shots.length > 1 ? 'data-slides' : ''}>
         ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-contain ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
         ${shots.length > 1 ? `<div class="absolute bottom-2 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow transition-colors duration-500 ${i ? 'bg-white/40' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
@@ -155,22 +161,23 @@
     }, { rootMargin: '200px 0px' }).observe(box);
   }
 
-  /* démo d'application : carte au format 4/5 (au plus deux fois la hauteur d'une carte de site) ; l'app web est affichée
-     sur 675 x 844 px, elle étend d'elle-même son fond sur les côtés ; un « doigt » virtuel parcourt l'app
+  /* démo d'application : carte une fois et demie plus haute qu'une carte de site, avec un iPhone au centre ;
+     l'app web tourne à l'écran (390 x 844 px) et son fond s'étend derrière le téléphone ; un « doigt » virtuel parcourt l'app
      (changement d'onglet, jours précédents, défilement, détail du salaire…) en boucle, uniquement quand la carte est visible */
-  const APP_W = 675, APP_H = 844;
+  const APP_W = 390, APP_H = 844;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   function liveApp(box) {
     let frame = null, visible = false, running = false;
-    const fit = () => { if (frame) frame.style.transform = `scale(${box.clientWidth / APP_W})`; };
-    new ResizeObserver(fit).observe(box);
+    const screen = box.querySelector('[data-screen]') || box;
+    const fit = () => { if (frame) frame.style.transform = `scale(${screen.clientWidth / APP_W})`; };
+    new ResizeObserver(fit).observe(screen);
     const dot = document.createElement('span');
     dot.className = 'pointer-events-none absolute z-10 w-7 h-7 -ml-3.5 -mt-3.5 rounded-full bg-white/70 ring-4 ring-white/25 opacity-0 transition-[opacity,transform] duration-300 scale-75';
     const until = async (ms) => { const end = performance.now() + ms; while (performance.now() < end) { await sleep(120); while (!visible) await sleep(300); } };
     const doc = () => frame.contentDocument, win = () => frame.contentWindow;
     async function tap(el) {
       if (!el) return;
-      const r = el.getBoundingClientRect(), k = box.clientWidth / APP_W;
+      const r = el.getBoundingClientRect(), k = screen.clientWidth / APP_W;
       dot.style.left = `${(r.left + r.width / 2) * k}px`; dot.style.top = `${(r.top + r.height / 2) * k}px`;
       dot.style.opacity = '1'; dot.style.transform = 'scale(1)';
       await until(260); el.click(); await until(220);
@@ -250,10 +257,14 @@
         setTimeout(() => {
           /* le bandeau « Démo » de l'app n'a pas sa place dans l'aperçu */
           try { [...doc().querySelectorAll('button')].forEach((b) => { if (/^\s*Démo/.test(b.textContent)) b.style.display = 'none'; }); } catch {}
+          /* le fond de l'app s'étend derrière le téléphone */
+          try { const b = getComputedStyle(doc().body), h = getComputedStyle(doc().documentElement); const pick = (c) => (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent' ? c : '');
+            box.style.backgroundColor = pick(b.backgroundColor) || pick(h.backgroundColor) || '#0d0d0d';
+            const img = b.backgroundImage !== 'none' ? b.backgroundImage : h.backgroundImage !== 'none' ? h.backgroundImage : ''; if (img) { box.style.backgroundImage = img; box.style.backgroundSize = 'cover'; } } catch {}
           frame.style.opacity = '1'; tour();
         }, 1500);
       }, { once: true });
-      box.append(frame, dot);
+      screen.append(frame, dot);
     }
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }, { rootMargin: '200px 0px' }).observe(box);
   }
