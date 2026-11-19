@@ -38,12 +38,12 @@
     if (p.device === 'phone') {
       /* démo en direct (même domaine) : la vraie app tourne dans la carte et une navigation de démonstration s'y joue */
       const demo = sameOrigin(p.demo_url);
-      if (demo) return `<div class="relative aspect-[390/844] overflow-hidden bg-black" data-liveapp="${esc(demo)}">
-        ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
+      if (demo) return `<div class="relative aspect-[4/5] overflow-hidden bg-black" data-liveapp="${esc(demo)}">
+        ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-contain">` : ''}
       </div>`;
-      if (!shots.length) return `<div class="relative aspect-[9/19] bg-[#0d0d0d]">${initial}</div>`;
-      return `<div class="relative aspect-[9/19] overflow-hidden bg-black" ${shots.length > 1 ? 'data-slides' : ''}>
-        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
+      if (!shots.length) return `<div class="relative aspect-[4/5] bg-[#0d0d0d]">${initial}</div>`;
+      return `<div class="relative aspect-[4/5] overflow-hidden bg-black" ${shots.length > 1 ? 'data-slides' : ''}>
+        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-contain ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
         ${shots.length > 1 ? `<div class="absolute bottom-2 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow transition-colors duration-500 ${i ? 'bg-white/40' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
     }
@@ -155,9 +155,10 @@
     }, { rootMargin: '200px 0px' }).observe(box);
   }
 
-  /* démo d'application : écran de téléphone (390 x 844) réduit à la carte ; un « doigt » virtuel parcourt l'app
+  /* démo d'application : carte au format 4/5 (au plus deux fois la hauteur d'une carte de site) ; l'app web est affichée
+     sur 675 x 844 px, elle étend d'elle-même son fond sur les côtés ; un « doigt » virtuel parcourt l'app
      (changement d'onglet, jours précédents, défilement, détail du salaire…) en boucle, uniquement quand la carte est visible */
-  const APP_W = 390, APP_H = 844;
+  const APP_W = 675, APP_H = 844;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   function liveApp(box) {
     let frame = null, visible = false, running = false;
