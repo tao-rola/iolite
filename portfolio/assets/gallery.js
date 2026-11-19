@@ -177,21 +177,45 @@
     }
     const q = (sel) => doc().querySelector(sel);
     const byLabel = (txt) => [...doc().querySelectorAll('[aria-label]')].find((e) => e.getAttribute('aria-label') === txt && e.offsetParent !== null);
-    /* défilement « humain » de la page de l'app */
+    /* zone qui défile : la page elle-même, ou le plus grand bloc défilant de l'écran (selon l'app) */
+    function scroller() {
+      const d = doc(), se = d.scrollingElement || d.documentElement;
+      if (se.scrollHeight > APP_H + 20) return se;
+      let best = null, area = 0;
+      d.querySelectorAll('body *').forEach((el) => {
+        if (el.scrollHeight <= el.clientHeight + 20) return;
+        const oy = getComputedStyle(el).overflowY; if (oy !== 'auto' && oy !== 'scroll') return;
+        const r = el.getBoundingClientRect(), a = r.width * r.height; if (a > area) { area = a; best = el; }
+      });
+      return best || se;
+    }
+    /* défilement « humain » de l'écran de l'app */
     async function scrollBy(total) {
-      const w = win(), dir = Math.sign(total); let left = Math.abs(total);
+      const el = scroller(), dir = Math.sign(total); let left = Math.abs(total);
       while (left > 4) {
-        const max = Math.max(0, doc().documentElement.scrollHeight - APP_H), from = w.scrollY;
+        const max = Math.max(0, el.scrollHeight - el.clientHeight), from = el.scrollTop;
         const dist = Math.min(left, rand(160, 420)), to = Math.max(0, Math.min(max, from + dir * dist));
         if (Math.abs(to - from) < 2) break;
         const dur = rand(450, 800), t0 = performance.now();
-        await new Promise((res) => { const f = (t) => { const k = Math.min(1, (t - t0) / dur); w.scrollTo(0, from + (to - from) * ease(k)); k < 1 ? requestAnimationFrame(f) : res(); }; requestAnimationFrame(f); });
+        await new Promise((res) => { const f = (t) => { const k = Math.min(1, (t - t0) / dur); el.scrollTop = from + (to - from) * ease(k); k < 1 ? requestAnimationFrame(f) : res(); }; requestAnimationFrame(f); });
         left -= dist; await until(rand(250, 900));
       }
     }
-    const toTop = async () => { await scrollBy(-(win().scrollY + 50)); };
+    const toTop = async () => { const el = scroller(); await scrollBy(-(el.scrollTop + 50)); };
+    /* parcours générique : chaque onglet de la barre du bas, défilement, ouverture d'un élément puis retour */
+    async function genericTour() {
+      const tabs = [...doc().querySelectorAll('nav a, nav button')].filter((e) => e.offsetParent !== null && !/nouveau|ajouter|\+/i.test(e.getAttribute('aria-label') || ''));
+      for (const t of tabs.length ? tabs : [null]) {
+        if (t) { await tap(t); await until(1700); }
+        await scrollBy(rand(450, 800)); await until(800);
+        const item = [...doc().querySelectorAll('.list-item, [class*="card"] a, a.card, button.card')].find((e) => { const r = e.getBoundingClientRect(); return e.offsetParent !== null && r.top > 80 && r.bottom < APP_H - 100; });
+        if (item && Math.random() < 0.7) { await tap(item); await until(2200); await scrollBy(400); await until(900); win().history.back(); await until(1500); }
+        await toTop(); await until(600);
+      }
+    }
     async function tour() {
       if (running) return; running = true;
+      if (!doc().querySelector('.tab[data-tab]')) { for (;;) { try { await genericTour(); } catch (e) { await until(2000); } } }
       for (;;) {
         try {
           await until(1800);
@@ -221,8 +245,12 @@
       frame.style.cssText = `position:absolute;top:0;left:0;width:${APP_W}px;height:${APP_H}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .6s`;
       fit();
       frame.addEventListener('load', () => {
-        try { const st = doc().createElement('style'); st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}::-webkit-scrollbar{display:none!important}'; doc().head.appendChild(st); } catch {}
-        setTimeout(() => { frame.style.opacity = '1'; tour(); }, 1200);
+        try { const st = doc().createElement('style'); st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important}*{scrollbar-width:none!important}'; doc().head.appendChild(st); } catch {}
+        setTimeout(() => {
+          /* le bandeau « Démo » de l'app n'a pas sa place dans l'aperçu */
+          try { [...doc().querySelectorAll('button')].forEach((b) => { if (/^\s*Démo/.test(b.textContent)) b.style.display = 'none'; }); } catch {}
+          frame.style.opacity = '1'; tour();
+        }, 1500);
       }, { once: true });
       box.append(frame, dot);
     }
