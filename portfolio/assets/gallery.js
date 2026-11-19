@@ -277,7 +277,7 @@
       const f = document.createElement('iframe');
       f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
       f.style.cssText = `position:absolute;top:0;left:0;width:${VW}px;height:${VH}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .8s`;
-      f.srcdoc = `<!doctype html><html><head><style>html,body{margin:0;height:100%;overflow:hidden;background:${bg};background-image:${bgi};background-size:cover}${css}</style></head><body>${deco ? deco.outerHTML : ''}</body></html>`;
+      f.srcdoc = `<!doctype html><html><head><style>html{background:${bg};background-image:${bgi};background-size:cover}html,body{margin:0;height:100%;overflow:hidden}body{background:transparent}${css}</style></head><body>${deco ? deco.outerHTML : ''}</body></html>`;
       const fitBg = () => { f.style.transform = `scale(${Math.max(box.clientWidth / VW, box.clientHeight / VH)})`; };
       fitBg(); new ResizeObserver(fitBg).observe(box);
       f.addEventListener('load', () => (f.style.opacity = '1'), { once: true });
