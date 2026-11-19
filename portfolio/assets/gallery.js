@@ -77,7 +77,7 @@
   }
 
   function card(p, i) {
-    const tags = (p.tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join('');
+    const tags = (p.tags || []).map((t) => `<span class="tag${/en cours/i.test(t) ? ' tag-wip' : ''}">${esc(t)}</span>`).join('');
     return `
       <div class="break-inside-avoid mb-4 animate-fade-up" style="animation-delay:${Math.min(i, 8) * 60}ms">
         <article class="group relative bg-white/5 rounded-lg overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300">

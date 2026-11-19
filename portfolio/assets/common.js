@@ -376,7 +376,7 @@
       ${media}
       <div class="p-5 sm:p-8">
         <h2 class="display text-5xl sm:text-6xl text-white mb-4 pr-10">${esc(p.title)}</h2>
-        ${(p.tags || []).length ? `<div class="flex flex-wrap gap-1.5 mb-5">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+        ${(p.tags || []).length ? `<div class="flex flex-wrap gap-1.5 mb-5">${p.tags.map((t) => `<span class="tag${/en cours/i.test(t) ? ' tag-wip' : ''}">${esc(t)}</span>`).join('')}</div>` : ''}
         ${p.description ? `<p class="text-white/70 leading-relaxed whitespace-pre-line text-[15px]">${esc(p.description)}</p>` : ''}
         ${link ? `<div class="mt-6">${link}</div>` : ''}
       </div>`);

@@ -33,6 +33,7 @@
   .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-11 md:h-10 px-4 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors disabled:opacity-50 disabled:pointer-events-none; }
   .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-3 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50; }
   .tag { @apply text-xs bg-white/20 text-white px-2 py-0.5 rounded; }
+  .tag-wip { @apply bg-orange-500 text-white font-semibold; }
   .no-scrollbar { scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .bg-grid { background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 48px 48px; }
