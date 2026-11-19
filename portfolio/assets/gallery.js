@@ -118,6 +118,32 @@
     });
     return best;
   }
+  /* aperçus en direct (sites et applications) : chaque cadre consomme beaucoup de mémoire.
+     Sur téléphone, un seul tourne à la fois (le plus visible) ; ailleurs, quatre au maximum.
+     Un aperçu sorti de l'écran est déchargé, puis rechargé quand il revient. */
+  const SMALL = matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+  const MAX_LIVE = SMALL ? 1 : 4, MIN_RATIO = SMALL ? 0.5 : 0.01;
+  const liveCtrls = new Set(), liveActive = new Set();
+  function liveBalance() {
+    const wanted = [...liveCtrls].filter((c) => c.ratio >= MIN_RATIO).sort((a, b) => b.ratio - a.ratio).slice(0, MAX_LIVE);
+    liveActive.forEach((c) => { if (!wanted.includes(c)) { liveActive.delete(c); c.stop(); } });
+    wanted.forEach((c) => { if (!liveActive.has(c)) { liveActive.add(c); c.start(); } });
+  }
+  function liveWatch(box, ctrl) {
+    ctrl.ratio = 0; liveCtrls.add(ctrl);
+    let t = 0;
+    new IntersectionObserver(([e]) => {
+      ctrl.ratio = e.isIntersecting ? e.intersectionRatio : 0;
+      ctrl.visible = ctrl.ratio > 0;
+      clearTimeout(t);
+      /* petite attente avant de décharger : un aller-retour rapide ne recharge pas tout */
+      if (ctrl.ratio < MIN_RATIO && liveActive.has(ctrl)) t = setTimeout(liveBalance, 1200); else liveBalance();
+      ctrl.onVisibility && ctrl.onVisibility();
+    }, { threshold: [0, 0.01, 0.25, 0.5, 0.75, 1], rootMargin: SMALL ? '0px' : '150px 0px' }).observe(box);
+  }
+  /* bouclier transparent : on ne peut jamais naviguer dans l'aperçu (un toucher ouvre le détail du projet) */
+  const shield = () => { const d = document.createElement('div'); d.className = 'absolute inset-0 z-[6]'; d.setAttribute('aria-hidden', 'true'); return d; };
+
   /* défilement « humain » : des coups de molette de longueur variable, accélérés puis freinés, entrecoupés de courtes pauses */
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const rand = (a, b) => a + Math.random() * (b - a);
@@ -137,7 +163,7 @@
           if (y >= max - 2) {
             /* fin de page : pause, fondu, retour en haut */
             busy = true;
-            setTimeout(() => { frame.style.opacity = '0'; setTimeout(() => { y = 0; sc.scrollTop = 0; waitUntil = performance.now() + 1800; busy = false; frame.style.opacity = '1'; }, 600); }, 1500);
+            setTimeout(() => { if (!frame) return; frame.style.opacity = '0'; setTimeout(() => { if (!frame) return; y = 0; sc.scrollTop = 0; waitUntil = performance.now() + 1800; busy = false; frame.style.opacity = '1'; }, 600); }, 1500);
           } else {
             const dist = Math.min(max - y, rand(380, 1100));
             seg = { from: y, to: y + dist, t0: t, dur: rand(700, 1300) + dist * 0.4 };
@@ -152,28 +178,35 @@
       }
       raf = requestAnimationFrame(step);
     }
-    function start() {
-      if (frame) return;
-      frame = document.createElement('iframe');
-      frame.src = box.dataset.live;
-      frame.title = 'Aperçu en direct du site';
-      frame.setAttribute('aria-hidden', 'true'); frame.tabIndex = -1;
-      frame.style.cssText = `position:absolute;top:0;left:0;width:${LIVE_W}px;height:${LIVE_H}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .6s`;
-      fit();
-      frame.addEventListener('load', () => {
-        try {
-          const st = frame.contentDocument.createElement('style');
-          st.textContent = '*{scroll-behavior:auto!important;scroll-snap-type:none!important;scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important}';
-          frame.contentDocument.head.appendChild(st);
-        } catch {}
-        setTimeout(() => { ready = true; frame.style.opacity = '1'; y = 0; waitUntil = performance.now() + 1500; if (visible && !raf) raf = requestAnimationFrame(step); }, 900);
-      });
-      box.appendChild(frame);
-    }
-    new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting;
-      if (visible) { start(); if (ready && !raf) raf = requestAnimationFrame(step); }
-    }, { rootMargin: '200px 0px' }).observe(box);
+    const ctrl = {
+      start() {
+        if (frame) return;
+        frame = document.createElement('iframe');
+        frame.src = box.dataset.live;
+        frame.title = 'Aperçu en direct du site';
+        frame.setAttribute('aria-hidden', 'true'); frame.setAttribute('scrolling', 'no'); frame.tabIndex = -1; frame.inert = true;
+        frame.style.cssText = `position:absolute;top:0;left:0;width:${LIVE_W}px;height:${LIVE_H}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .6s`;
+        fit();
+        const me = frame;
+        frame.addEventListener('load', () => {
+          if (frame !== me) return;
+          try {
+            const st = frame.contentDocument.createElement('style');
+            st.textContent = '*{scroll-behavior:auto!important;scroll-snap-type:none!important;scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important}';
+            frame.contentDocument.head.appendChild(st);
+          } catch {}
+          setTimeout(() => { if (frame !== me) return; ready = true; frame.style.opacity = '1'; y = 0; seg = null; waitUntil = performance.now() + 1500; if (visible && !raf) raf = requestAnimationFrame(step); }, 900);
+        });
+        box.insertBefore(frame, guard);
+      },
+      stop() {
+        cancelAnimationFrame(raf); raf = 0; ready = false; busy = false; seg = null; y = 0;
+        if (frame) { frame.src = 'about:blank'; frame.remove(); frame = null; }
+      },
+      onVisibility() { visible = ctrl.visible; if (visible && ready && !raf) raf = requestAnimationFrame(step); },
+    };
+    const guard = shield(); box.appendChild(guard);
+    liveWatch(box, ctrl);
   }
 
   /* démo d'application : carte une fois et demie plus haute qu'une carte de site, avec un iPhone au centre ;
@@ -182,13 +215,14 @@
   const APP_W = 390, APP_H = 844;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   function liveApp(box) {
-    let frame = null, visible = false, running = false;
+    let frame = null, visible = false, running = false, gen = 0;
     const screen = box.querySelector('[data-screen]') || box;
     const fit = () => { if (frame) frame.style.transform = `scale(${screen.clientWidth / APP_W})`; };
     new ResizeObserver(fit).observe(screen);
     const dot = document.createElement('span');
     dot.className = 'pointer-events-none absolute z-10 w-7 h-7 -ml-3.5 -mt-3.5 rounded-full bg-white/70 ring-4 ring-white/25 opacity-0 transition-[opacity,transform] duration-300 scale-75';
-    const until = async (ms) => { const end = performance.now() + ms; while (performance.now() < end) { await sleep(120); while (!visible) await sleep(300); } };
+    /* attente qui s'interrompt si l'aperçu est déchargé (gen change) */
+    const until = async (ms) => { const g = gen, end = performance.now() + ms; while (performance.now() < end) { await sleep(120); while (!visible && g === gen) await sleep(300); if (g !== gen) throw new Error('stop'); } };
     const doc = () => frame.contentDocument, win = () => frame.contentWindow;
     async function tap(el) {
       if (!el) return;
@@ -238,8 +272,9 @@
     }
     async function tour() {
       if (running) return; running = true;
-      if (!doc().querySelector('.tab[data-tab]')) { for (;;) { try { await genericTour(); } catch (e) { await until(2000); } } }
-      for (;;) {
+      const g = gen;
+      if (!doc().querySelector('.tab[data-tab]')) { while (g === gen) { try { await genericTour(); } catch (e) { if (g !== gen) break; await sleep(2000); } } running = false; return; }
+      while (g === gen) {
         try {
           await until(1800);
           await tap(byLabel('Jour précédent')); await until(1300);
@@ -256,8 +291,9 @@
           await tap(q('.tab[data-tab="params"]')); await until(1500);
           await scrollBy(700); await until(900); await toTop();
           await tap(q('.tab[data-tab="shift"]'));
-        } catch (e) { await until(2000); }
+        } catch (e) { if (g !== gen) break; await sleep(2000); }
       }
+      running = false;
     }
     /* le fond de l'app (couleur, dégradés, halos animés…) est recopié derrière le téléphone :
        on reprend l'élément de décor de l'app et ses règles CSS dans une petite page à part, à la taille de la carte */
@@ -301,12 +337,15 @@
       frame = document.createElement('iframe');
       frame.src = box.dataset.liveapp;
       frame.title = "Démo de l'application";
-      frame.setAttribute('aria-hidden', 'true'); frame.tabIndex = -1;
+      frame.setAttribute('aria-hidden', 'true'); frame.setAttribute('scrolling', 'no'); frame.tabIndex = -1;
       frame.style.cssText = `position:absolute;top:0;left:0;width:${APP_W}px;height:${APP_H}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .6s`;
       fit();
+      const me = frame;
       frame.addEventListener('load', () => {
+        if (frame !== me) return;
         try { const st = doc().createElement('style'); st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}*::-webkit-scrollbar{display:none!important}*{scrollbar-width:none!important}'; doc().head.appendChild(st); } catch {}
         setTimeout(() => {
+          if (frame !== me) return;
           /* le bandeau « Démo » de l'app n'a pas sa place dans l'aperçu */
           try { [...doc().querySelectorAll('button')].forEach((b) => { if (/^\s*Démo/.test(b.textContent)) b.style.display = 'none'; }); } catch {}
           try { extendBackground(); } catch (e) { console.warn(e); }
@@ -315,7 +354,15 @@
       }, { once: true });
       screen.append(frame, dot);
     }
-    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }, { rootMargin: '200px 0px' }).observe(box);
+    function stop() {
+      gen++; running = false;
+      if (frame) { frame.src = 'about:blank'; frame.remove(); frame = null; }
+      dot.remove();
+      const host = box.querySelector('[data-appbg]'); if (host) host.replaceChildren();
+    }
+    const ctrl = { start, stop, onVisibility() { visible = ctrl.visible; } };
+    box.appendChild(shield());
+    liveWatch(box, ctrl);
   }
 
   /* visite des pages d'un site : défilement vers le bas, pause, fondu vers la page suivante */

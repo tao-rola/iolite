@@ -410,7 +410,7 @@
       if (isIntersecting) { if (v.preload !== 'auto') v.preload = 'auto'; v.play().catch(() => {}); }
       else v.pause();
     });
-  }, { rootMargin: '600px 0px' }) : null; /* démarre un peu avant l'arrivée à l'écran : la vidéo tourne déjà quand on la voit */
+  }, { rootMargin: matchMedia('(max-width: 767px), (pointer: coarse)').matches ? '250px 0px' : '600px 0px' }) : null; /* démarre un peu avant l'arrivée à l'écran (moins tôt sur téléphone, pour la mémoire) */
   const watchVideo = (v) => { v.muted = true; if (io) io.observe(v); else v.play().catch(() => {}); };
 
   window.TR = { navTo, initNavMenu, sb, rest, CONTACT, CATEGORIES, icon, esc, getProjects, getSettings, withProjects, withSettings, ytId, kindOf, hostOf, posterOf, projectLink, homeNav, topBar, footer, initCursor, toast, openModal, closeModal, projectModal, devPlaceholder, watchVideo, scrambleText };
