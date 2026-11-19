@@ -36,12 +36,9 @@
 
     /* applications : carte verticale (format téléphone), les écrans se succèdent en fondu */
     if (p.device === 'phone') {
-      if (!shots.length) return `<div class="relative aspect-[9/16] bg-[#0d0d0d]">${initial}</div>`;
-      return `<div class="relative aspect-[9/16] overflow-hidden bg-[#0d0d0d]" ${shots.length > 1 ? 'data-slides' : ''}>
-        <div class="glow" style="width:90%;height:70%;top:15%;left:5%;background:radial-gradient(circle,#10b981 0%,transparent 70%);opacity:.3"></div>
-        <div class="absolute inset-y-[5%] left-1/2 -translate-x-1/2 aspect-[390/844] rounded-[1.6rem] overflow-hidden ring-1 ring-white/15 shadow-2xl bg-black">
-          ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
-        </div>
+      if (!shots.length) return `<div class="relative aspect-[9/19] bg-[#0d0d0d]">${initial}</div>`;
+      return `<div class="relative aspect-[9/19] overflow-hidden bg-black" ${shots.length > 1 ? 'data-slides' : ''}>
+        ${shots.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="${i ? 'eager' : 'lazy'}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top ${i ? 'opacity-0' : 'opacity-100'} transition-opacity duration-1000">`).join('')}
         ${shots.length > 1 ? `<div class="absolute bottom-2 inset-x-0 flex justify-center gap-1.5 pointer-events-none">${shots.map((_, i) => `<span class="dot w-1.5 h-1.5 rounded-full shadow transition-colors duration-500 ${i ? 'bg-white/40' : 'bg-white'}"></span>`).join('')}</div>` : ''}
       </div>`;
     }
@@ -94,8 +91,12 @@
   /* aperçu en direct : le site est affiché comme sur un écran de 1280 x 800, réduit à la taille de la carte,
      puis défile lentement de haut en bas en boucle (il ne tourne que lorsqu'il est visible) */
   const LIVE_W = 1280, LIVE_H = 800;
+  /* défilement « humain » : des coups de molette de longueur variable, accélérés puis freinés, entrecoupés de courtes pauses */
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const rand = (a, b) => a + Math.random() * (b - a);
   function liveSite(box) {
-    let frame = null, raf = 0, visible = false, y = 0, pauseUntil = 0, last = 0, ready = false, resetting = false;
+    let frame = null, raf = 0, visible = false, ready = false, busy = false;
+    let y = 0, seg = null, waitUntil = 0;
     const fit = () => { if (frame) frame.style.transform = `scale(${box.clientWidth / LIVE_W})`; };
     new ResizeObserver(fit).observe(box);
     function step(t) {
@@ -103,15 +104,23 @@
       const win = frame.contentWindow, doc = frame.contentDocument;
       if (!win || !doc) return;
       const max = Math.max(0, doc.documentElement.scrollHeight - LIVE_H);
-      const dt = last ? Math.min(64, t - last) : 16; last = t;
-      if (t >= pauseUntil) {
-        y += dt * 0.07; /* environ 70 px par seconde */
-        if (y >= max && !resetting) {
-          /* fin de page : courte pause, fondu, retour en haut */
-          y = max; resetting = true; pauseUntil = Infinity;
-          setTimeout(() => { frame.style.opacity = '0'; setTimeout(() => { y = 0; win.scrollTo(0, 0); pauseUntil = performance.now() + 2500; resetting = false; frame.style.opacity = '1'; }, 600); }, 2000);
+      if (!busy && t >= waitUntil) {
+        if (!seg) {
+          if (y >= max - 2) {
+            /* fin de page : pause, fondu, retour en haut */
+            busy = true;
+            setTimeout(() => { frame.style.opacity = '0'; setTimeout(() => { y = 0; win.scrollTo(0, 0); waitUntil = performance.now() + 1800; busy = false; frame.style.opacity = '1'; }, 600); }, 1500);
+          } else {
+            const dist = Math.min(max - y, rand(380, 1100));
+            seg = { from: y, to: y + dist, t0: t, dur: rand(700, 1300) + dist * 0.4 };
+          }
         }
-        win.scrollTo(0, y);
+        if (seg) {
+          const k = Math.min(1, (t - seg.t0) / seg.dur);
+          y = seg.from + (seg.to - seg.from) * ease(k);
+          win.scrollTo(0, y);
+          if (k >= 1) { seg = null; waitUntil = t + rand(350, 1500); }
+        }
       }
       raf = requestAnimationFrame(step);
     }
@@ -129,13 +138,13 @@
           st.textContent = 'html,body{scroll-behavior:auto!important;scrollbar-width:none!important}::-webkit-scrollbar{display:none!important}';
           frame.contentDocument.head.appendChild(st);
         } catch {}
-        setTimeout(() => { ready = true; frame.style.opacity = '1'; y = 0; pauseUntil = performance.now() + 2500; if (visible && !raf) raf = requestAnimationFrame(step); }, 900);
+        setTimeout(() => { ready = true; frame.style.opacity = '1'; y = 0; waitUntil = performance.now() + 1500; if (visible && !raf) raf = requestAnimationFrame(step); }, 900);
       });
       box.appendChild(frame);
     }
     new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
-      if (visible) { start(); if (ready && !raf) { last = 0; raf = requestAnimationFrame(step); } }
+      if (visible) { start(); if (ready && !raf) raf = requestAnimationFrame(step); }
     }, { rootMargin: '200px 0px' }).observe(box);
   }
 
@@ -151,7 +160,15 @@
       const d = Math.max(0, img.offsetHeight - box.offsetHeight);
       img.style.transform = 'translateY(0)';
       if (anim) anim.cancel();
-      anim = img.animate([{ transform: 'translateY(0)' }, { transform: `translateY(-${d}px)` }], { duration: Math.max(4000, d * 14), delay: 900, easing: 'ease-in-out', fill: 'forwards' });
+      /* même défilement « humain » que les sites en direct : par à-coups variés avec pauses */
+      const frames = [{ transform: 'translateY(0)', offset: 0 }]; const marks = [0]; let pos = 0, time = 0;
+      while (pos < d) { const dist = Math.min(d - pos, rand(200, 520) * (box.clientWidth / 800)); time += rand(700, 1300) + dist; pos += dist; marks.push([time, pos]); time += rand(350, 1400); marks.push([time, pos]); }
+      const total = Math.max(time, 1);
+      marks.slice(1).forEach(([tm, ps]) => frames.push({ transform: `translateY(-${ps}px)`, offset: Math.min(1, tm / total), easing: 'cubic-bezier(.65,0,.35,1)' }));
+      frames[0].easing = 'cubic-bezier(.65,0,.35,1)';
+      for (let k = 1; k < frames.length; k++) if (frames[k].offset < frames[k - 1].offset) frames[k].offset = frames[k - 1].offset;
+      frames[frames.length - 1].offset = 1;
+      anim = img.animate(frames, { duration: total, delay: 900, fill: 'forwards' });
       anim.onfinish = () => {
         timer = setTimeout(async () => {
           if (imgs.length > 1) await ready(imgs[(i + 1) % imgs.length]);

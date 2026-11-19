@@ -167,7 +167,7 @@
     if (k === 'video') return p.poster_url
       ? `<img src="${esc(p.poster_url)}" alt="" loading="lazy" class="w-full h-auto block bg-black">`
       : `<video src="${esc(p.media_url)}#t=0.5" class="w-full h-auto block bg-black min-h-[180px]" muted playsinline preload="metadata"></video>`;
-    if (p.device === 'phone') return `<div class="relative aspect-[9/16] overflow-hidden bg-[#0d0d0d]">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute inset-y-[5%] left-1/2 -translate-x-1/2 h-[90%] w-auto rounded-[1.6rem] ring-1 ring-white/15">` : ''}</div>`;
+    if (p.device === 'phone') return `<div class="relative aspect-[9/19] overflow-hidden bg-black">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}</div>`;
     if (p.device === 'desktop') return `<div class="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">${first ? `<img src="${esc(first)}" alt="" loading="lazy" class="absolute top-0 left-0 w-full h-auto">` : ''}</div>`;
     if (shots.length > 1) return `<img src="${esc(first)}" alt="" loading="lazy" class="w-full h-auto block bg-black">`;
     if (k === 'image') return `<img src="${esc(p.media_url)}" alt="" loading="lazy" class="w-full h-auto block">`;
