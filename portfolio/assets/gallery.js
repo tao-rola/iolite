@@ -38,13 +38,16 @@
     if (p.device === 'phone') {
       /* démo en direct (même domaine) : la vraie app tourne dans la carte et une navigation de démonstration s'y joue */
       const demo = sameOrigin(p.demo_url);
-      if (demo) return `<div class="relative aspect-[16/15] overflow-hidden bg-[#0d0d0d] transition-[background] duration-700" data-liveapp="${esc(demo)}">
-        <div class="absolute inset-0 bg-gradient-to-b from-white/[.04] to-black/30 pointer-events-none"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[90%] aspect-[410/864] rounded-[14%/6.6%] bg-[#111] p-[2.4%] shadow-[0_25px_60px_-15px_rgba(0,0,0,.75),inset_0_0_0_1.5px_rgba(255,255,255,.14)]">
-          <div class="relative w-full h-full rounded-[12%/5.6%] overflow-hidden bg-black" data-screen>
-            ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
-            <span class="absolute top-[1.6%] left-1/2 -translate-x-1/2 w-[30%] h-[3.6%] rounded-full bg-black z-20 pointer-events-none"></span>
-          </div>
+      if (demo) return `<div class="relative aspect-[16/15] overflow-hidden bg-[#0d0d0d]" data-liveapp="${esc(demo)}">
+        <div class="absolute inset-0" data-appbg></div>
+        <div class="phone absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-[402/840]">
+          <span class="phone-btn" style="left:-.9%;top:17%;height:4%"></span><span class="phone-btn" style="left:-.9%;top:25%;height:7.5%"></span><span class="phone-btn" style="left:-.9%;top:34%;height:7.5%"></span><span class="phone-btn" style="right:-.9%;top:27%;height:11%"></span>
+          <div class="phone-rim"><div class="phone-bezel">
+            <div class="relative w-full h-full overflow-hidden bg-black phone-screen" data-screen>
+              ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
+              <span class="absolute top-[1.3%] left-1/2 -translate-x-1/2 w-[29%] h-[3.3%] rounded-full bg-black z-20 pointer-events-none"></span>
+            </div>
+          </div></div>
         </div>
       </div>`;
       if (!shots.length) return `<div class="relative aspect-[16/15] bg-[#0d0d0d]">${initial}</div>`;
@@ -244,6 +247,43 @@
         } catch (e) { await until(2000); }
       }
     }
+    /* le fond de l'app (couleur, dégradés, halos animés…) est recopié derrière le téléphone :
+       on reprend l'élément de décor de l'app et ses règles CSS dans une petite page à part, à la taille de la carte */
+    function extendBackground() {
+      const d = doc(), host = box.querySelector('[data-appbg]'); if (!host) return;
+      const pick = (c) => (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent' ? c : '');
+      const hs = getComputedStyle(d.documentElement), bs = getComputedStyle(d.body);
+      const bg = pick(bs.backgroundColor) || pick(hs.backgroundColor) || '#0d0d0d';
+      const bgi = bs.backgroundImage !== 'none' ? bs.backgroundImage : hs.backgroundImage !== 'none' ? hs.backgroundImage : 'none';
+      /* décor : élément fixe ou absolu qui couvre l'écran, sans texte (halos, dégradés…) */
+      const deco = [...d.body.querySelectorAll(':scope > *')].find((el) => {
+        const cs = getComputedStyle(el), r = el.getBoundingClientRect();
+        return (cs.position === 'fixed' || cs.position === 'absolute') && r.width >= APP_W * 0.9 && r.height >= APP_H * 0.6 && !el.textContent.trim() && el.children.length;
+      });
+      let css = '';
+      if (deco) {
+        const els = [deco, ...deco.querySelectorAll('*')];
+        const hit = (sel) => sel.split(',').some((part) => { const clean = part.replace(/::?(before|after)\b/g, '').trim() || '*'; try { return els.some((el) => el.matches(clean)); } catch { return false; } });
+        for (const sh of d.styleSheets) {
+          let rules; try { rules = sh.cssRules; } catch { continue; }
+          for (const r of rules) {
+            if (r.type === CSSRule.KEYFRAMES_RULE) css += r.cssText;
+            else if (r.type === CSSRule.STYLE_RULE && (r.selectorText === ':root' || hit(r.selectorText))) css += r.cssText;
+            else if (r.type === CSSRule.MEDIA_RULE && matchMedia(r.conditionText).matches) for (const rr of r.cssRules) if (rr.type === CSSRule.STYLE_RULE && hit(rr.selectorText)) css += rr.cssText;
+          }
+        }
+      }
+      const VW = 640, VH = 600;
+      const f = document.createElement('iframe');
+      f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
+      f.style.cssText = `position:absolute;top:0;left:0;width:${VW}px;height:${VH}px;border:0;transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .8s`;
+      f.srcdoc = `<!doctype html><html><head><style>html,body{margin:0;height:100%;overflow:hidden;background:${bg};background-image:${bgi};background-size:cover}${css}</style></head><body>${deco ? deco.outerHTML : ''}</body></html>`;
+      const fitBg = () => { f.style.transform = `scale(${Math.max(box.clientWidth / VW, box.clientHeight / VH)})`; };
+      fitBg(); new ResizeObserver(fitBg).observe(box);
+      f.addEventListener('load', () => (f.style.opacity = '1'), { once: true });
+      host.replaceChildren(f);
+      box.style.backgroundColor = bg;
+    }
     function start() {
       if (frame) return;
       frame = document.createElement('iframe');
@@ -257,10 +297,7 @@
         setTimeout(() => {
           /* le bandeau « Démo » de l'app n'a pas sa place dans l'aperçu */
           try { [...doc().querySelectorAll('button')].forEach((b) => { if (/^\s*Démo/.test(b.textContent)) b.style.display = 'none'; }); } catch {}
-          /* le fond de l'app s'étend derrière le téléphone */
-          try { const b = getComputedStyle(doc().body), h = getComputedStyle(doc().documentElement); const pick = (c) => (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent' ? c : '');
-            box.style.backgroundColor = pick(b.backgroundColor) || pick(h.backgroundColor) || '#0d0d0d';
-            const img = b.backgroundImage !== 'none' ? b.backgroundImage : h.backgroundImage !== 'none' ? h.backgroundImage : ''; if (img) { box.style.backgroundImage = img; box.style.backgroundSize = 'cover'; } } catch {}
+          try { extendBackground(); } catch (e) { console.warn(e); }
           frame.style.opacity = '1'; tour();
         }, 1500);
       }, { once: true });
