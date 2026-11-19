@@ -124,11 +124,18 @@
   const SMALL = matchMedia('(max-width: 767px), (pointer: coarse)').matches;
   const MAX_LIVE = SMALL ? 1 : 4, MIN_RATIO = SMALL ? 0.5 : 0.01;
   const liveCtrls = new Set(), liveActive = new Set();
+  /* tout est mis en pause quand la fenêtre de détail est ouverte ou qu'on part voir un projet (mémoire libérée) */
+  let livePaused = false;
+  const pauseLive = (on) => { livePaused = on; liveBalance(); };
+  document.addEventListener('tr:modal-open', () => pauseLive(true));
+  document.addEventListener('tr:modal-closed', () => pauseLive(false));
+  document.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('a[target="_blank"]')) pauseLive(true); }, true);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !document.getElementById('modal')) pauseLive(false); else if (document.visibilityState === 'hidden') pauseLive(true); });
   function liveBalance() {
     /* priorité : la part visible, puis la proximité avec le centre de l'écran */
     const mid = innerHeight / 2;
     const score = (c) => { const r = c.box.getBoundingClientRect(); return c.ratio * 10 - Math.abs((r.top + r.bottom) / 2 - mid) / innerHeight; };
-    const wanted = [...liveCtrls].filter((c) => c.ratio >= MIN_RATIO).sort((a, b) => score(b) - score(a)).slice(0, MAX_LIVE);
+    const wanted = livePaused ? [] : [...liveCtrls].filter((c) => c.ratio >= MIN_RATIO).sort((a, b) => score(b) - score(a)).slice(0, MAX_LIVE);
     liveActive.forEach((c) => { if (!wanted.includes(c)) { liveActive.delete(c); c.stop(); } });
     wanted.forEach((c) => { if (!liveActive.has(c)) { liveActive.add(c); c.start(); } });
   }

@@ -345,12 +345,15 @@
     document.body.appendChild(m);
     document.body.style.overflow = 'hidden';
     m.querySelector('[data-close]').focus({ preventScroll: true });
+    document.dispatchEvent(new Event('tr:modal-open'));
   }
   function closeModal() {
     const m = document.getElementById('modal');
     if (!m) return;
     m.querySelectorAll('video').forEach((v) => v.pause());
+    m.querySelectorAll('iframe').forEach((f) => (f.src = 'about:blank'));
     m.remove(); document.body.style.overflow = '';
+    document.dispatchEvent(new Event('tr:modal-closed'));
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
   addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
@@ -362,7 +365,7 @@
     if (k === 'youtube') media = `<div class="relative aspect-video bg-black overflow-hidden"><img src="${posterOf(p)}" alt="${esc(p.title)}" onload="if(this.naturalWidth<=120)this.src=this.src.replace('maxresdefault','hqdefault')" class="absolute inset-0 w-full h-full object-cover"></div>`; /* ancien lien YouTube : image fixe en attendant le fichier vidéo */
     else if (k === 'video') media = `<div class="bg-black flex justify-center"><video src="${esc(p.media_url)}" ${p.poster_url ? `poster="${esc(p.poster_url)}"` : ''} class="w-full max-h-[60dvh] object-contain" controls autoplay muted loop playsinline></video></div>`;
     /* site internet : le vrai site, en direct et utilisable (on peut y faire défiler et cliquer) */
-    else if (p.device === 'desktop' && p.link) media = `<div class="relative aspect-[16/10] bg-[#0d0d0d] overflow-hidden" data-modal-live><iframe src="${esc(p.link)}" title="${esc(p.title)}" loading="lazy" style="position:absolute;top:0;left:0;width:1280px;height:800px;border:0;transform-origin:0 0"></iframe></div>`;
+    else if (p.device === 'desktop' && p.link && !(matchMedia('(max-width: 767px), (pointer: coarse)').matches && (p.gallery || []).length)) media = `<div class="relative aspect-[16/10] bg-[#0d0d0d] overflow-hidden" data-modal-live><iframe src="${esc(p.link)}" title="${esc(p.title)}" loading="lazy" style="position:absolute;top:0;left:0;width:1280px;height:800px;border:0;transform-origin:0 0"></iframe></div>`;
     /* site sans adresse : ses pages capturées, à faire défiler */
     else if (p.device === 'desktop' && (p.gallery || []).length) media = `<div class="aspect-[16/10] bg-white overflow-y-auto overscroll-contain">${p.gallery.map((src, i) => `<img src="${esc(src)}" alt="${i ? '' : esc(p.title)}" loading="lazy" class="block w-full h-auto ${i ? 'border-t-8 border-[#0d0d0d]' : ''}">`).join('')}</div>`;
     /* application : écrans côte à côte, à faire défiler */
