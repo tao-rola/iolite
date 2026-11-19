@@ -125,12 +125,15 @@
   const MAX_LIVE = SMALL ? 1 : 4, MIN_RATIO = SMALL ? 0.5 : 0.01;
   const liveCtrls = new Set(), liveActive = new Set();
   function liveBalance() {
-    const wanted = [...liveCtrls].filter((c) => c.ratio >= MIN_RATIO).sort((a, b) => b.ratio - a.ratio).slice(0, MAX_LIVE);
+    /* priorité : la part visible, puis la proximité avec le centre de l'écran */
+    const mid = innerHeight / 2;
+    const score = (c) => { const r = c.box.getBoundingClientRect(); return c.ratio * 10 - Math.abs((r.top + r.bottom) / 2 - mid) / innerHeight; };
+    const wanted = [...liveCtrls].filter((c) => c.ratio >= MIN_RATIO).sort((a, b) => score(b) - score(a)).slice(0, MAX_LIVE);
     liveActive.forEach((c) => { if (!wanted.includes(c)) { liveActive.delete(c); c.stop(); } });
     wanted.forEach((c) => { if (!liveActive.has(c)) { liveActive.add(c); c.start(); } });
   }
   function liveWatch(box, ctrl) {
-    ctrl.ratio = 0; liveCtrls.add(ctrl);
+    ctrl.ratio = 0; ctrl.box = box; liveCtrls.add(ctrl);
     let t = 0;
     new IntersectionObserver(([e]) => {
       ctrl.ratio = e.isIntersecting ? e.intersectionRatio : 0;
@@ -141,6 +144,9 @@
       ctrl.onVisibility && ctrl.onVisibility();
     }, { threshold: [0, 0.01, 0.25, 0.5, 0.75, 1], rootMargin: SMALL ? '0px' : '150px 0px' }).observe(box);
   }
+  /* plusieurs aperçus entièrement visibles : on réévalue à la fin du défilement */
+  let balanceT = 0;
+  addEventListener('scroll', () => { clearTimeout(balanceT); balanceT = setTimeout(() => liveCtrls.size && liveBalance(), 250); }, { passive: true });
   /* bouclier transparent : on ne peut jamais naviguer dans l'aperçu (un toucher ouvre le détail du projet) */
   const shield = () => { const d = document.createElement('div'); d.className = 'absolute inset-0 z-[6]'; d.setAttribute('aria-hidden', 'true'); return d; };
 
