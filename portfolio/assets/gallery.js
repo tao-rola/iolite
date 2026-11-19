@@ -45,7 +45,6 @@
           <div class="phone-rim"><div class="phone-bezel">
             <div class="relative w-full h-full overflow-hidden bg-black phone-screen" data-screen>
               ${shots[0] ? `<img src="${esc(shots[0])}" alt="${esc(p.title)}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">` : ''}
-              <span class="absolute top-[1.3%] left-1/2 -translate-x-1/2 w-[29%] h-[3.3%] rounded-full bg-black z-20 pointer-events-none"></span>
             </div>
           </div></div>
         </div>
