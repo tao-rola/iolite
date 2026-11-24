@@ -1,6 +1,6 @@
 // iolite.team : animations et interactions
 (function () {
-  var APP_STORE_URL = '';                 // à renseigner au lancement : https://apps.apple.com/fr/app/iolite/id…
+  var APP_STORE_URL = 'https://apps.apple.com/fr/app/iolite-heures-et-salaire/id6835842075';
   var doc = document.documentElement, body = document.body;
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;

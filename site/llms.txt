@@ -11,7 +11,7 @@
 - iPhone : activité en direct sur l'écran verrouillé et dans la Dynamic Island, widgets, Face ID, rappels, notifications.
 - Plusieurs emplois, chacun avec son contrat et son planning ; export et suppression des données.
 - Données hébergées dans l'Union européenne (Irlande), sans publicité ni pistage ; l'employeur n'a pas accès aux données.
-- Disponibilité : version web disponible (https://iolite-app.pages.dev) ; application iPhone bientôt sur l'App Store. Android : via la version web.
+- Disponibilité : version web disponible (https://iolite-app.pages.dev) ; application iPhone gratuite sur l'App Store (https://apps.apple.com/fr/app/iolite-heures-et-salaire/id6835842075). Android : via la version web.
 - Le salaire affiché est une estimation pour vérifier sa fiche de paie ; seul le bulletin officiel fait foi.
 - Contact : contact@iolite.team
 
